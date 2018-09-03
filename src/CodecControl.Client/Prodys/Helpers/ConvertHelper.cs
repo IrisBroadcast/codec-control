@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CCM.CodecControl.Helpers
+namespace CodecControl.Client.Prodys.Helpers
 {
     /// <summary>
     /// Helper class for encoding and decoding values

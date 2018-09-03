@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CodecControl.Web.Models
+namespace CodecControl.Client.Models
 {
     public class AudioStatus
     {

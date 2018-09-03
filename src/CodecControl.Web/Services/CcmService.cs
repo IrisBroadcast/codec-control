@@ -1,4 +1,6 @@
-﻿using CodecControl.Web.Controllers;
+﻿using CodecControl.Client;
+using CodecControl.Web.Controllers;
+using CodecControl.Web.Interfaces;
 using CodecControl.Web.Models;
 
 namespace CodecControl.Web.Services

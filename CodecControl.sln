@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.28010.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodecControl.Web", "src\CodecControl.Web\CodecControl.Web.csproj", "{4C01BD46-17C6-4A78-93B6-489D70ACDAFC}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodecControl.Client", "src\CodecControl.Client\CodecControl.Client.csproj", "{04D715D0-8F54-4953-AC51-010F63CEE893}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{4C01BD46-17C6-4A78-93B6-489D70ACDAFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4C01BD46-17C6-4A78-93B6-489D70ACDAFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4C01BD46-17C6-4A78-93B6-489D70ACDAFC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04D715D0-8F54-4953-AC51-010F63CEE893}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04D715D0-8F54-4953-AC51-010F63CEE893}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04D715D0-8F54-4953-AC51-010F63CEE893}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04D715D0-8F54-4953-AC51-010F63CEE893}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

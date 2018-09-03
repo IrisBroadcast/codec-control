@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace CodecControl.Web.Models
+namespace CodecControl.Client.Models
 {
     /// <summary>
     /// Ljudkodningsalgoritm, baserat på Prodys implementation

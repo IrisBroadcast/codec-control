@@ -1,4 +1,4 @@
-﻿namespace CodecControl.Web.Models
+﻿namespace CodecControl.Client.Models
 {
     public class LineStatus
     {

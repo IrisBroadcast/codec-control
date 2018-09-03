@@ -1,8 +1,7 @@
 ﻿using System.Threading.Tasks;
-using CCM.Core.CodecControl.Entities;
-using CCM.Core.CodecControl.Enums;
+using CodecControl.Client.Models;
 
-namespace CCM.CodecControl
+namespace CodecControl.Client
 {
     /// <remarks>
     /// Gpi = General Purpose Input

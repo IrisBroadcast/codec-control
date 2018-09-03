@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using CodecControl.Client;
+using CodecControl.Client.Models;
 using CodecControl.Web.Interfaces;
 using CodecControl.Web.Models;
 using CodecControl.Web.Services;

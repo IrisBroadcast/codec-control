@@ -1,4 +1,4 @@
-﻿namespace CCM.CodecControl.Prodys.IkusNet.Sdk.Commands.Base
+﻿namespace CodecControl.Client.Prodys.IkusNet.Sdk.Commands.Base
 {
     public interface ICommandBase
     {

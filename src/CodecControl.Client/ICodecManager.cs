@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
-using System.Threading.Tasks;
-using CodecControl.Web.Models;
+﻿using System.Threading.Tasks;
+using CodecControl.Client.Models;
 
-namespace CodecControl.Web.Interfaces
+namespace CodecControl.Client
 {
 
     public interface ICodecManager

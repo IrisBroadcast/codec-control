@@ -3,17 +3,13 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
-using CCM.CodecControl.Prodys.IkusNet.Sdk.Commands;
-using CCM.CodecControl.Prodys.IkusNet.Sdk.Commands.Base;
-using CCM.CodecControl.Prodys.IkusNet.Sdk.Enums;
-using CCM.CodecControl.Prodys.IkusNet.Sdk.Responses;
-using CCM.Core.CodecControl.Entities;
-using CCM.Core.CodecControl.Enums;
-using CCM.Core.Exceptions;
-using NLog;
-using CCM.CodecControl.Helpers;
+using CodecControl.Client.Prodys.Helpers;
+using CodecControl.Client.Prodys.IkusNet.Sdk.Commands;
+using CodecControl.Client.Prodys.IkusNet.Sdk.Commands.Base;
+using CodecControl.Client.Prodys.IkusNet.Sdk.Enums;
+using CodecControl.Client.Prodys.IkusNet.Sdk.Responses;
 
-namespace CCM.CodecControl.Prodys.IkusNet
+namespace CodecControl.Client.Prodys.IkusNet
 {
     public class IkusNetApi : ICodecApi
     {

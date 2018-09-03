@@ -1,5 +1,5 @@
 ﻿
-namespace CodecControl.Web.Models
+namespace CodecControl.Client.Models
 {
     public enum DisconnectReason
     {

@@ -1,14 +1,8 @@
 ﻿using System;
-using CCM.Core.CodecControl.Entities;
-using CCM.Core.CodecControl.Enums;
-using NLog;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Linq;
-using CCM.CodecControl.SR.BaresipRest;
-using CCM.Core.Helpers;
 
-namespace CCM.CodecControl.SR.BaresipRest
+namespace CodecControl.Client.SR.BaresipRest
 {
     /// <summary>
     /// Codec control implementation for the Baresip, this implementation is experimental/proprietary

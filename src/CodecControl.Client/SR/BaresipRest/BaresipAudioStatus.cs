@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CCM.CodecControl.SR.BaresipRest
+namespace CodecControl.Client.SR.BaresipRest
 {
     public class BaresipLineStatus
     {

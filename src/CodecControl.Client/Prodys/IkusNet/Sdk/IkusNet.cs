@@ -1,4 +1,4 @@
-﻿namespace CCM.CodecControl.Prodys.IkusNet.Sdk
+﻿namespace CodecControl.Client.Prodys.IkusNet.Sdk
 {
     /// <summary>
     /// Constants for Ikusnet

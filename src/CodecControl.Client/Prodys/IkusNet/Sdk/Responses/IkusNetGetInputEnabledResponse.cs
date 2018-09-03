@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Net.Sockets;
-using CCM.CodecControl.Helpers;
-using CCM.CodecControl.Prodys.IkusNet.Sdk.Enums;
+using CodecControl.Client.Prodys.Helpers;
+using CodecControl.Client.Prodys.IkusNet.Sdk.Enums;
 
-namespace CCM.CodecControl.Prodys.IkusNet.Sdk.Responses
+namespace CodecControl.Client.Prodys.IkusNet.Sdk.Responses
 {
     public class IkusNetGetInputEnabledResponse : IkusNetStatusResponseBase
     {

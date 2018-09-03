@@ -1,8 +1,8 @@
 ﻿using System;
-using CCM.CodecControl.Helpers;
-using CCM.CodecControl.Prodys.IkusNet.Sdk.Enums;
+using CodecControl.Client.Prodys.Helpers;
+using CodecControl.Client.Prodys.IkusNet.Sdk.Enums;
 
-namespace CCM.CodecControl.Prodys.IkusNet.Sdk.Commands
+namespace CodecControl.Client.Prodys.IkusNet.Sdk.Commands
 {
     public class CsConnect : ConnectCommandBase
     {

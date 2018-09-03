@@ -1,6 +1,6 @@
-﻿using CodecControl.Web.Models;
+﻿using CodecControl.Client;
 
-namespace CodecControl.Web.Services
+namespace CodecControl.Web.Interfaces
 {
     public interface ICcmService
     {

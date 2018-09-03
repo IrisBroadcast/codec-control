@@ -13,4 +13,8 @@
     <PackageReference Include="NLog" Version="4.5.9" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CodecControl.Client\CodecControl.Client.csproj" />
+  </ItemGroup>
+
 </Project>

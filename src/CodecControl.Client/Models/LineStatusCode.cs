@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel;
 
-namespace CodecControl.Web.Models
+namespace CodecControl.Client.Models
 {
     public enum LineStatusCode
     {
-        [Description("Ingen tillgänglig förbindelse möjlig")] NoPhysicalLine = 0,
+        [Description("Ingen tillgänglig förbindelse")] NoPhysicalLine = 0,
         [Description("Nedkopplad")] Disconnected,
         [Description("Kopplar ned")] Disconnecting,
         [Description("Ringer")] Calling, // Ringer upp

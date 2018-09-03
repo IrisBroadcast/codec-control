@@ -1,4 +1,4 @@
-﻿namespace CodecControl.Web.Models
+﻿namespace CodecControl.Client.Models
 {
     public class VuValues
     {
@@ -9,7 +9,7 @@
 
         public override string ToString()
         {
-            return string.Format("Tx: {0} {1} Rx: {2} {3}", TxLeft, TxRight, RxLeft, RxRight);
+            return $"Tx: {TxLeft} {TxRight} Rx: {RxLeft} {RxRight}";
         }
 
     }

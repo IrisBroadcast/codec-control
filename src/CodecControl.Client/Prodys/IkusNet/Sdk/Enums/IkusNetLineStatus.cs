@@ -1,4 +1,4 @@
-﻿namespace CCM.CodecControl.Prodys.IkusNet.Sdk.Enums
+﻿namespace CodecControl.Client.Prodys.IkusNet.Sdk.Enums
 {
     public enum IkusNetLineStatus
     {

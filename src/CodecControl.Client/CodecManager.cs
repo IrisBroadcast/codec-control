@@ -2,17 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CCM.CodecControl.Mandozzi.Umac;
-using CCM.CodecControl.Prodys.IkusNet;
-using CCM.Core.CodecControl.Entities;
-using CCM.Core.CodecControl.Enums;
-using CCM.Core.CodecControl.Interfaces;
-using CCM.Core.Exceptions;
-using CCM.Core.Interfaces.Managers;
-using NLog;
-using CCM.CodecControl.SR.BaresipRest;
+using CodecControl.Client.Models;
+using CodecControl.Client.Prodys.IkusNet;
+using CodecControl.Client.SR.BaresipRest;
 
-namespace CCM.CodecControl
+namespace CodecControl.Client
 {
     /// <summary>
     /// Manager for connecting with Code APIs
@@ -61,8 +55,6 @@ namespace CCM.CodecControl
             {
                 case "IkusNet":
                     return new IkusNetApi();
-                case "Umac":
-                    return new UmacApi();
                 case "BaresipRest":
                     return new BaresipRestApi();
                 default:

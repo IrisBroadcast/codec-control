@@ -1,7 +1,7 @@
-﻿using CCM.CodecControl.Helpers;
-using CCM.CodecControl.Prodys.IkusNet.Sdk.Enums;
+﻿using CodecControl.Client.Prodys.Helpers;
+using CodecControl.Client.Prodys.IkusNet.Sdk.Enums;
 
-namespace CCM.CodecControl.Prodys.IkusNet.Sdk.Commands.Base
+namespace CodecControl.Client.Prodys.IkusNet.Sdk.Commands.Base
 {
     public abstract class CommandBase : ICommandBase 
     {

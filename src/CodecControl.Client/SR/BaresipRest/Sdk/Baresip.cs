@@ -1,4 +1,4 @@
-﻿namespace CCM.CodecControl.SR.BaresipRest.Sdk
+﻿namespace CodecControl.Client.SR.BaresipRest.Sdk
 {
     /// <summary>
     /// Constant values for Baresip custom REST API

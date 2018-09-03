@@ -2,7 +2,7 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 
-namespace CCM.CodecControl.Helpers
+namespace CodecControl.Client.Prodys.Helpers
 {
     public static class SocketExtensions
     {

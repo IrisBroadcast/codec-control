@@ -12,7 +12,10 @@ namespace CodecControl.Web.Services
             // TODO: Connect to CCM and retrieve codec information
             // TODO: Cache the information
             // TODO: Listen to CCM hub and reload only when necessary
-            return new CodecInformation();
+            return new CodecInformation()
+            {
+                SipAddress = sipAddress
+            };
         }
     }
 }

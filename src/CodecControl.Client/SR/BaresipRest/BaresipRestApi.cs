@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using CodecControl.Client.Models;
+using NLog;
 
 namespace CodecControl.Client.SR.BaresipRest
 {
@@ -166,7 +169,10 @@ namespace CodecControl.Client.SR.BaresipRest
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<bool> LoadPresetAsync(string ip, string presetName) { throw new NotImplementedException(); }
+        public async Task<bool> LoadPresetAsync(string ip, string presetName)
+        {
+            throw new NotImplementedException();
+        }
 
         public async Task<bool> RebootAsync(string ip) { throw new NotImplementedException(); }
         

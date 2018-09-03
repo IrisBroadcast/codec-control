@@ -4,7 +4,6 @@ using CodecControl.Client;
 using CodecControl.Client.Models;
 using CodecControl.Web.Interfaces;
 using CodecControl.Web.Models;
-using CodecControl.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
 
@@ -19,9 +18,10 @@ namespace CodecControl.Web.Controllers
 
         private readonly string No_Gpo_Found = "Ingen GPO kunde hittas";
 
-        public CodecControlController(ICcmService ccmService)
+        public CodecControlController(ICcmService ccmService, ICodecManager codecManager)
         {
             _ccmService = ccmService;
+            _codecManager = codecManager;
         }
         #endregion
 

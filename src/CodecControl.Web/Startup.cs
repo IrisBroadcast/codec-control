@@ -1,4 +1,5 @@
-﻿using CodecControl.Web.Interfaces;
+﻿using CodecControl.Client;
+using CodecControl.Web.Interfaces;
 using CodecControl.Web.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -21,6 +22,7 @@ namespace CodecControl.Web
         {
             // Dependency injection
             services.AddTransient<ICcmService, CcmService>();
+            services.AddTransient<ICodecManager, CodecManager>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }

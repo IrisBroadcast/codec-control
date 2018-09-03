@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using CodecControl.Client.Models;
 using CodecControl.Client.Prodys.Helpers;
 using CodecControl.Client.Prodys.IkusNet.Sdk.Commands;
 using CodecControl.Client.Prodys.IkusNet.Sdk.Commands.Base;
 using CodecControl.Client.Prodys.IkusNet.Sdk.Enums;
 using CodecControl.Client.Prodys.IkusNet.Sdk.Responses;
+using NLog;
 
 namespace CodecControl.Client.Prodys.IkusNet
 {

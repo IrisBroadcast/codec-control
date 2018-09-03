@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CodecControl.Client.Models;
 using CodecControl.Client.Prodys.IkusNet;
 using CodecControl.Client.SR.BaresipRest;
+using NLog;
 
 namespace CodecControl.Client
 {
@@ -13,39 +14,14 @@ namespace CodecControl.Client
     /// </summary>
     public class CodecManager : ICodecManager
     {
-        private readonly ISettingsManager _settingsManager;
         protected static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-        public CodecManager(ISettingsManager settingsManager)
+        public CodecManager()
         {
-            _settingsManager = settingsManager;
-        }
-
-        public static Dictionary<string, CodecApiInformation> AvailableApis
-        {
-            get
-            {
-                var apis = new List<CodecApiInformation>
-                {
-                    new CodecApiInformation { DisplayName = "Prodys IkusNet", Name = "IkusNet" },
-                    new CodecApiInformation { DisplayName = "Mandozzi Umac", Name = "Umac" },
-                    new CodecApiInformation { DisplayName = "Baresip Proprietary", Name = "BaresipRest" }
-                };
-                return apis.ToDictionary(c => c.Name);
-            }
         }
 
         private ICodecApi CreateCodecApi(CodecInformation codecInformation)
         {
-            // Pga en bugg in Prodys Quantum, där den kan hänga sig då man skickar kommandon, 
-            // införs möjligheten att helt kunna stänga av kodarstyrningsfunktionen.
-            var codecControlActive = _settingsManager.CodecControlActive;
-
-            if (!codecControlActive)
-            {
-                throw new CodecApiNotFoundException("Codec control is disabled.");
-            }
-
             if (codecInformation == null)
             {
                 throw new CodecApiNotFoundException("Missing codec api information.");

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using CodecControl.Client;
+using CodecControl.Client.Exceptions;
 using CodecControl.Client.Models;
 using CodecControl.Web.Controllers;
 using CodecControl.Web.Interfaces;
@@ -26,161 +27,318 @@ namespace CodecControl.Web.Services
         private CodecInformation GetCodecInformationBySipAddress(string sipAddress)
         {
             var codecInfo = _ccmService.GetCodecInformationBySipAddress(sipAddress);
-            return string.IsNullOrEmpty(codecInfo?.Api) ? null : codecInfo;
+            return codecInfo?.CodecApiType == null ? null : codecInfo;
         }
-
-        //private ICodecApi CreateCodecApi(CodecInformation codecInformation)
-        //{
-        //    if (codecInformation == null)
-        //    {
-        //        throw new CodecApiNotFoundException("Missing codec api information.");
-        //    }
-
-        //    switch (codecInformation.Api)
-        //    {
-        //        case "IkusNet":
-        //            return new IkusNetApi();
-        //        case "BaresipRest":
-        //            return new BaresipRestApi();
-        //        default:
-        //            throw new CodecApiNotFoundException($"Could not load API {codecInformation.Api}.");
-        //    }
-        //}
 
 
         public async Task<bool> CallAsync(string sipAddress, string callee, string profileName)
         {
-            // TODO: first check codec call status. Do not execute the call method if the codec is already in a call.
-            // Some codecs will hangup the current call and dial up the new call without hesitation.
-
             if (string.IsNullOrEmpty(sipAddress))
             {
-                throw new ArgumentException(nameof(sipAddress));
+                throw new MissingSipAddressException();
             }
 
             CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
 
-            if (codecInformation == null)
-            {
-                throw new Exception("");
-            }
-            
-            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation);
+            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation?.CodecApiType);
 
-            if (codecApi == null)
+            if (codecInformation == null || codecApi == null)
             {
-                throw new Exception();
+                throw new CodecApiNotFoundException();
             }
 
-            return await codecApi.CallAsync(codecInformation.Ip, callee, profileName);
+            // TODO: first check codec call status. Do not execute the call method if the codec is already in a call.
+            // Some codecs will hangup the current call and dial up the new call without hesitation.
+            var callAsync = await codecApi.CallAsync(codecInformation.Ip, callee, profileName);
+            return callAsync;
         }
 
-        public async Task<bool> HangUpAsync(CodecInformation codecInformation)
+        public async Task<bool> HangUpAsync(string sipAddress)
         {
-            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation);
+            if (string.IsNullOrEmpty(sipAddress))
+            {
+                throw new MissingSipAddressException();
+            }
+
+            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
+
+            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation?.CodecApiType);
+
+            if (codecInformation == null || codecApi == null)
+            {
+                throw new CodecApiNotFoundException();
+            }
+
             return await codecApi.HangUpAsync(codecInformation.Ip);
         }
 
-        public async Task<bool> CheckIfAvailableAsync(CodecInformation codecInformation)
+        public async Task<bool> CheckIfAvailableAsync(string sipAddress)
         {
-            try
+            if (string.IsNullOrEmpty(sipAddress))
             {
-                var codecApi = _codecApiFactory.CreateCodecApi(codecInformation);
-                return await codecApi.CheckIfAvailableAsync(codecInformation.Ip);
+                throw new MissingSipAddressException();
             }
-            catch (Exception ex)
+
+            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
+
+            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation?.CodecApiType);
+
+            if (codecInformation == null || codecApi == null)
             {
-                log.Warn(ex, "Exception in CheckIfAvailableAsync");
-                return false;
+                throw new CodecApiNotFoundException();
             }
+
+            return await codecApi.CheckIfAvailableAsync(codecInformation.Ip);
         }
 
-        public async Task<bool?> GetGpoAsync(CodecInformation codecInformation, int gpio)
+        public async Task<bool?> GetGpoAsync(string sipAddress, int gpio)
         {
-            try
+            if (string.IsNullOrEmpty(sipAddress))
             {
-                var codecApi = _codecApiFactory.CreateCodecApi(codecInformation);
-                var gpo = await codecApi.GetGpoAsync(codecInformation.Ip, gpio);
-                return gpo;
-
+                throw new MissingSipAddressException();
             }
-            catch (Exception)
+
+            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
+
+            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation?.CodecApiType);
+
+            if (codecInformation == null || codecApi == null)
             {
-                return null;
+                throw new CodecApiNotFoundException();
             }
+
+            return await codecApi.GetGpoAsync(codecInformation.Ip, gpio);
         }
 
-        public async Task<bool> GetInputEnabledAsync(CodecInformation codecInformation, int input)
-        {
-            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation);
-            return await codecApi.GetInputEnabledAsync(codecInformation.Ip, input);
-        }
 
-        public async Task<int> GetInputGainLevelAsync(CodecInformation codecInformation, int input)
-        {
-            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation);
-            return await codecApi.GetInputGainLevelAsync(codecInformation.Ip, input);
-        }
 
-        public async Task<LineStatus> GetLineStatusAsync(CodecInformation codecInformation, int line)
+        public async Task<bool> SetGpoAsync(string sipAddress, int gpo, bool active)
         {
-            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation);
-            return await codecApi.GetLineStatusAsync(codecInformation.Ip, line);
-        }
+            if (string.IsNullOrEmpty(sipAddress))
+            {
+                throw new MissingSipAddressException();
+            }
 
-        public async Task<string> GetLoadedPresetNameAsync(CodecInformation codecInformation, string lastPresetName)
-        {
-            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation);
-            return await codecApi.GetLoadedPresetNameAsync(codecInformation.Ip, lastPresetName);
-        }
+            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
 
-        public async Task<VuValues> GetVuValuesAsync(CodecInformation codecInformation)
-        {
-            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation);
-            return await codecApi.GetVuValuesAsync(codecInformation.Ip);
-        }
+            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation?.CodecApiType);
 
-        public async Task<AudioStatus> GetAudioStatusAsync(CodecInformation codecInformation, int nrOfInputs, int nrOfGpos)
-        {
-            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation);
-            return await codecApi.GetAudioStatusAsync(codecInformation.Ip, nrOfInputs, nrOfGpos);
-        }
+            if (codecInformation == null || codecApi == null)
+            {
+                throw new CodecApiNotFoundException();
+            }
 
-        public async Task<AudioMode> GetAudioModeAsync(CodecInformation codecInformation)
-        {
-            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation);
-            return await codecApi.GetAudioModeAsync(codecInformation.Ip);
-        }
-
-        public async Task<bool> LoadPresetAsync(CodecInformation codecInformation, string preset)
-        {
-            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation);
-            return await codecApi.LoadPresetAsync(codecInformation.Ip, preset);
-        }
-
-        public async Task<bool> RebootAsync(CodecInformation codecInformation)
-        {
-            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation);
-            return await codecApi.RebootAsync(codecInformation.Ip);
-        }
-
-        public async Task<bool> SetGpoAsync(CodecInformation codecInformation, int gpo, bool active)
-        {
-            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation);
             return await codecApi.SetGpoAsync(codecInformation.Ip, gpo, active);
         }
 
-        public async Task<bool> SetInputEnabledAsync(CodecInformation codecInformation, int input, bool enabled)
+        public async Task<bool> SetInputEnabledAsync(string sipAddress, int input, bool enabled)
         {
-            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation);
+            if (string.IsNullOrEmpty(sipAddress))
+            {
+                throw new MissingSipAddressException();
+            }
+
+            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
+
+            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation?.CodecApiType);
+
+            if (codecInformation == null || codecApi == null)
+            {
+                throw new CodecApiNotFoundException();
+            }
+
             return await codecApi.SetInputEnabledAsync(codecInformation.Ip, input, enabled);
         }
 
-        public async Task<int> SetInputGainLevelAsync(CodecInformation codecInformation, int input, int gainLevel)
+        public async Task<int> SetInputGainLevelAsync(string sipAddress, int input, int gainLevel)
         {
-            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation);
+            if (string.IsNullOrEmpty(sipAddress))
+            {
+                throw new MissingSipAddressException();
+            }
+
+            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
+
+            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation?.CodecApiType);
+
+            if (codecInformation == null || codecApi == null)
+            {
+                throw new CodecApiNotFoundException();
+            }
+
             await codecApi.SetInputGainLevelAsync(codecInformation.Ip, input, gainLevel);
             return await codecApi.GetInputGainLevelAsync(codecInformation.Ip, input);
+        }
+
+        public async Task<bool> GetInputEnabledAsync(string sipAddress, int input)
+        {
+            if (string.IsNullOrEmpty(sipAddress))
+            {
+                throw new MissingSipAddressException();
+            }
+
+            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
+
+            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation?.CodecApiType);
+
+            if (codecInformation == null || codecApi == null)
+            {
+                throw new CodecApiNotFoundException();
+            }
+
+            return await codecApi.GetInputEnabledAsync(codecInformation.Ip, input);
+        }
+
+        public async Task<int> GetInputGainLevelAsync(string sipAddress, int input)
+        {
+            if (string.IsNullOrEmpty(sipAddress))
+            {
+                throw new MissingSipAddressException();
+            }
+
+            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
+
+            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation?.CodecApiType);
+
+            if (codecInformation == null || codecApi == null)
+            {
+                throw new CodecApiNotFoundException();
+            }
+
+            return await codecApi.GetInputGainLevelAsync(codecInformation.Ip, input);
+        }
+
+        public async Task<LineStatus> GetLineStatusAsync(string sipAddress, int line)
+        {
+            if (string.IsNullOrEmpty(sipAddress))
+            {
+                throw new MissingSipAddressException();
+            }
+
+            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
+
+            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation?.CodecApiType);
+
+            if (codecInformation == null || codecApi == null)
+            {
+                throw new CodecApiNotFoundException();
+            }
+
+            return await codecApi.GetLineStatusAsync(codecInformation.Ip, line);
+        }
+
+        public async Task<string> GetLoadedPresetNameAsync(string sipAddress, string lastPresetName)
+        {
+            if (string.IsNullOrEmpty(sipAddress))
+            {
+                throw new MissingSipAddressException();
+            }
+
+            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
+
+            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation?.CodecApiType);
+
+            if (codecInformation == null || codecApi == null)
+            {
+                throw new CodecApiNotFoundException();
+            }
+
+            return await codecApi.GetLoadedPresetNameAsync(codecInformation.Ip, lastPresetName);
+        }
+
+        public async Task<VuValues> GetVuValuesAsync(string sipAddress)
+        {
+            if (string.IsNullOrEmpty(sipAddress))
+            {
+                throw new MissingSipAddressException();
+            }
+
+            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
+
+            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation?.CodecApiType);
+
+            if (codecInformation == null || codecApi == null)
+            {
+                throw new CodecApiNotFoundException();
+            }
+
+            return await codecApi.GetVuValuesAsync(codecInformation.Ip);
+        }
+
+        public async Task<AudioStatus> GetAudioStatusAsync(string sipAddress, int nrOfInputs, int nrOfGpos)
+        {
+            if (string.IsNullOrEmpty(sipAddress))
+            {
+                throw new MissingSipAddressException();
+            }
+
+            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
+
+            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation?.CodecApiType);
+
+            if (codecInformation == null || codecApi == null)
+            {
+                throw new CodecApiNotFoundException();
+            }
+
+            return await codecApi.GetAudioStatusAsync(codecInformation.Ip, nrOfInputs, nrOfGpos);
+        }
+
+        public async Task<AudioMode> GetAudioModeAsync(string sipAddress)
+        {
+            if (string.IsNullOrEmpty(sipAddress))
+            {
+                throw new MissingSipAddressException();
+            }
+
+            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
+
+            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation?.CodecApiType);
+
+            if (codecInformation == null || codecApi == null)
+            {
+                throw new CodecApiNotFoundException();
+            }
+
+            return await codecApi.GetAudioModeAsync(codecInformation.Ip);
+        }
+
+        public async Task<bool> LoadPresetAsync(string sipAddress, string preset)
+        {
+            if (string.IsNullOrEmpty(sipAddress))
+            {
+                throw new MissingSipAddressException();
+            }
+
+            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
+
+            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation?.CodecApiType);
+
+            if (codecInformation == null || codecApi == null)
+            {
+                throw new CodecApiNotFoundException();
+            }
+
+            return await codecApi.LoadPresetAsync(codecInformation.Ip, preset);
+        }
+
+        public async Task<bool> RebootAsync(string sipAddress)
+        {
+            if (string.IsNullOrEmpty(sipAddress))
+            {
+                throw new MissingSipAddressException();
+            }
+
+            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
+
+            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation?.CodecApiType);
+
+            if (codecInformation == null || codecApi == null)
+            {
+                throw new CodecApiNotFoundException();
+            }
+
+            return await codecApi.RebootAsync(codecInformation.Ip);
         }
 
     }

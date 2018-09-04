@@ -7,6 +7,9 @@ namespace CodecControl.Client.Exceptions
 
     }
 
+    public class MissingSipAddressException : CodecControlException {}
+
+
     public class CodecApiNotFoundException : ApplicationException
     {
         public CodecApiNotFoundException()

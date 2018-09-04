@@ -17,38 +17,9 @@ namespace CodecControl.Web.Controllers
             _serviceProvider = serviceProvider;
         }
 
-        //public ICodecApi GetCodecApi(string sipAddress)
-        //{
-        //    var codecInfo = GetCodecInformationBySipAddress(sipAddress);
-        //    var codecApi = CreateCodecApi(codecInfo);
-        //    return codecApi;
-        //}
-
-        //public CodecInformation GetCodecInformationBySipAddress(string sipAddress)
-        //{
-        //    var codecInformation = _ccmService.GetCodecInformationBySipAddress(sipAddress);
-
-        //    if (codecInformation == null)
-        //    {
-        //        // TODO: Log as warning
-        //        return null;
-        //    }
-
-        //    return string.IsNullOrEmpty(codecInformation.Api) ? null : codecInformation;
-        //}
-
-        public ICodecApi CreateCodecApi(CodecInformation codecInformation)
+        public ICodecApi CreateCodecApi(Type codecApiType)
         {
-            switch (codecInformation.Api)
-            {
-                case "IkusNet":
-                    return (ICodecApi)_serviceProvider.GetService(typeof(IkusNetApi));
-                case "BaresipRest":
-                    return (ICodecApi)_serviceProvider.GetService(typeof(BaresipRestApi));
-                default:
-                    // TODO: Log as warning
-                    return null;
-            }
+            return codecApiType != null ? _serviceProvider.GetService(codecApiType) as ICodecApi : null;
         }
 
     }

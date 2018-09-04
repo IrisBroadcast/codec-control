@@ -20,13 +20,17 @@ namespace CodecControl.Client.Prodys.IkusNet
             {
                 using (var socket = await ProdysSocket.GetConnectedSocketAsync(ip))
                 {
-                    socket.Close();
+                    if (socket != null)
+                    {
+                        return true;
+                    }
+                    return false;
                 }
-                return await Task.FromResult(true);
+                
             }
             catch (Exception ex)
             {
-                return await Task.FromResult(false);
+                return false;
             }
         }
 

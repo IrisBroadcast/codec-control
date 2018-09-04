@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using CodecControl.Client;
 using CodecControl.Client.Models;
 
 namespace CodecControl.Web.Interfaces
@@ -8,23 +7,23 @@ namespace CodecControl.Web.Interfaces
     public interface ICodecManager
     {
         Task<bool> CallAsync(string sipAddress, string callee, string profileName);
-        Task<bool> HangUpAsync(CodecInformation codecInformation);
-        Task<bool> CheckIfAvailableAsync(CodecInformation codecInformation);
-        Task<bool?> GetGpoAsync(CodecInformation codecInformation, int gpio);
-        Task<bool> SetGpoAsync(CodecInformation codecInformation, int gpo, bool active);
+        Task<bool> HangUpAsync(string sipAddress);
+        Task<bool> CheckIfAvailableAsync(string sipAddress);
+        Task<bool?> GetGpoAsync(string sipAddress, int gpio);
+        Task<bool> SetGpoAsync(string sipAddress, int gpo, bool active);
 
         // GetInputEnabled, SetInputEnabled, GetInputGainLevel och SetInputGainLevel doesn't work on Quantum ST since it lacks controlable inputs.
-        Task<bool> GetInputEnabledAsync(CodecInformation codecInformation, int input);
-        Task<bool> SetInputEnabledAsync(CodecInformation codecInformation, int input, bool enabled);
-        Task<int> GetInputGainLevelAsync(CodecInformation codecInformation, int input);
-        Task<int> SetInputGainLevelAsync(CodecInformation codecInformation, int input, int gainLevel);
-        Task<LineStatus> GetLineStatusAsync(CodecInformation codecInformation, int line);
-        Task<string> GetLoadedPresetNameAsync(CodecInformation codecInformation, string lastPresetName);
-        Task<VuValues> GetVuValuesAsync(CodecInformation codecInformation);
-        Task<AudioStatus> GetAudioStatusAsync(CodecInformation codecInformation, int nrOfInputs, int nrOfGpos);
-        Task<AudioMode> GetAudioModeAsync(CodecInformation codecInformation);
-        Task<bool> LoadPresetAsync(CodecInformation codecInformation, string preset);
-        Task<bool> RebootAsync(CodecInformation codecInformation);
+        Task<bool> GetInputEnabledAsync(string sipAddress, int input);
+        Task<bool> SetInputEnabledAsync(string sipAddress, int input, bool enabled);
+        Task<int> GetInputGainLevelAsync(string sipAddress, int input);
+        Task<int> SetInputGainLevelAsync(string sipAddress, int input, int gainLevel);
+        Task<LineStatus> GetLineStatusAsync(string sipAddress, int line);
+        Task<string> GetLoadedPresetNameAsync(string sipAddress, string lastPresetName);
+        Task<VuValues> GetVuValuesAsync(string sipAddress);
+        Task<AudioStatus> GetAudioStatusAsync(string sipAddress, int nrOfInputs, int nrOfGpos);
+        Task<AudioMode> GetAudioModeAsync(string sipAddress);
+        Task<bool> LoadPresetAsync(string sipAddress, string preset);
+        Task<bool> RebootAsync(string sipAddress);
     }
 
 

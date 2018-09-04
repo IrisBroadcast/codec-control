@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CodecControl.Client;
 using CodecControl.Client.Models;
@@ -29,8 +31,7 @@ namespace CodecControl.Web.Controllers
         [HttpGet]
         public async Task<bool> CheckCodecAvailable(string sipAddress)
         {
-            var codecInformation = GetCodecInformationBySipAddress(sipAddress);
-            return await _codecManager.CheckIfAvailableAsync(codecInformation);
+            return await _codecManager.CheckIfAvailableAsync(sipAddress);
         }
 
         [Route("GetAvailableGpos")]
@@ -42,12 +43,10 @@ namespace CodecControl.Web.Controllers
                 return BadRequest();
             }
 
-            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
+            var codecInformation = new CodecInformation(); // Dummy!!!
 
-            if (codecInformation == null)
-            {
-                return NotFound();
-            }
+            string gpoNameString = codecInformation.GpoNames;
+            List<string> gpoNames = (gpoNameString ?? string.Empty).Split(',').Select(s => s.Trim()).ToList();
 
             var model = new AvailableGposViewModel();
 
@@ -55,7 +54,7 @@ namespace CodecControl.Web.Controllers
             {
                 for (int i = 0; i < nrOfGpos; i++)
                 {
-                    bool? active = await _codecManager.GetGpoAsync(codecInformation, i);
+                    bool? active = await _codecManager.GetGpoAsync(sipAddress, i);
 
                     if (!active.HasValue)
                     {
@@ -63,12 +62,10 @@ namespace CodecControl.Web.Controllers
                         break;
                     }
 
-                    var gpoName = GetGpoName(codecInformation.GpoNames, i);
-
                     model.Gpos.Add(new GpoViewModel()
                     {
                         Active = active.Value,
-                        Name = string.IsNullOrWhiteSpace(gpoName) ? $"GPO {i}" : gpoName,
+                        Name = i < gpoNames.Count ? gpoNames[i] : $"GPO {i}",
                         Number = i
                     });
                 }
@@ -83,13 +80,7 @@ namespace CodecControl.Web.Controllers
 
             return model;
         }
-
-        public string GetGpoName(string gpoNames, int index)
-        {
-            var names = (gpoNames ?? string.Empty).Split(',');
-            return index < names.Length ? names[index].Trim() : string.Empty;
-        }
-
+        
         [Route("GetAudioStatus")]
         [HttpGet]
         public async Task<ActionResult<AudioStatusViewModel>> GetAudioStatus(string sipAddress, int nrOfInputs = 2, int nrOfGpos = 2)
@@ -99,16 +90,9 @@ namespace CodecControl.Web.Controllers
                 return BadRequest();
             }
 
-            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
-
-            if (codecInformation == null)
-            {
-                return NotFound();
-            }
-
             try
             {
-                var audioStatus = await _codecManager.GetAudioStatusAsync(codecInformation, nrOfInputs, nrOfGpos);
+                var audioStatus = await _codecManager.GetAudioStatusAsync(sipAddress, nrOfInputs, nrOfGpos);
 
                 var model = new AudioStatusViewModel()
                 {
@@ -120,7 +104,7 @@ namespace CodecControl.Web.Controllers
             }
             catch (Exception ex)
             {
-                log.Warn(ex, "Exception when sending codec control command to " + codecInformation.SipAddress);
+                log.Warn(ex, "Exception when sending codec control command to " + sipAddress);
                 return CodecUnavailable();
             }
         }
@@ -134,25 +118,18 @@ namespace CodecControl.Web.Controllers
                 return BadRequest();
             }
 
-            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
-
-            if (codecInformation == null)
-            {
-                return NotFound();
-            }
-
             try
             {
                 var model = new InputGainAndStatusViewModel
                 {
-                    Enabled = await _codecManager.GetInputEnabledAsync(codecInformation, input),
-                    GainLevel = await _codecManager.GetInputGainLevelAsync(codecInformation, input)
+                    Enabled = await _codecManager.GetInputEnabledAsync(sipAddress, input),
+                    GainLevel = await _codecManager.GetInputGainLevelAsync(sipAddress, input)
                 };
                 return model;
             }
             catch (Exception ex)
             {
-                log.Warn(ex, "Exception when sending codec control command to " + codecInformation.SipAddress);
+                log.Warn(ex, "Exception when sending codec control command to " + sipAddress);
                 return CodecUnavailable();
             }
         }
@@ -166,21 +143,14 @@ namespace CodecControl.Web.Controllers
                 return BadRequest();
             }
 
-            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
-
-            if (codecInformation == null)
-            {
-                return NotFound();
-            }
-
             try
             {
-                var enabled = await _codecManager.GetInputEnabledAsync(codecInformation, input);
+                var enabled = await _codecManager.GetInputEnabledAsync(sipAddress, input);
                 return new InputStatusViewModel { Enabled = enabled };
             }
             catch (Exception ex)
             {
-                log.Warn(ex, "Exception when sending codec control command to " + codecInformation.SipAddress);
+                log.Warn(ex, "Exception when sending codec control command to " + sipAddress);
                 return CodecUnavailable();
             }
         }
@@ -194,17 +164,10 @@ namespace CodecControl.Web.Controllers
                 return BadRequest();
             }
 
-            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
-
-            if (codecInformation == null)
-            {
-                return NotFound();
-            }
-
             try
             {
                 var model = new LineStatusViewModel();
-                LineStatus lineStatus = await _codecManager.GetLineStatusAsync(codecInformation, line);
+                LineStatus lineStatus = await _codecManager.GetLineStatusAsync(sipAddress, line);
 
                 if (lineStatus == null || lineStatus.StatusCode == LineStatusCode.ErrorGettingStatus)
                 {
@@ -221,7 +184,7 @@ namespace CodecControl.Web.Controllers
             }
             catch (Exception ex)
             {
-                log.Warn(ex, "Exception when sending codec control command to " + codecInformation.SipAddress);
+                log.Warn(ex, "Exception when sending codec control command to " + sipAddress);
                 return CodecUnavailable();
             }
         }
@@ -235,21 +198,14 @@ namespace CodecControl.Web.Controllers
                 return BadRequest();
             }
 
-            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
-
-            if (codecInformation == null)
-            {
-                return NotFound();
-            }
-
             try
             {
-                var loadedPreset = await _codecManager.GetLoadedPresetNameAsync(codecInformation, string.Empty);
+                var loadedPreset = await _codecManager.GetLoadedPresetNameAsync(sipAddress, string.Empty);
                 return new PresetViewModel { LoadedPreset = loadedPreset };
             }
             catch (Exception ex)
             {
-                log.Warn(ex, "Exception when sending codec control command to " + codecInformation.SipAddress);
+                log.Warn(ex, "Exception when sending codec control command to " + sipAddress);
                 return CodecUnavailable();
             }
         }
@@ -262,17 +218,10 @@ namespace CodecControl.Web.Controllers
             {
                 return BadRequest();
             }
-
-            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
-
-            if (codecInformation == null)
-            {
-                return NotFound();
-            }
-
+            
             try
             {
-                var vuValues = await _codecManager.GetVuValuesAsync(codecInformation);
+                var vuValues = await _codecManager.GetVuValuesAsync(sipAddress);
 
                 return new VuValuesViewModel
                 {
@@ -284,7 +233,7 @@ namespace CodecControl.Web.Controllers
             }
             catch (Exception ex)
             {
-                log.Warn(ex, "Exception when sending codec control command to " + codecInformation.SipAddress);
+                log.Warn(ex, "Exception when sending codec control command to " + sipAddress);
                 return CodecUnavailable();
             }
         }
@@ -298,16 +247,9 @@ namespace CodecControl.Web.Controllers
                 return BadRequest();
             }
 
-            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
-
-            if (codecInformation == null)
-            {
-                return NotFound();
-            }
-
             try
             {
-                AudioMode result = await _codecManager.GetAudioModeAsync(codecInformation);
+                AudioMode result = await _codecManager.GetAudioModeAsync(sipAddress);
 
                 return new AudioModeViewModel
                 {
@@ -317,7 +259,7 @@ namespace CodecControl.Web.Controllers
             }
             catch (Exception ex)
             {
-                log.Warn(ex, "Exception when sending codec control command to " + codecInformation.SipAddress);
+                log.Warn(ex, "Exception when sending codec control command to " + sipAddress);
                 return CodecUnavailable();
             }
         }
@@ -330,22 +272,15 @@ namespace CodecControl.Web.Controllers
             {
                 return BadRequest();
             }
-
-            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
-
-            if (codecInformation == null)
-            {
-                return NotFound();
-            }
-
+            
             try
             {
-                await _codecManager.LoadPresetAsync(codecInformation, name);
+                await _codecManager.LoadPresetAsync(sipAddress, name);
                 return true;
             }
             catch (Exception ex)
             {
-                log.Warn(ex, "Exception when sending codec control command to " + codecInformation.SipAddress);
+                log.Warn(ex, "Exception when sending codec control command to " + sipAddress);
                 return CodecUnavailable();
             }
         }
@@ -358,23 +293,16 @@ namespace CodecControl.Web.Controllers
             {
                 return BadRequest();
             }
-
-            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
-
-            if (codecInformation == null)
-            {
-                return NotFound();
-            }
-
+            
             try
             {
-                await _codecManager.SetGpoAsync(codecInformation, number, active);
-                var gpoActive = await _codecManager.GetGpoAsync(codecInformation, number) ?? false;
+                await _codecManager.SetGpoAsync(sipAddress, number, active);
+                var gpoActive = await _codecManager.GetGpoAsync(sipAddress, number) ?? false;
                 return new GpoViewModel { Number = number, Active = gpoActive };
             }
             catch (Exception ex)
             {
-                log.Warn(ex, "Exception when sending codec control command to " + codecInformation.SipAddress);
+                log.Warn(ex, "Exception when sending codec control command to " + sipAddress);
                 return CodecUnavailable();
             }
         }
@@ -387,22 +315,15 @@ namespace CodecControl.Web.Controllers
             {
                 return BadRequest();
             }
-
-            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
-
-            if (codecInformation == null)
-            {
-                return NotFound();
-            }
-
+            
             try
             {
-                var isEnabled = await _codecManager.SetInputEnabledAsync(codecInformation, input, enabled);
+                var isEnabled = await _codecManager.SetInputEnabledAsync(sipAddress, input, enabled);
                 return new InputStatusViewModel { Enabled = isEnabled };
             }
             catch (Exception ex)
             {
-                log.Warn(ex, "Exception when sending codec control command to " + codecInformation.SipAddress);
+                log.Warn(ex, "Exception when sending codec control command to " + sipAddress);
                 return CodecUnavailable();
             }
         }
@@ -416,21 +337,14 @@ namespace CodecControl.Web.Controllers
                 return BadRequest();
             }
 
-            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
-
-            if (codecInformation == null)
-            {
-                return NotFound();
-            }
-
             try
             {
-                var gainLevel = await _codecManager.SetInputGainLevelAsync(codecInformation, input, level);
+                var gainLevel = await _codecManager.SetInputGainLevelAsync(sipAddress, input, level);
                 return new InputGainLevelViewModel { GainLevel = gainLevel };
             }
             catch (Exception ex)
             {
-                log.Warn(ex, "Exception when sending codec control command to " + codecInformation.SipAddress);
+                log.Warn(ex, "Exception when sending codec control command to " + sipAddress);
                 return CodecUnavailable();
             }
         }
@@ -444,14 +358,7 @@ namespace CodecControl.Web.Controllers
                 return BadRequest();
             }
 
-            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
-
-            if (codecInformation == null)
-            {
-                return NotFound();
-            }
-
-            return await _codecManager.RebootAsync(codecInformation);
+            return await _codecManager.RebootAsync(sipAddress);
         }
 
         [Route("Call")]
@@ -498,14 +405,7 @@ namespace CodecControl.Web.Controllers
                     return BadRequest();
                 }
 
-                CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
-
-                if (codecInformation == null)
-                {
-                    return NotFound();
-                }
-
-                return await _codecManager.HangUpAsync(codecInformation);
+                return await _codecManager.HangUpAsync(sipAddress);
             }
             catch (Exception ex)
             {
@@ -513,11 +413,11 @@ namespace CodecControl.Web.Controllers
             }
         }
 
-        private CodecInformation GetCodecInformationBySipAddress(string sipAddress)
-        {
-            var codecInfo = _ccmService.GetCodecInformationBySipAddress(sipAddress);
-            return string.IsNullOrEmpty(codecInfo?.Api) ? null : codecInfo;
-        }
+        //private CodecInformation GetCodecInformationBySipAddress(string sipAddress)
+        //{
+        //    var codecInfo = _ccmService.GetCodecInformationBySipAddress(sipAddress);
+        //    return string.IsNullOrEmpty(codecInfo?.Api) ? null : codecInfo;
+        //}
 
     }
 

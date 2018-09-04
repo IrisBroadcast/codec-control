@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net.Sockets;
 using CodecControl.Client.Prodys.Helpers;
 using CodecControl.Client.Prodys.IkusNet.Sdk.Enums;
 
@@ -24,7 +23,7 @@ namespace CodecControl.Client.Prodys.IkusNet.Sdk.Responses
         
         public override string ToString()
         {
-            return string.Format("{0}, Received Command={1}, Acknowleged={2} ", base.ToString(), ReceivedCommand, Acknowleged);
+            return $"{base.ToString()}, Received Command={ReceivedCommand}, Acknowleged={Acknowleged} ";
         }
     }
 }

@@ -30,7 +30,6 @@ namespace CodecControl.Client.Prodys.IkusNet
 
         public void Close()
         {
-
         }
 
         protected ProdysSocket(Socket socket)

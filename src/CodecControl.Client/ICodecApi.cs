@@ -25,7 +25,7 @@ namespace CodecControl.Client
 
         Task<bool> SetGpoAsync(string ip, int gpo, bool active);
         Task<bool> SetInputEnabledAsync(string ip, int input, bool enabled);
-        Task<bool> SetInputGainLevelAsync(string ip, int input, int gainLevel);
+        Task<int> SetInputGainLevelAsync(string ip, int input, int gainLevel);
         
         Task<bool> LoadPresetAsync(string ip, string presetName);
         Task<bool> RebootAsync(string ip);

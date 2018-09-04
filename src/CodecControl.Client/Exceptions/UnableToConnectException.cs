@@ -1,19 +1,6 @@
 ﻿using System;
 
-namespace CodecControl.Client
+namespace CodecControl.Client.Exceptions
 {
-    public class UnableToConnectException : ApplicationException
-    {
-        public UnableToConnectException()
-        {
-        }
-
-        public UnableToConnectException(string message) : base(message)
-        {
-        }
-
-        public UnableToConnectException(string message, Exception innerException) : base(message, innerException)
-        {
-        }
-    }
+    public class UnableToConnectException : ApplicationException { }
 }

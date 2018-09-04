@@ -5,9 +5,7 @@ using System.Threading.Tasks;
 using CodecControl.Client.Exceptions;
 using CodecControl.Client.Prodys.Helpers;
 using CodecControl.Client.Prodys.IkusNet.Sdk.Commands;
-using CodecControl.Client.Prodys.IkusNet.Sdk.Commands.Base;
 using CodecControl.Client.Prodys.IkusNet.Sdk.Enums;
-using CodecControl.Client.Prodys.IkusNet.Sdk.Responses;
 using NLog;
 
 namespace CodecControl.Client.Prodys.IkusNet
@@ -50,7 +48,7 @@ namespace CodecControl.Client.Prodys.IkusNet
             IPAddress ipAddress = GetIpAddress(address);
             if (ipAddress == null)
             {
-                throw new UnableToResolveAddressException(string.Format("Unable to resolve ip address for {0}", address));
+                throw new UnableToResolveAddressException($"Unable to resolve ip address for {address}");
             }
 
             // Try with authenticated connect first

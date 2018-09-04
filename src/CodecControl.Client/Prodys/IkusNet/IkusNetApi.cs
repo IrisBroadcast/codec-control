@@ -222,6 +222,9 @@ namespace CodecControl.Client.Prodys.IkusNet
         #region Configuration Commands
         public async Task<bool> CallAsync(string hostAddress, string callee, string profileName)
         {
+            // TODO: first check codec call status. Do not execute the call method if the codec is already in a call.
+            // Some codecs will hangup the current call and dial up the new call without hesitation.
+            
             var cmd = new CommandIkusNetCall
             {
                 Address = callee,
@@ -270,11 +273,12 @@ namespace CodecControl.Client.Prodys.IkusNet
             return await SendConfigurationCommandAsync(hostAddress, cmd);
         }
 
-        public async Task<bool> SetInputGainLevelAsync(string hostAddress, int input, int gainLevel)
+        public async Task<int> SetInputGainLevelAsync(string hostAddress, int input, int gainLevel)
         {
             // Fungerar endast på Quantum-kodare, ej Quantum ST
             var cmd = new CommandIkusNetSetInputGainLevel { GainLeveldB = gainLevel, Input = input };
-            return await SendConfigurationCommandAsync(hostAddress, cmd);
+            await SendConfigurationCommandAsync(hostAddress, cmd);
+            return gainLevel; // TODO: Check value and return real input level
         }
         #endregion
 

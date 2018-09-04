@@ -162,11 +162,11 @@ namespace CodecControl.Client.SR.BaresipRest
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<bool> SetInputGainLevelAsync(string ip, int input, int gainLevel)
+        public async Task<int> SetInputGainLevelAsync(string ip, int input, int gainLevel)
         {
             var url = CreateUrl(ip, "api/inputgain");
             var response = await HttpService.PostJsonAsync(url, new { input = input, value = gainLevel});
-            return response.IsSuccessStatusCode;
+            return gainLevel; // TODO: Return real input level
         }
 
         public async Task<bool> LoadPresetAsync(string ip, string presetName)

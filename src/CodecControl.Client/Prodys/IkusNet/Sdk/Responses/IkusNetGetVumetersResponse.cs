@@ -16,7 +16,7 @@ namespace CodecControl.Client.Prodys.IkusNet.Sdk.Responses
         public int TalkbackRxLeft { get; private set; }
         public int TalkbackRxRight { get; private set; }
 
-        public IkusNetGetVumetersResponse(Socket socket)
+        public IkusNetGetVumetersResponse(ProdysSocket socket)
         {
             var responseBytes = GetResponseBytes(socket, Command.IkusNetGetVumeters, 32);
             ProgramTxLeft = (int) ConvertHelper.DecodeUInt(responseBytes, 0);

@@ -10,7 +10,7 @@ namespace CodecControl.Client.Prodys.IkusNet.Sdk.Responses
         public Command ReceivedCommand { get; set; }
         public bool Acknowleged { get; set; }
 
-        public AcknowledgeResponse(Socket socket)
+        public AcknowledgeResponse(ProdysSocket socket)
         {
             var buffer = new byte[16];
             socket.Receive(buffer);

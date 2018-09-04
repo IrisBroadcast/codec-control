@@ -1,12 +1,13 @@
 ﻿using System.Threading.Tasks;
+using CodecControl.Client;
 using CodecControl.Client.Models;
 
-namespace CodecControl.Client
+namespace CodecControl.Web.Interfaces
 {
 
     public interface ICodecManager
     {
-        Task<bool> CallAsync(CodecInformation codecInformation, string callee, string profileName);
+        Task<bool> CallAsync(string sipAddress, string callee, string profileName);
         Task<bool> HangUpAsync(CodecInformation codecInformation);
         Task<bool> CheckIfAvailableAsync(CodecInformation codecInformation);
         Task<bool?> GetGpoAsync(CodecInformation codecInformation, int gpio);

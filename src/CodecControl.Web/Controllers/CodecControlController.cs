@@ -422,7 +422,7 @@ namespace CodecControl.Web.Controllers
             {
                 return NotFound();
             }
-         
+
             try
             {
                 var gainLevel = await _codecManager.SetInputGainLevelAsync(codecInformation, input, level);
@@ -458,19 +458,32 @@ namespace CodecControl.Web.Controllers
         [HttpPost]
         public async Task<ActionResult<bool>> Call(string sipAddress, string callee, string profileName)
         {
-            if (string.IsNullOrEmpty(sipAddress))
+            //if (string.IsNullOrEmpty(sipAddress))
+            //{
+            //    return BadRequest();
+            //}
+
+            //CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
+
+            //if (codecInformation == null)
+            //{
+            //    return NotFound();
+            //}
+
+            try
             {
-                return BadRequest();
+                return await _codecManager.CallAsync(sipAddress, callee, profileName);
             }
-
-            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
-
-            if (codecInformation == null)
+            catch (Exception ex)
             {
-                return NotFound();
+                switch (ex)
+                {
+                    case NotImplementedException e:
+                        return BadRequest();
+                    default:
+                        return BadRequest();
+                }
             }
-
-            return await _codecManager.CallAsync(codecInformation, callee, profileName);
         }
 
 
@@ -478,19 +491,26 @@ namespace CodecControl.Web.Controllers
         [HttpPost]
         public async Task<ActionResult<bool>> Hangup(string sipAddress)
         {
-            if (string.IsNullOrEmpty(sipAddress))
+            try
+            {
+                if (string.IsNullOrEmpty(sipAddress))
+                {
+                    return BadRequest();
+                }
+
+                CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
+
+                if (codecInformation == null)
+                {
+                    return NotFound();
+                }
+
+                return await _codecManager.HangUpAsync(codecInformation);
+            }
+            catch (Exception ex)
             {
                 return BadRequest();
             }
-
-            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
-
-            if (codecInformation == null)
-            {
-                return NotFound();
-            }
-
-            return await _codecManager.HangUpAsync(codecInformation);
         }
 
         private CodecInformation GetCodecInformationBySipAddress(string sipAddress)

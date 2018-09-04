@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace CodecControl.Client
+namespace CodecControl.Client.Exceptions
 {
-    public class UnableToResolveAddressException : Exception
+    public class UnableToResolveAddressException : ApplicationException
     {
         public UnableToResolveAddressException()
         {

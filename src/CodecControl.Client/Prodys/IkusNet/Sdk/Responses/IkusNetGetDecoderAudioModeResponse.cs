@@ -6,7 +6,7 @@ namespace CodecControl.Client.Prodys.IkusNet.Sdk.Responses
 {
     public class IkusNetGetDecoderAudioModeResponse : IkusNetStatusResponseBase
     {
-        public static IkusNetGetDecoderAudioModeResponse GetResponse(Socket socket)
+        public static IkusNetGetDecoderAudioModeResponse GetResponse(ProdysSocket socket)
         {
             var responseBytes = GetResponseBytes(socket, Command.IkusNetDecoderGetAudioMode, 4);
             return new IkusNetGetDecoderAudioModeResponse(responseBytes);

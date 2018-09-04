@@ -1,5 +1,6 @@
 ﻿using Xunit;
 using CodecControl.Client;
+using CodecControl.Client.Prodys.IkusNet;
 
 namespace CodecControl.IntegrationTests
 {
@@ -15,18 +16,12 @@ namespace CodecControl.IntegrationTests
             Ip = "192.0.2.30" // sto-s17-01
         };
         
-        
-    
-        private ICodecManager GetCodecManager()
-        {
-            return new CodecManager();
-        }
 
         [Fact]
         public void Ikusnet_GetLineStatus()
         {
-            var manager = GetCodecManager();
-            var lineStatus = manager.GetLineStatusAsync(CodecInformation, 0);
+            var codecApi = new IkusNetApi();
+            var lineStatus = codecApi.GetLineStatusAsync(CodecInformation.Ip, 0);
             Assert.NotNull(lineStatus);
         }
 

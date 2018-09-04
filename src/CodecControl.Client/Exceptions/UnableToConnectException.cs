@@ -2,7 +2,7 @@
 
 namespace CodecControl.Client
 {
-    public class UnableToConnectException : Exception
+    public class UnableToConnectException : ApplicationException
     {
         public UnableToConnectException()
         {

@@ -1,8 +1,13 @@
 ﻿using System;
 
-namespace CodecControl.Client
+namespace CodecControl.Client.Exceptions
 {
-    public class CodecApiNotFoundException : Exception
+    public abstract class CodecControlException : ApplicationException
+    {
+
+    }
+
+    public class CodecApiNotFoundException : ApplicationException
     {
         public CodecApiNotFoundException()
         {

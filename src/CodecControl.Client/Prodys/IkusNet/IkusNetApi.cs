@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Net.Sockets;
 using System.Threading.Tasks;
 using CodecControl.Client.Models;
-using CodecControl.Client.Prodys.Helpers;
 using CodecControl.Client.Prodys.IkusNet.Sdk.Commands;
 using CodecControl.Client.Prodys.IkusNet.Sdk.Commands.Base;
 using CodecControl.Client.Prodys.IkusNet.Sdk.Enums;
@@ -21,7 +18,7 @@ namespace CodecControl.Client.Prodys.IkusNet
         {
             try
             {
-                using (var socket = await GetConnectedSocketAsync(ip))
+                using (var socket = await ProdysSocket.GetConnectedSocketAsync(ip))
                 {
                     socket.Close();
                 }
@@ -38,7 +35,7 @@ namespace CodecControl.Client.Prodys.IkusNet
         // Endast för test
         public async Task<string> GetDeviceNameAsync(string hostAddress)
         {
-            using (var socket = await GetConnectedSocketAsync(hostAddress))
+            using (var socket = await ProdysSocket.GetConnectedSocketAsync(hostAddress))
             {
                 SendCommand(socket, new CommandIkusNetSysGetDeviceName());
                 var response = new IkusNetGetDeviceNameResponse(socket);
@@ -48,7 +45,7 @@ namespace CodecControl.Client.Prodys.IkusNet
 
         public async Task<bool?> GetGpiAsync(string hostAddress, int gpio)
         {
-            using (var socket = await GetConnectedSocketAsync(hostAddress))
+            using (var socket = await ProdysSocket.GetConnectedSocketAsync(hostAddress))
             {
                 SendCommand(socket, new CommandIkusNetGetGpi { Gpio = gpio });
                 var response = new IkusNetGetGpiResponse(socket);
@@ -58,7 +55,7 @@ namespace CodecControl.Client.Prodys.IkusNet
 
         public async Task<bool?> GetGpoAsync(string hostAddress, int gpio)
         {
-            using (var socket = await GetConnectedSocketAsync(hostAddress))
+            using (var socket = await ProdysSocket.GetConnectedSocketAsync(hostAddress))
             {
                 SendCommand(socket, new CommandIkusNetGetGpo { Gpio = gpio });
                 var response = new IkusNetGetGpoResponse(socket);
@@ -69,7 +66,7 @@ namespace CodecControl.Client.Prodys.IkusNet
         public async Task<bool> GetInputEnabledAsync(string hostAddress, int input)
         {
             // Works only on Quantum codec, not Quantum ST
-            using (var socket = await GetConnectedSocketAsync(hostAddress))
+            using (var socket = await ProdysSocket.GetConnectedSocketAsync(hostAddress))
             {
                 SendCommand(socket, new CommandIkusNetGetInputEnabled { Input = input });
                 var response = new IkusNetGetInputEnabledResponse(socket);
@@ -80,7 +77,7 @@ namespace CodecControl.Client.Prodys.IkusNet
         public async Task<int> GetInputGainLevelAsync(string hostAddress, int input)
         {
             // Works only on Quantum codec, not Quantum ST
-            using (var socket = await GetConnectedSocketAsync(hostAddress))
+            using (var socket = await ProdysSocket.GetConnectedSocketAsync(hostAddress))
             {
                 SendCommand(socket, new CommandIkusNetGetInputGainLevel { Input = input });
                 var response = new IkusNetGetInputGainLevelResponse(socket);
@@ -90,7 +87,7 @@ namespace CodecControl.Client.Prodys.IkusNet
 
         public async Task<LineStatus> GetLineStatusAsync(string hostAddress, int line)
         {
-            using (var socket = await GetConnectedSocketAsync(hostAddress))
+            using (var socket = await ProdysSocket.GetConnectedSocketAsync(hostAddress))
             {
                 SendCommand(socket, new CommandIkusNetGetLineStatus { Line = (IkusNetLine)line });
                 var response = new IkusNetGetLineStatusResponse(socket);
@@ -106,7 +103,7 @@ namespace CodecControl.Client.Prodys.IkusNet
 
         public async Task<string> GetLoadedPresetNameAsync(string hostAddress, string lastPresetName)
         {
-            using (var socket = await GetConnectedSocketAsync(hostAddress))
+            using (var socket = await ProdysSocket.GetConnectedSocketAsync(hostAddress))
             {
                 SendCommand(socket, new CommandIkusNetGetLoadedPresetName { LastLoadedPresetName = lastPresetName });
                 var response = new IkusNetGetLoadedPresetNameResponse(socket);
@@ -116,7 +113,7 @@ namespace CodecControl.Client.Prodys.IkusNet
 
         public async Task<VuValues> GetVuValuesAsync(string hostAddress)
         {
-            using (var socket = await GetConnectedSocketAsync(hostAddress))
+            using (var socket = await ProdysSocket.GetConnectedSocketAsync(hostAddress))
             {
                 SendCommand(socket, new CommandIkusNetGetVuMeters());
                 var response = new IkusNetGetVumetersResponse(socket);
@@ -132,7 +129,7 @@ namespace CodecControl.Client.Prodys.IkusNet
 
         public async Task<AudioMode> GetAudioModeAsync(string hostAddress)
         {
-            using (var socket = await GetConnectedSocketAsync(hostAddress))
+            using (var socket = await ProdysSocket.GetConnectedSocketAsync(hostAddress))
             {
                 // Get encoder algoritm
                 SendCommand(socket, new CommandIkusNetGetEncoderAudioMode());
@@ -154,7 +151,7 @@ namespace CodecControl.Client.Prodys.IkusNet
         {
             var audioStatus = new AudioStatus();
 
-            using (var socket = await GetConnectedSocketAsync(hostAddress))
+            using (var socket = await ProdysSocket.GetConnectedSocketAsync(hostAddress))
             {
                 SendCommand(socket, new CommandIkusNetGetVuMeters());
                 var vuResponse = new IkusNetGetVumetersResponse(socket);
@@ -281,7 +278,7 @@ namespace CodecControl.Client.Prodys.IkusNet
 
         private async Task<bool> SendConfigurationCommandAsync(string hostAddress, ICommandBase cmd)
         {
-            using (var socket = await GetConnectedSocketAsync(hostAddress))
+            using (var socket = await ProdysSocket.GetConnectedSocketAsync(hostAddress))
             {
                 SendCommand(socket, cmd);
                 var ackResponse = new AcknowledgeResponse(socket);
@@ -289,102 +286,15 @@ namespace CodecControl.Client.Prodys.IkusNet
             }
         }
 
-        private int SendCommand(Socket socket, ICommandBase command)
+        private int SendCommand(ProdysSocket socket, ICommandBase command)
         {
             return socket.Send(command.GetBytes());
         }
 
-        private async Task<Socket> GetConnectedSocketAsync(string address, int sendTimeout = 300)
-        {
-            IPAddress ipAddress = GetIpAddress(address);
-            if (ipAddress == null)
-            {
-                throw new UnableToResolveAddressException(string.Format("Unable to resolve ip address for {0}", address));
-            }
+       
 
-            // Try with authenticated connect first
-            // INFO: It seems that authenticated connect works also when authentication is not active on the codec. At least on some firmware versions...
-            Socket connectedSocket = await ConnectAsync(ipAddress, new CsConnect2(), sendTimeout);
+        
 
-            if (connectedSocket != null)
-            {
-                return connectedSocket;
-            }
-
-            log.Warn("Unable to connect to codec at {0} using authenticated connect.", ipAddress);
-
-            // Otherwise, try non authenticated connect
-            connectedSocket = await ConnectAsync(ipAddress, new CsConnect(), sendTimeout);
-
-            if (connectedSocket != null)
-            {
-                return connectedSocket;
-            }
-
-            log.Warn("Unable to connect to codec at {0}. Both authenticated and unauthenticated connect failed.", ipAddress);
-            throw new UnableToConnectException();
-        }
-
-        private IPAddress GetIpAddress(string address)
-        {
-            if (IPAddress.TryParse(address, out var ipAddress))
-            {
-                return ipAddress;
-            }
-            var ips = Dns.GetHostAddresses(address);
-            return ips.Length > 0 ? ips[0] : null;
-        }
-
-        private async Task<Socket> ConnectAsync(IPAddress ipAddress, ConnectCommandBase connectCmd, int sendTimeout)
-        {
-            Socket socket = null;
-
-            try
-            {
-                socket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.IP);
-
-                if (sendTimeout > 0)
-                {
-                    socket.SendTimeout = sendTimeout;
-                }
-
-                var endpoint = new IPEndPoint(ipAddress, Sdk.IkusNet.ExternalProtocolIpCommandsPort);
-                socket.Connect(endpoint, TimeSpan.FromMilliseconds(1000));
-
-                if (!socket.Connected)
-                {
-                    socket.Close();
-                    return null;
-                }
-
-                var sent = SendCommand(socket, connectCmd);
-
-                if (sent <= 0 || !socket.Connected)
-                {
-                    socket.Close();
-                    return null;
-                }
-
-                var ackResponse = new AcknowledgeResponse(socket);
-                log.Debug("Connect response from codec at {0}: {1}", ipAddress, ackResponse);
-
-                var success = ackResponse.Acknowleged;
-
-                if (!success)
-                {
-                    socket.Close();
-                    return null;
-                }
-
-                return socket;
-            }
-            catch (Exception ex)
-            {
-                log.Warn(ex, "Exception when connecting to codec at {0}", ipAddress);
-                socket?.Close();
-                return null;
-            }
-        }
 
         #endregion
 

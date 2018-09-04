@@ -7,6 +7,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodecControl.Web", "src\Cod
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodecControl.Client", "src\CodecControl.Client\CodecControl.Client.csproj", "{04D715D0-8F54-4953-AC51-010F63CEE893}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{7BD8B44B-AF6D-4933-9BDF-35E218FC0677}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{546E5B7F-CDEB-4C89-938A-CFED0AAABC58}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodecControl.IntegrationTests", "CodecControl.IntegrationTests\CodecControl.IntegrationTests.csproj", "{5807E4AD-991D-41F7-9A01-2475ECF2D27C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,9 +27,18 @@ Global
 		{04D715D0-8F54-4953-AC51-010F63CEE893}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{04D715D0-8F54-4953-AC51-010F63CEE893}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{04D715D0-8F54-4953-AC51-010F63CEE893}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5807E4AD-991D-41F7-9A01-2475ECF2D27C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5807E4AD-991D-41F7-9A01-2475ECF2D27C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5807E4AD-991D-41F7-9A01-2475ECF2D27C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5807E4AD-991D-41F7-9A01-2475ECF2D27C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4C01BD46-17C6-4A78-93B6-489D70ACDAFC} = {7BD8B44B-AF6D-4933-9BDF-35E218FC0677}
+		{04D715D0-8F54-4953-AC51-010F63CEE893} = {7BD8B44B-AF6D-4933-9BDF-35E218FC0677}
+		{5807E4AD-991D-41F7-9A01-2475ECF2D27C} = {546E5B7F-CDEB-4C89-938A-CFED0AAABC58}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2D4BB099-0D46-4172-AAC8-492A9BFAE48F}

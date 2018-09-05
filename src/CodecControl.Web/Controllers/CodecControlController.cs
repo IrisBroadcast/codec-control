@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CodecControl.Client;
+using CodecControl.Client.Exceptions;
 using CodecControl.Client.Models;
+using CodecControl.Web.Controllers.Base;
 using CodecControl.Web.Interfaces;
 using CodecControl.Web.Models;
+using CodecControl.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
 
@@ -15,15 +18,15 @@ namespace CodecControl.Web.Controllers
     {
         #region Constructor and members
         protected static readonly Logger log = LogManager.GetCurrentClassLogger();
-        private readonly CodecApiFactory _codecApiFactory;
+        private readonly IServiceProvider _serviceProvider;
         private readonly ICcmService _ccmService;
 
         private readonly string No_Gpo_Found = "Ingen GPO kunde hittas";
 
-        public CodecControlController(ICcmService ccmService, CodecApiFactory codecApiFactory)
+        public CodecControlController(ICcmService ccmService, IServiceProvider serviceProvider)
         {
             _ccmService = ccmService;
-            _codecApiFactory = codecApiFactory;
+            _serviceProvider = serviceProvider;
         }
         #endregion
 
@@ -31,93 +34,57 @@ namespace CodecControl.Web.Controllers
         [HttpGet]
         public async Task<ActionResult<bool>> CheckCodecAvailable(string sipAddress)
         {
-            if (string.IsNullOrEmpty(sipAddress))
-            {
-                return BadRequest();
-            }
-
-            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
-            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation?.CodecApiType);
-
-            if (codecInformation == null || codecApi == null)
-            {
-                return CodecUnavailable();
-            }
-
-            return await codecApi.CheckIfAvailableAsync(sipAddress);
+            return await Execute(sipAddress, async (codecApi, codecInformation) =>
+                {
+                    return await codecApi.CheckIfAvailableAsync(sipAddress); 
+                });
         }
 
         [Route("GetAvailableGpos")]
         [HttpPost]
         public async Task<ActionResult<AvailableGposViewModel>> GetAvailableGpos(string sipAddress, int nrOfGpos = 10)
         {
-            if (string.IsNullOrEmpty(sipAddress))
+            return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
-                return BadRequest();
-            }
+                string gpoNameString = codecInformation.GpoNames;
+                List<string> gpoNames = (gpoNameString ?? string.Empty).Split(',').Select(s => s.Trim()).ToList();
 
-            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
-            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation?.CodecApiType);
+                var model = new AvailableGposViewModel();
 
-            if (codecInformation == null || codecApi == null)
-            {
-                return CodecUnavailable();
-            }
-
-            string gpoNameString = codecInformation.GpoNames;
-            List<string> gpoNames = (gpoNameString ?? string.Empty).Split(',').Select(s => s.Trim()).ToList();
-
-            var model = new AvailableGposViewModel();
-
-            try
-            {
-                for (int i = 0; i < nrOfGpos; i++)
+                try
                 {
-                    bool? active = await codecApi.GetGpoAsync(sipAddress, i);
-
-                    if (!active.HasValue)
+                    for (int i = 0; i < nrOfGpos; i++)
                     {
-                        // GPO missing. Expected that we passed the last GPO
-                        break;
+                        bool? active = await codecApi.GetGpoAsync(sipAddress, i);
+
+                        if (!active.HasValue)
+                        {
+                            // GPO missing. Expected that we passed the last GPO
+                            break;
+                        }
+
+                        model.Gpos.Add(new GpoViewModel()
+                        {
+                            Active = active.Value,
+                            Name = i < gpoNames.Count ? gpoNames[i] : $"GPO {i}",
+                            Number = i
+                        });
                     }
-
-                    model.Gpos.Add(new GpoViewModel()
-                    {
-                        Active = active.Value,
-                        Name = i < gpoNames.Count ? gpoNames[i] : $"GPO {i}",
-                        Number = i
-                    });
                 }
-            }
-            catch (Exception ex)
-            {
-                if (model.Gpos.Count == 0)
+                catch (Exception ex)
                 {
-                    model.Error = No_Gpo_Found;
+                    // TODO: Log warning
                 }
-            }
 
-            return model;
+                return model;
+            });
         }
 
         [Route("GetAudioStatus")]
         [HttpGet]
         public async Task<ActionResult<AudioStatusViewModel>> GetAudioStatus(string sipAddress, int nrOfInputs = 2, int nrOfGpos = 2)
         {
-            if (string.IsNullOrEmpty(sipAddress))
-            {
-                return BadRequest();
-            }
-
-            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
-            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation?.CodecApiType);
-
-            if (codecInformation == null || codecApi == null)
-            {
-                return CodecUnavailable();
-            }
-
-            try
+            return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
                 var audioStatus = await codecApi.GetAudioStatusAsync(sipAddress, nrOfInputs, nrOfGpos);
 
@@ -128,32 +95,15 @@ namespace CodecControl.Web.Controllers
                     VuValues = audioStatus.VuValues
                 };
                 return model;
-            }
-            catch (Exception ex)
-            {
-                log.Warn(ex, "Exception when sending codec control command to " + sipAddress);
-                return CodecUnavailable();
-            }
+            });
         }
+
 
         [Route("GetInputGainAndStatus")]
         [HttpGet]
         public async Task<ActionResult<InputGainAndStatusViewModel>> GetInputGainAndStatus(string sipAddress, int input)
         {
-            if (string.IsNullOrEmpty(sipAddress))
-            {
-                return BadRequest();
-            }
-
-            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
-            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation?.CodecApiType);
-
-            if (codecInformation == null || codecApi == null)
-            {
-                return CodecUnavailable();
-            }
-
-            try
+            return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
                 var model = new InputGainAndStatusViewModel
                 {
@@ -161,61 +111,25 @@ namespace CodecControl.Web.Controllers
                     GainLevel = await codecApi.GetInputGainLevelAsync(sipAddress, input)
                 };
                 return model;
-            }
-            catch (Exception ex)
-            {
-                log.Warn(ex, "Exception when sending codec control command to " + sipAddress);
-                return CodecUnavailable();
-            }
+            });
         }
 
         [Route("GetInputStatus")]
         [HttpGet]
         public async Task<ActionResult<InputStatusViewModel>> GetInputStatus(string sipAddress, int input)
         {
-            if (string.IsNullOrEmpty(sipAddress))
-            {
-                return BadRequest();
-            }
-
-            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
-            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation?.CodecApiType);
-
-            if (codecInformation == null || codecApi == null)
-            {
-                return CodecUnavailable();
-            }
-
-            try
+            return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
                 var enabled = await codecApi.GetInputEnabledAsync(sipAddress, input);
                 return new InputStatusViewModel { Enabled = enabled };
-            }
-            catch (Exception ex)
-            {
-                log.Warn(ex, "Exception when sending codec control command to " + sipAddress);
-                return CodecUnavailable();
-            }
+            });
         }
 
         [Route("GetLineStatus")]
         [HttpGet]
         public async Task<ActionResult<LineStatusViewModel>> GetLineStatus(string sipAddress, int line)
         {
-            if (string.IsNullOrEmpty(sipAddress))
-            {
-                return BadRequest();
-            }
-
-            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
-            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation?.CodecApiType);
-
-            if (codecInformation == null || codecApi == null)
-            {
-                return CodecUnavailable();
-            }
-
-            try
+            return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
                 var model = new LineStatusViewModel();
                 LineStatus lineStatus = await codecApi.GetLineStatusAsync(sipAddress, line);
@@ -232,62 +146,26 @@ namespace CodecControl.Web.Controllers
                     model.LineStatus = lineStatus.StatusCode;
                 }
                 return model;
-            }
-            catch (Exception ex)
-            {
-                log.Warn(ex, "Exception when sending codec control command to " + sipAddress);
-                return CodecUnavailable();
-            }
+            });
         }
 
         [Route("GetLoadedPreset")]
         [HttpPost]
         public async Task<ActionResult<PresetViewModel>> GetLoadedPreset(string sipAddress)
         {
-            if (string.IsNullOrEmpty(sipAddress))
-            {
-                return BadRequest();
-            }
-
-            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
-            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation?.CodecApiType);
-
-            if (codecInformation == null || codecApi == null)
-            {
-                return CodecUnavailable();
-            }
-
-            try
+            return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
                 var loadedPreset = await codecApi.GetLoadedPresetNameAsync(sipAddress, string.Empty);
-                return new PresetViewModel { LoadedPreset = loadedPreset };
-            }
-            catch (Exception ex)
-            {
-                log.Warn(ex, "Exception when sending codec control command to " + sipAddress);
-                return CodecUnavailable();
-            }
+                return new PresetViewModel {LoadedPreset = loadedPreset};
+            });
+
         }
 
         [Route("GetVuValues")]
         [HttpGet]
         public async Task<ActionResult<VuValuesViewModel>> GetVuValues(string sipAddress)
         {
-            if (string.IsNullOrEmpty(sipAddress))
-            {
-                return BadRequest();
-            }
-
-            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
-            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation?.CodecApiType);
-
-            if (codecInformation == null || codecApi == null)
-            {
-                return CodecUnavailable();
-            }
-
-            try
-            {
+            return await Execute(sipAddress, async (codecApi, codecInformation) => {
                 var vuValues = await codecApi.GetVuValuesAsync(sipAddress);
 
                 return new VuValuesViewModel
@@ -297,33 +175,14 @@ namespace CodecControl.Web.Controllers
                     TxLeft = vuValues.TxLeft,
                     TxRight = vuValues.TxRight
                 };
-            }
-            catch (Exception ex)
-            {
-                log.Warn(ex, "Exception when sending codec control command to " + sipAddress);
-                return CodecUnavailable();
-            }
+            });
         }
 
         [Route("GetAudioMode")]
         [HttpGet]
         public async Task<ActionResult<AudioModeViewModel>> GetAudioMode(string sipAddress)
         {
-            if (string.IsNullOrEmpty(sipAddress))
-            {
-                return BadRequest();
-            }
-
-            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
-            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation?.CodecApiType);
-
-            if (codecInformation == null || codecApi == null)
-            {
-                return CodecUnavailable();
-            }
-
-            try
-            {
+            return await Execute(sipAddress, async (codecApi, codecInformation) => {
                 AudioMode result = await codecApi.GetAudioModeAsync(sipAddress);
 
                 return new AudioModeViewModel
@@ -331,176 +190,72 @@ namespace CodecControl.Web.Controllers
                     EncoderAudioMode = result.EncoderAudioAlgoritm,
                     DecoderAudioMode = result.DecoderAudioAlgoritm
                 };
-            }
-            catch (Exception ex)
-            {
-                log.Warn(ex, "Exception when sending codec control command to " + sipAddress);
-                return CodecUnavailable();
-            }
+            });
         }
 
         [Route("LoadPreset")]
         [HttpPost]
         public async Task<ActionResult<bool>> LoadPreset(string sipAddress, string name)
         {
-            if (string.IsNullOrEmpty(sipAddress))
-            {
-                return BadRequest();
-            }
-
-            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
-            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation?.CodecApiType);
-
-            if (codecInformation == null || codecApi == null)
-            {
-                return CodecUnavailable();
-            }
-
-            try
+            return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
                 await codecApi.LoadPresetAsync(sipAddress, name);
                 return true;
-            }
-            catch (Exception ex)
-            {
-                log.Warn(ex, "Exception when sending codec control command to " + sipAddress);
-                return CodecUnavailable();
-            }
+            });
         }
 
         [Route("SetGpo")]
         [HttpGet]
         public async Task<ActionResult<GpoViewModel>> SetGpo(string sipAddress, int number, bool active)
         {
-            if (string.IsNullOrEmpty(sipAddress))
-            {
-                return BadRequest();
-            }
-
-            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
-            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation?.CodecApiType);
-
-            if (codecInformation == null || codecApi == null)
-            {
-                return CodecUnavailable();
-            }
-
-            try
+            return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
                 await codecApi.SetGpoAsync(sipAddress, number, active);
                 var gpoActive = await codecApi.GetGpoAsync(sipAddress, number) ?? false;
                 return new GpoViewModel { Number = number, Active = gpoActive };
-            }
-            catch (Exception ex)
-            {
-                log.Warn(ex, "Exception when sending codec control command to " + sipAddress);
-                return CodecUnavailable();
-            }
+            });
         }
 
         [Route("SetInputEnabled")]
         [HttpPost]
         public async Task<ActionResult<InputStatusViewModel>> SetInputEnabled(string sipAddress, int input, bool enabled)
         {
-            if (string.IsNullOrEmpty(sipAddress))
-            {
-                return BadRequest();
-            }
-
-            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
-            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation?.CodecApiType);
-
-            if (codecInformation == null || codecApi == null)
-            {
-                return CodecUnavailable();
-            }
-
-            try
+            return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
                 var isEnabled = await codecApi.SetInputEnabledAsync(sipAddress, input, enabled);
                 return new InputStatusViewModel { Enabled = isEnabled };
-            }
-            catch (Exception ex)
-            {
-                log.Warn(ex, "Exception when sending codec control command to " + sipAddress);
-                return CodecUnavailable();
-            }
+            });
         }
 
         [HttpPost]
         [Route("SetInputGainLevel")]
         public async Task<ActionResult<InputGainLevelViewModel>> SetInputGainLevelAsync(string sipAddress, int input, int level)
         {
-            if (string.IsNullOrEmpty(sipAddress))
-            {
-                return BadRequest();
-            }
-
-            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
-            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation?.CodecApiType);
-
-            if (codecInformation == null || codecApi == null)
-            {
-                return CodecUnavailable();
-            }
-
-            try
+            return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
                 var gainLevel = await codecApi.SetInputGainLevelAsync(sipAddress, input, level);
                 return new InputGainLevelViewModel { GainLevel = gainLevel };
-            }
-            catch (Exception ex)
-            {
-                log.Warn(ex, "Exception when sending codec control command to " + sipAddress);
-                return CodecUnavailable();
-            }
+            });
         }
 
         [Route("RebootCodec")]
         [HttpPost]
         public async Task<ActionResult<bool>> RebootCodec(string sipAddress)
         {
-            if (string.IsNullOrEmpty(sipAddress))
+            return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
-                return BadRequest();
-            }
-
-            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
-            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation?.CodecApiType);
-
-            if (codecInformation == null || codecApi == null)
-            {
-                return CodecUnavailable();
-            }
-
-            return await codecApi.RebootAsync(sipAddress);
+                return await codecApi.RebootAsync(sipAddress); 
+            });
         }
 
         [Route("Call")]
         [HttpPost]
         public async Task<ActionResult<bool>> Call(string sipAddress, string callee, string profileName)
         {
-            if (string.IsNullOrEmpty(sipAddress))
-            {
-                return BadRequest();
-            }
-
-            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
-            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation?.CodecApiType);
-
-            if (codecInformation == null || codecApi == null)
-            {
-                return CodecUnavailable();
-            }
-
-            try
+            return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
                 return await codecApi.CallAsync(sipAddress, callee, profileName);
-            }
-            catch (Exception ex)
-            {
-                return CodecUnavailable();
-            }
+            });
         }
 
 
@@ -508,13 +263,25 @@ namespace CodecControl.Web.Controllers
         [HttpPost]
         public async Task<ActionResult<bool>> Hangup(string sipAddress)
         {
+            return await Execute(sipAddress, async (codecApi, codecInformation) =>
+            {
+                return await codecApi.HangUpAsync(sipAddress);
+            });
+
+        }
+        
+        private async Task<ActionResult<TResult>> Execute<TResult>(string sipAddress, Func<ICodecApi, CodecInformation, Task<TResult>> f)
+        {
             if (string.IsNullOrEmpty(sipAddress))
             {
                 return BadRequest();
             }
 
-            CodecInformation codecInformation = GetCodecInformationBySipAddress(sipAddress);
-            var codecApi = _codecApiFactory.CreateCodecApi(codecInformation?.CodecApiType);
+            var codecInfo = _ccmService.GetCodecInformationBySipAddress(sipAddress);
+            CodecInformation codecInformation = codecInfo?.CodecApiType == null ? null : codecInfo;
+
+            var codecApiType = codecInformation?.CodecApiType;
+            var codecApi  = codecApiType != null ? _serviceProvider.GetService(codecApiType) as ICodecApi : null;
 
             if (codecInformation == null || codecApi == null)
             {
@@ -523,18 +290,18 @@ namespace CodecControl.Web.Controllers
 
             try
             {
-                return await codecApi.HangUpAsync(sipAddress);
+                return await f(codecApi, codecInformation);
+            }
+            catch (CodecControlException ex)
+            {
+                log.Warn(ex, "Exception when sending codec control command to " + sipAddress);
+                return InternalServerError();
             }
             catch (Exception ex)
             {
-                return BadRequest();
+                log.Warn(ex, "Unknown exception when sending codec control command to " + sipAddress);
+                return InternalServerError();
             }
-        }
-
-        private CodecInformation GetCodecInformationBySipAddress(string sipAddress)
-        {
-            var codecInfo = _ccmService.GetCodecInformationBySipAddress(sipAddress);
-            return codecInfo?.CodecApiType == null ? null : codecInfo;
         }
 
     }

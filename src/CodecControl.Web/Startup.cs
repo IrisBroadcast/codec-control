@@ -20,9 +20,13 @@ namespace CodecControl.Web
 
         public void ConfigureServices(IServiceCollection services)
         {
+            ApplicationSettings appSettings = new ApplicationSettings();
+            Configuration.GetSection("Application").Bind(appSettings);
+            services.AddSingleton(appSettings);
+
             // Dependency injection
             services.AddSingleton<ICcmService, CcmService>();
-            services.AddTransient<CodecApiFactory>();
+
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }

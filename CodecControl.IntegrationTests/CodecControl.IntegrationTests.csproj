@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\src\CodecControl.Client\CodecControl.Client.csproj" />
+    <ProjectReference Include="..\src\CodecControl.Web\CodecControl.Web.csproj" />
   </ItemGroup>
 
 </Project>

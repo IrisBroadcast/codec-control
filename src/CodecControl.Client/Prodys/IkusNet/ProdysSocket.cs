@@ -48,7 +48,8 @@ namespace CodecControl.Client.Prodys.IkusNet
             IPAddress ipAddress = GetIpAddress(address);
             if (ipAddress == null)
             {
-                throw new UnableToResolveAddressException($"Unable to resolve ip address for {address}");
+                log.Warn($"Unable to resolve ip address for {address}");
+                throw new UnableToResolveAddressException();
             }
 
             // Try with authenticated connect first

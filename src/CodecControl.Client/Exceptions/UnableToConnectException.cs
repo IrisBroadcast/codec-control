@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace CodecControl.Client.Exceptions
+﻿namespace CodecControl.Client.Exceptions
 {
-    public class UnableToConnectException : ApplicationException { }
+    public class UnableToConnectException : CodecControlException { }
 }

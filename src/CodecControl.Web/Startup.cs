@@ -1,4 +1,5 @@
-﻿using CodecControl.Web.Controllers;
+﻿using CodecControl.Client.Prodys.IkusNet;
+using CodecControl.Web.Controllers;
 using CodecControl.Web.Interfaces;
 using CodecControl.Web.Services;
 using Microsoft.AspNetCore.Builder;
@@ -26,7 +27,7 @@ namespace CodecControl.Web
 
             // Dependency injection
             services.AddSingleton<ICcmService, CcmService>();
-
+            services.AddSingleton<SocketPool>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }

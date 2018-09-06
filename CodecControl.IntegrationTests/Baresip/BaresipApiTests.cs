@@ -2,29 +2,10 @@
 using CodecControl.Client.Models;
 using CodecControl.Client.Prodys.IkusNet;
 using CodecControl.Client.SR.BaresipRest;
-using CodecControl.Web;
-using CodecControl.Web.Services;
 using Xunit;
 
 namespace CodecControl.IntegrationTests.Baresip
 {
-    public class CcmIntegrationTests
-    {
-        [Fact]
-        public void should_get_list_of_controllable_codecs_from_ccm()
-        {
-            var appSettings = new ApplicationSettings
-            {
-                CcmHost = "http://ccm.sr.se"
-            };
-            var sut = new CcmService(appSettings);
-
-            var list = sut.CodecInformationList;
-            Assert.NotNull(list);
-            Assert.False(string.IsNullOrEmpty(list[0].SipAddress));
-        }
-    }
-
     public class BaresipApiTests
     {
         private readonly string _ip;
@@ -54,7 +35,7 @@ namespace CodecControl.IntegrationTests.Baresip
         [Fact]
         public async Task GetInputLevel()
         {
-            var sut = new IkusNetApi();
+            var sut = new IkusNetApi(new SocketPool());
 
             await sut.SetInputGainLevelAsync(_ip, 0, 6);
 
@@ -71,7 +52,7 @@ namespace CodecControl.IntegrationTests.Baresip
         [Fact]
         public async Task GetLineStatus()
         {
-            var sut = new IkusNetApi();
+            var sut = new IkusNetApi(new SocketPool());
 
             LineStatus lineStatus = await sut.GetLineStatusAsync(_ip, 0);
             Assert.Equal("", lineStatus.RemoteAddress);
@@ -82,7 +63,7 @@ namespace CodecControl.IntegrationTests.Baresip
         [Fact(Skip = "To avoid unintentional calling")]
         public async Task Call()
         {
-            var sut = new IkusNetApi();
+            var sut = new IkusNetApi(new SocketPool());
 
             var callee = "sto-s17-01@acip.example.com";
             var profileName = "Studio";
@@ -94,7 +75,7 @@ namespace CodecControl.IntegrationTests.Baresip
         [Fact(Skip = "To avoid unintentional hangup")]
         public async Task Hangup()
         {
-            var sut = new IkusNetApi();
+            var sut = new IkusNetApi(new SocketPool());
             bool result = await sut.HangUpAsync(_ip);
             Assert.True(result);
         }

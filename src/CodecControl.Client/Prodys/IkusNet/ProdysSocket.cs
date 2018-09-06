@@ -10,29 +10,37 @@ using NLog;
 
 namespace CodecControl.Client.Prodys.IkusNet
 {
-    public class ProdysSocket : IDisposable
-    {
+    public class ProdysSocket : Socket {
+
         protected static readonly Logger log = LogManager.GetCurrentClassLogger();
+        private static TimeSpan _lingerTimeSpan = new TimeSpan(0,0,0,30);
 
-        private readonly Socket _socket;
+        public string IpAddress { get; }
+        private DateTime _evictionTime = DateTime.Now.Add(_lingerTimeSpan);
 
-        public int Send(byte[] buffer)
+        public ProdysSocket(AddressFamily addressFamily, SocketType socketType, ProtocolType protocolType, string ipAddress) : base(addressFamily, socketType, protocolType)
         {
-            return _socket.Send(buffer);
+            IpAddress = ipAddress;
         }
 
-        public int Receive(byte[] buffer)
+        public ProdysSocket(SocketInformation socketInformation, string ipAddress) : base(socketInformation)
         {
-            return _socket.Receive(buffer);
+            IpAddress = ipAddress;
         }
 
-        public void Close()
+        public ProdysSocket(SocketType socketType, ProtocolType protocolType, string ipAddress) : base(socketType, protocolType)
         {
+            IpAddress = ipAddress;
         }
 
-        protected ProdysSocket(Socket socket)
+        public void UpdateEvictionTime()
         {
-            _socket = socket;
+            _evictionTime = DateTime.Now.Add(_lingerTimeSpan);
+        }
+
+        public bool IsOld()
+        {
+            return DateTime.Now > _evictionTime;
         }
 
         public static async Task<ProdysSocket> GetConnectedSocketAsync(string address, int sendTimeout = 300)
@@ -88,11 +96,11 @@ namespace CodecControl.Client.Prodys.IkusNet
 
         private static async Task<ProdysSocket> ConnectAsync(IPAddress ipAddress, ConnectCommandBase connectCmd, int sendTimeout)
         {
-            Socket socket = null;
-            
+            ProdysSocket socket = null;
+
             try
             {
-                socket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.IP);
+                socket = new ProdysSocket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.IP, ipAddress.ToString());
 
                 if (sendTimeout > 0)
                 {
@@ -100,7 +108,7 @@ namespace CodecControl.Client.Prodys.IkusNet
                 }
 
                 var endpoint = new IPEndPoint(ipAddress, Sdk.IkusNet.ExternalProtocolIpCommandsPort);
-                    
+
                 await socket.ConnectAsync(endpoint); // TODO: timeout ?
 
                 if (!socket.Connected)
@@ -137,7 +145,7 @@ namespace CodecControl.Client.Prodys.IkusNet
                     return null;
                 }
 
-                return new ProdysSocket(socket);
+                return socket;
             }
             catch (Exception ex)
             {
@@ -145,11 +153,6 @@ namespace CodecControl.Client.Prodys.IkusNet
                 socket?.Close();
                 return null;
             }
-        }
-
-        public void Dispose()
-        {
-            // TODO: Lämna tillbaka socket-instansen till poolen men stäng aldrig socketen
         }
     }
 }

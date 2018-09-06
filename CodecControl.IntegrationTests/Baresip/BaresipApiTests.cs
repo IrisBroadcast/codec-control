@@ -35,7 +35,7 @@ namespace CodecControl.IntegrationTests.Baresip
         [Fact]
         public async Task GetInputLevel()
         {
-            var sut = new IkusNetApi();
+            var sut = new IkusNetApi(new SocketPool());
 
             await sut.SetInputGainLevelAsync(_ip, 0, 6);
 
@@ -52,7 +52,7 @@ namespace CodecControl.IntegrationTests.Baresip
         [Fact]
         public async Task GetLineStatus()
         {
-            var sut = new IkusNetApi();
+            var sut = new IkusNetApi(new SocketPool());
 
             LineStatus lineStatus = await sut.GetLineStatusAsync(_ip, 0);
             Assert.Equal("", lineStatus.RemoteAddress);
@@ -63,7 +63,7 @@ namespace CodecControl.IntegrationTests.Baresip
         [Fact(Skip = "To avoid unintentional calling")]
         public async Task Call()
         {
-            var sut = new IkusNetApi();
+            var sut = new IkusNetApi(new SocketPool());
 
             var callee = "sto-s17-01@acip.example.com";
             var profileName = "Studio";
@@ -75,7 +75,7 @@ namespace CodecControl.IntegrationTests.Baresip
         [Fact(Skip = "To avoid unintentional hangup")]
         public async Task Hangup()
         {
-            var sut = new IkusNetApi();
+            var sut = new IkusNetApi(new SocketPool());
             bool result = await sut.HangUpAsync(_ip);
             Assert.True(result);
         }

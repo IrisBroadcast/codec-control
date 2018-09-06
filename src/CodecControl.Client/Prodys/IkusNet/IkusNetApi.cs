@@ -300,7 +300,7 @@ namespace CodecControl.Client.Prodys.IkusNet
             }
         }
 
-        private int SendCommand(ProdysSocket socket, ICommandBase command)
+        private int SendCommand(SocketProxy socket, ICommandBase command)
         {
             return socket.Send(command.GetBytes());
         }

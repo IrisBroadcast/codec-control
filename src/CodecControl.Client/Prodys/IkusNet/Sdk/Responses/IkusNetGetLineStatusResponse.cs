@@ -6,7 +6,7 @@ namespace CodecControl.Client.Prodys.IkusNet.Sdk.Responses
 {
     public class IkusNetGetLineStatusResponse : IkusNetStatusResponseBase
     {
-        public IkusNetGetLineStatusResponse(ProdysSocket socket)
+        public IkusNetGetLineStatusResponse(SocketProxy socket)
         {
             var responseBytes = GetResponseBytes(socket, Command.IkusNetGetLineStatus, 268);
             Address = responseBytes.ToNullTerminatedString(0, 256);

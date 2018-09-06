@@ -7,7 +7,7 @@ namespace CodecControl.Client.Prodys.IkusNet.Sdk.Responses
     {
         public string PresetName { get; set; }
 
-        public IkusNetGetLoadedPresetNameResponse(ProdysSocket socket)
+        public IkusNetGetLoadedPresetNameResponse(SocketProxy socket)
         {
             var responseBytes = GetResponseBytes(socket, Command.IkusNetGetLoadedPresetName, 256);
             PresetName = responseBytes.ToNullTerminatedString(0, 256);

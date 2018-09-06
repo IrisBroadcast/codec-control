@@ -7,7 +7,7 @@ namespace CodecControl.Client.Prodys.IkusNet.Sdk.Responses
 {
     public class IkusNetGetInputEnabledResponse : IkusNetStatusResponseBase
     {
-        public IkusNetGetInputEnabledResponse(ProdysSocket socket)
+        public IkusNetGetInputEnabledResponse(SocketProxy socket)
         {
             var response = GetResponseBytes(socket, Command.IkusNetGetInputEnabled, 4);
             Enabled = Convert.ToBoolean(ConvertHelper.DecodeUInt(response, 0));

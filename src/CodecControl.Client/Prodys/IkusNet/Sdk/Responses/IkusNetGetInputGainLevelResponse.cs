@@ -8,7 +8,7 @@ namespace CodecControl.Client.Prodys.IkusNet.Sdk.Responses
     {
         public int GainLeveldB { get; set; }
 
-        public IkusNetGetInputGainLevelResponse(ProdysSocket socket)
+        public IkusNetGetInputGainLevelResponse(SocketProxy socket)
         {
             var responseBytes = GetResponseBytes(socket, Command.IkusNetGetInputGainLevel, 4);
             GainLeveldB = (int)ConvertHelper.DecodeUInt(responseBytes, 0);

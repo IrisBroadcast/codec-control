@@ -28,6 +28,7 @@ namespace CodecControl.Web
             // Dependency injection
             services.AddSingleton<ICcmService, CcmService>();
             services.AddSingleton<SocketPool>();
+            services.AddTransient<IkusNetApi>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }

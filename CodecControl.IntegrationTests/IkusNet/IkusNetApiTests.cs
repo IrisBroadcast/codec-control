@@ -1,24 +1,32 @@
 ﻿using System.Threading.Tasks;
-using Xunit;
-using CodecControl.Client.Prodys.IkusNet;
+using CodecControl.Client;
 using CodecControl.Client.Models;
+using CodecControl.Client.Prodys.IkusNet;
+using Xunit;
 
-namespace CodecControl.IntegrationTests
+namespace CodecControl.IntegrationTests.IkusNet
 {
     public class IkusNetApiTests
     {
-        private string _hostAddress;
+        //private string _hostAddress;
+
+        private CodecInformation CodecInformation => new CodecInformation()
+        {
+            SipAddress = "mtu-25@contrib.sr.se",
+            Api = "IkusNet",
+            Ip = "134.25.127.236"
+        };
 
         public IkusNetApiTests()
         {
-            _hostAddress = "192.0.2.237";
+            //_hostAddress = "192.0.2.237";
         }
 
         [Fact]
         public async Task GetDeviceName()
         {
             var sut = new IkusNetApi();
-            var deviceName = await sut.GetDeviceNameAsync(_hostAddress);
+            var deviceName = await sut.GetDeviceNameAsync(CodecInformation.Ip);
             Assert.Equal("MTU 25", deviceName);
         }
 
@@ -27,14 +35,14 @@ namespace CodecControl.IntegrationTests
         {
             var sut = new IkusNetApi();
 
-            await sut.SetInputGainLevelAsync(_hostAddress, 0, 6);
+            await sut.SetInputGainLevelAsync(CodecInformation.Ip, 0, 6);
 
-            var level = await sut.GetInputGainLevelAsync(_hostAddress, 0);
+            var level = await sut.GetInputGainLevelAsync(CodecInformation.Ip, 0);
             Assert.Equal(6, level);
 
-            await sut.SetInputGainLevelAsync(_hostAddress, 0, 4);
+            await sut.SetInputGainLevelAsync(CodecInformation.Ip, 0, 4);
 
-            level = await sut.GetInputGainLevelAsync(_hostAddress, 0);
+            level = await sut.GetInputGainLevelAsync(CodecInformation.Ip, 0);
             Assert.Equal(4, level);
 
         }
@@ -44,7 +52,7 @@ namespace CodecControl.IntegrationTests
         {
             var sut = new IkusNetApi();
 
-            LineStatus lineStatus = await sut.GetLineStatusAsync(_hostAddress, 0);
+            LineStatus lineStatus = await sut.GetLineStatusAsync(CodecInformation.Ip, 0);
             Assert.Equal("", lineStatus.RemoteAddress);
             Assert.Equal(LineStatusCode.NoPhysicalLine, lineStatus.StatusCode);
             Assert.Equal(DisconnectReason.None, lineStatus.DisconnectReason);
@@ -69,5 +77,15 @@ namespace CodecControl.IntegrationTests
         //    bool result = await sut.HangUpAsync(_hostAddress);
         //    Assert.True(result);
         //}
+
+
+        [Fact]
+        public async Task Ikusnet_GetLineStatus()
+        {
+            var codecApi = new IkusNetApi();
+            var lineStatus = await codecApi.GetLineStatusAsync(CodecInformation.Ip, 0);
+            Assert.NotNull(lineStatus);
+        }
+
     }
 }

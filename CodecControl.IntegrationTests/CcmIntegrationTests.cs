@@ -6,7 +6,7 @@ namespace CodecControl.IntegrationTests.Baresip
 {
     public class CcmIntegrationTests
     {
-        [Fact]
+        [Fact(Skip = "Integration test")]
         public void should_get_list_of_controllable_codecs_from_ccm()
         {
             var appSettings = new ApplicationSettings

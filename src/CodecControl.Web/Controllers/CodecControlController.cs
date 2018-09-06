@@ -36,7 +36,7 @@ namespace CodecControl.Web.Controllers
         {
             return await Execute(sipAddress, async (codecApi, codecInformation) =>
                 {
-                    return await codecApi.CheckIfAvailableAsync(sipAddress); 
+                    return await codecApi.CheckIfAvailableAsync(codecInformation.Ip); 
                 });
         }
 
@@ -55,7 +55,7 @@ namespace CodecControl.Web.Controllers
                 {
                     for (int i = 0; i < nrOfGpos; i++)
                     {
-                        bool? active = await codecApi.GetGpoAsync(sipAddress, i);
+                        bool? active = await codecApi.GetGpoAsync(codecInformation.Ip, i);
 
                         if (!active.HasValue)
                         {
@@ -86,7 +86,7 @@ namespace CodecControl.Web.Controllers
         {
             return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
-                var audioStatus = await codecApi.GetAudioStatusAsync(sipAddress, nrOfInputs, nrOfGpos);
+                var audioStatus = await codecApi.GetAudioStatusAsync(codecInformation.Ip, nrOfInputs, nrOfGpos);
 
                 var model = new AudioStatusViewModel()
                 {
@@ -107,8 +107,8 @@ namespace CodecControl.Web.Controllers
             {
                 var model = new InputGainAndStatusViewModel
                 {
-                    Enabled = await codecApi.GetInputEnabledAsync(sipAddress, input),
-                    GainLevel = await codecApi.GetInputGainLevelAsync(sipAddress, input)
+                    Enabled = await codecApi.GetInputEnabledAsync(codecInformation.Ip, input),
+                    GainLevel = await codecApi.GetInputGainLevelAsync(codecInformation.Ip, input)
                 };
                 return model;
             });
@@ -120,7 +120,7 @@ namespace CodecControl.Web.Controllers
         {
             return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
-                var enabled = await codecApi.GetInputEnabledAsync(sipAddress, input);
+                var enabled = await codecApi.GetInputEnabledAsync(codecInformation.Ip, input);
                 return new InputStatusViewModel { Enabled = enabled };
             });
         }
@@ -132,7 +132,7 @@ namespace CodecControl.Web.Controllers
             return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
                 var model = new LineStatusViewModel();
-                LineStatus lineStatus = await codecApi.GetLineStatusAsync(sipAddress, line);
+                LineStatus lineStatus = await codecApi.GetLineStatusAsync(codecInformation.Ip, line);
 
                 if (lineStatus == null || lineStatus.StatusCode == LineStatusCode.ErrorGettingStatus)
                 {
@@ -155,7 +155,7 @@ namespace CodecControl.Web.Controllers
         {
             return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
-                var loadedPreset = await codecApi.GetLoadedPresetNameAsync(sipAddress, string.Empty);
+                var loadedPreset = await codecApi.GetLoadedPresetNameAsync(codecInformation.Ip, string.Empty);
                 return new PresetViewModel {LoadedPreset = loadedPreset};
             });
 
@@ -166,7 +166,7 @@ namespace CodecControl.Web.Controllers
         public async Task<ActionResult<VuValuesViewModel>> GetVuValues(string sipAddress)
         {
             return await Execute(sipAddress, async (codecApi, codecInformation) => {
-                var vuValues = await codecApi.GetVuValuesAsync(sipAddress);
+                var vuValues = await codecApi.GetVuValuesAsync(codecInformation.Ip);
 
                 return new VuValuesViewModel
                 {
@@ -183,7 +183,7 @@ namespace CodecControl.Web.Controllers
         public async Task<ActionResult<AudioModeViewModel>> GetAudioMode(string sipAddress)
         {
             return await Execute(sipAddress, async (codecApi, codecInformation) => {
-                AudioMode result = await codecApi.GetAudioModeAsync(sipAddress);
+                AudioMode result = await codecApi.GetAudioModeAsync(codecInformation.Ip);
 
                 return new AudioModeViewModel
                 {
@@ -199,7 +199,7 @@ namespace CodecControl.Web.Controllers
         {
             return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
-                await codecApi.LoadPresetAsync(sipAddress, name);
+                await codecApi.LoadPresetAsync(codecInformation.Ip, name);
                 return true;
             });
         }
@@ -210,8 +210,8 @@ namespace CodecControl.Web.Controllers
         {
             return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
-                await codecApi.SetGpoAsync(sipAddress, number, active);
-                var gpoActive = await codecApi.GetGpoAsync(sipAddress, number) ?? false;
+                await codecApi.SetGpoAsync(codecInformation.Ip, number, active);
+                var gpoActive = await codecApi.GetGpoAsync(codecInformation.Ip, number) ?? false;
                 return new GpoViewModel { Number = number, Active = gpoActive };
             });
         }
@@ -222,7 +222,7 @@ namespace CodecControl.Web.Controllers
         {
             return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
-                var isEnabled = await codecApi.SetInputEnabledAsync(sipAddress, input, enabled);
+                var isEnabled = await codecApi.SetInputEnabledAsync(codecInformation.Ip, input, enabled);
                 return new InputStatusViewModel { Enabled = isEnabled };
             });
         }
@@ -233,7 +233,7 @@ namespace CodecControl.Web.Controllers
         {
             return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
-                var gainLevel = await codecApi.SetInputGainLevelAsync(sipAddress, input, level);
+                var gainLevel = await codecApi.SetInputGainLevelAsync(codecInformation.Ip, input, level);
                 return new InputGainLevelViewModel { GainLevel = gainLevel };
             });
         }
@@ -244,7 +244,7 @@ namespace CodecControl.Web.Controllers
         {
             return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
-                return await codecApi.RebootAsync(sipAddress); 
+                return await codecApi.RebootAsync(codecInformation.Ip); 
             });
         }
 
@@ -254,7 +254,7 @@ namespace CodecControl.Web.Controllers
         {
             return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
-                return await codecApi.CallAsync(sipAddress, callee, profileName);
+                return await codecApi.CallAsync(codecInformation.Ip, callee, profileName);
             });
         }
 
@@ -265,7 +265,7 @@ namespace CodecControl.Web.Controllers
         {
             return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
-                return await codecApi.HangUpAsync(sipAddress);
+                return await codecApi.HangUpAsync(codecInformation.Ip);
             });
 
         }

@@ -14,7 +14,7 @@ namespace CodecControl.Client
         Task<bool> HangUpAsync(string hostAddress);
         Task<bool> CheckIfAvailableAsync(string ip);
         
-        Task<bool?> GetGpoAsync(string ipp, int gpio);
+        Task<bool?> GetGpoAsync(string ip, int gpio);
         Task<bool> GetInputEnabledAsync(string ip, int input);
         Task<int> GetInputGainLevelAsync(string ip, int input);
         Task<LineStatus> GetLineStatusAsync(string ip, int line);

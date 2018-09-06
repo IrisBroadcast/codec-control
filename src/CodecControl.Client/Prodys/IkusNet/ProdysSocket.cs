@@ -10,15 +10,17 @@ using NLog;
 
 namespace CodecControl.Client.Prodys.IkusNet
 {
-    public class ProdysSocket : Socket {
+    public class ProdysSocket : Socket
+    {
 
         protected static readonly Logger log = LogManager.GetCurrentClassLogger();
-        private static TimeSpan _lingerTimeSpan = new TimeSpan(0,0,0,30);
+        private static TimeSpan _lingerTimeSpan = new TimeSpan(0, 0, 0, 30);
 
         public string IpAddress { get; }
         private DateTime _evictionTime = DateTime.Now.Add(_lingerTimeSpan);
 
-        public ProdysSocket(AddressFamily addressFamily, SocketType socketType, ProtocolType protocolType, string ipAddress) : base(addressFamily, socketType, protocolType)
+        public ProdysSocket(AddressFamily addressFamily, SocketType socketType, ProtocolType protocolType,
+            string ipAddress) : base(addressFamily, socketType, protocolType)
         {
             IpAddress = ipAddress;
         }
@@ -28,7 +30,8 @@ namespace CodecControl.Client.Prodys.IkusNet
             IpAddress = ipAddress;
         }
 
-        public ProdysSocket(SocketType socketType, ProtocolType protocolType, string ipAddress) : base(socketType, protocolType)
+        public ProdysSocket(SocketType socketType, ProtocolType protocolType, string ipAddress) : base(socketType,
+            protocolType)
         {
             IpAddress = ipAddress;
         }
@@ -79,7 +82,8 @@ namespace CodecControl.Client.Prodys.IkusNet
                 return connectedSocket;
             }
 
-            log.Warn("Unable to connect to codec at {0}. Both authenticated and unauthenticated connect failed.", ipAddress);
+            log.Warn("Unable to connect to codec at {0}. Both authenticated and unauthenticated connect failed.",
+                ipAddress);
             throw new UnableToConnectException();
         }
 
@@ -89,18 +93,20 @@ namespace CodecControl.Client.Prodys.IkusNet
             {
                 return ipAddress;
             }
+
             var ips = Dns.GetHostAddresses(address);
             return ips.Length > 0 ? ips[0] : null;
         }
 
-
-        private static async Task<ProdysSocket> ConnectAsync(IPAddress ipAddress, ConnectCommandBase connectCmd, int sendTimeout)
+        private static async Task<ProdysSocket> ConnectAsync(IPAddress ipAddress, ConnectCommandBase connectCmd,
+            int sendTimeout)
         {
             ProdysSocket socket = null;
 
             try
             {
-                socket = new ProdysSocket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.IP, ipAddress.ToString());
+                socket = new ProdysSocket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.IP,
+                    ipAddress.ToString());
 
                 if (sendTimeout > 0)
                 {
@@ -130,9 +136,9 @@ namespace CodecControl.Client.Prodys.IkusNet
                 var buffer = new byte[16];
                 socket.Receive(buffer);
 
-                var command = (Command)ConvertHelper.DecodeUInt(buffer, 0);
-                var length = (int)ConvertHelper.DecodeUInt(buffer, 4);
-                var receivedCommand = (Command)ConvertHelper.DecodeUInt(buffer, 8);
+                var command = (Command) ConvertHelper.DecodeUInt(buffer, 0);
+                var length = (int) ConvertHelper.DecodeUInt(buffer, 4);
+                var receivedCommand = (Command) ConvertHelper.DecodeUInt(buffer, 8);
                 // TODO: Verify command, length, receivedCommand
                 var acknowleged = Convert.ToBoolean(ConvertHelper.DecodeUInt(buffer, 12));
 
@@ -154,5 +160,6 @@ namespace CodecControl.Client.Prodys.IkusNet
                 return null;
             }
         }
+
     }
 }

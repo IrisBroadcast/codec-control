@@ -12,33 +12,20 @@ namespace CodecControl.Client.Prodys.IkusNet
 {
     public class ProdysSocket : Socket
     {
-
         protected static readonly Logger log = LogManager.GetCurrentClassLogger();
-        private static TimeSpan _lingerTimeSpan = new TimeSpan(0, 0, 0, 30);
+        private static readonly TimeSpan LingerTimeSpan = TimeSpan.FromSeconds(30);
 
         public string IpAddress { get; }
-        private DateTime _evictionTime = DateTime.Now.Add(_lingerTimeSpan);
+        private DateTime _evictionTime = DateTime.Now.Add(LingerTimeSpan);
 
-        public ProdysSocket(AddressFamily addressFamily, SocketType socketType, ProtocolType protocolType,
-            string ipAddress) : base(addressFamily, socketType, protocolType)
+        public ProdysSocket(IPAddress ipAddress) : base(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.IP)
         {
-            IpAddress = ipAddress;
+            IpAddress = ipAddress.ToString();
         }
-
-        public ProdysSocket(SocketInformation socketInformation, string ipAddress) : base(socketInformation)
+        
+        public void RefreshEvictionTime()
         {
-            IpAddress = ipAddress;
-        }
-
-        public ProdysSocket(SocketType socketType, ProtocolType protocolType, string ipAddress) : base(socketType,
-            protocolType)
-        {
-            IpAddress = ipAddress;
-        }
-
-        public void UpdateEvictionTime()
-        {
-            _evictionTime = DateTime.Now.Add(_lingerTimeSpan);
+            _evictionTime = DateTime.Now.Add(LingerTimeSpan);
         }
 
         public bool IsOld()
@@ -48,15 +35,8 @@ namespace CodecControl.Client.Prodys.IkusNet
 
         public static async Task<ProdysSocket> GetConnectedSocketAsync(string address, int sendTimeout = 300)
         {
-            // TODO: Hämta socket ur poolen om sådan finns. Markera som tagen.
-            // TODO: Om det inte finns socket skapa ny och lägg i poolen.
-
-            // TODO: Kolla om redan uppkopplad socket finns. Om det finns returnera den.
-            // TODO: Om socket saknas, gör uppkoppling, spara i lista med sockets, returnera.
-
-            // TODO: Efter x sekunder utan användning ska socketen stängas 
-
             IPAddress ipAddress = GetIpAddress(address);
+
             if (ipAddress == null)
             {
                 log.Warn($"Unable to resolve ip address for {address}");
@@ -82,8 +62,7 @@ namespace CodecControl.Client.Prodys.IkusNet
                 return connectedSocket;
             }
 
-            log.Warn("Unable to connect to codec at {0}. Both authenticated and unauthenticated connect failed.",
-                ipAddress);
+            log.Warn("Unable to connect to codec at {0}. Both authenticated and unauthenticated connect failed.", ipAddress);
             throw new UnableToConnectException();
         }
 
@@ -98,15 +77,13 @@ namespace CodecControl.Client.Prodys.IkusNet
             return ips.Length > 0 ? ips[0] : null;
         }
 
-        private static async Task<ProdysSocket> ConnectAsync(IPAddress ipAddress, ConnectCommandBase connectCmd,
-            int sendTimeout)
+        private static async Task<ProdysSocket> ConnectAsync(IPAddress ipAddress, ConnectCommandBase connectCmd, int sendTimeout)
         {
             ProdysSocket socket = null;
 
             try
             {
-                socket = new ProdysSocket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.IP,
-                    ipAddress.ToString());
+                socket = new ProdysSocket(ipAddress);
 
                 if (sendTimeout > 0)
                 {

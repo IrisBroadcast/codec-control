@@ -8,7 +8,6 @@ using CodecControl.Client.Models;
 using CodecControl.Web.Controllers.Base;
 using CodecControl.Web.Interfaces;
 using CodecControl.Web.Models;
-using CodecControl.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
 

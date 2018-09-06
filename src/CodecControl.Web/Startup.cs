@@ -29,6 +29,7 @@ namespace CodecControl.Web
             services.AddSingleton<ICcmService, CcmService>();
             services.AddSingleton<SocketPool>();
             services.AddTransient<IkusNetApi>();
+            services.AddTransient<SocketProxy>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }

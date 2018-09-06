@@ -23,7 +23,7 @@ namespace CodecControl.Client.Prodys.IkusNet
         {
             try
             {
-                using (var socket = await _socketPool.GetSocket(ip))
+                using (var socket = await _socketPool.TakeSocket(ip))
                 {
                     // TODO: Skicka dummy-kommando till kodaren.
                     if (socket != null)
@@ -41,11 +41,11 @@ namespace CodecControl.Client.Prodys.IkusNet
         }
 
         #region Get Commands
-
+        
         // Endast för test
-        public async Task<string> GetDeviceNameAsync(string hostAddress)
+        public async Task<string> GetDeviceNameAsync( string hostAddress)
         {
-            using (var socket = await _socketPool.GetSocket(hostAddress))
+            using (var socket = await _socketPool.TakeSocket(hostAddress))
             {
                 SendCommand(socket, new CommandIkusNetSysGetDeviceName());
                 var response = new IkusNetGetDeviceNameResponse(socket);
@@ -55,7 +55,7 @@ namespace CodecControl.Client.Prodys.IkusNet
 
         public async Task<bool?> GetGpiAsync(string hostAddress, int gpio)
         {
-            using (var socket = await _socketPool.GetSocket(hostAddress))
+            using (var socket = await _socketPool.TakeSocket(hostAddress))
             {
                 SendCommand(socket, new CommandIkusNetGetGpi { Gpio = gpio });
                 var response = new IkusNetGetGpiResponse(socket);
@@ -65,7 +65,7 @@ namespace CodecControl.Client.Prodys.IkusNet
 
         public async Task<bool?> GetGpoAsync(string hostAddress, int gpio)
         {
-            using (var socket = await _socketPool.GetSocket(hostAddress))
+            using (var socket = await _socketPool.TakeSocket(hostAddress))
             {
                 SendCommand(socket, new CommandIkusNetGetGpo { Gpio = gpio });
                 var response = new IkusNetGetGpoResponse(socket);
@@ -76,7 +76,7 @@ namespace CodecControl.Client.Prodys.IkusNet
         public async Task<bool> GetInputEnabledAsync(string hostAddress, int input)
         {
             // Works only on Quantum codec, not Quantum ST
-            using (var socket = await _socketPool.GetSocket(hostAddress))
+            using (var socket = await _socketPool.TakeSocket(hostAddress))
             {
                 SendCommand(socket, new CommandIkusNetGetInputEnabled { Input = input });
                 var response = new IkusNetGetInputEnabledResponse(socket);
@@ -87,7 +87,7 @@ namespace CodecControl.Client.Prodys.IkusNet
         public async Task<int> GetInputGainLevelAsync(string hostAddress, int input)
         {
             // Works only on Quantum codec, not Quantum ST
-            using (var socket = await _socketPool.GetSocket(hostAddress))
+            using (var socket = await _socketPool.TakeSocket(hostAddress))
             {
                 SendCommand(socket, new CommandIkusNetGetInputGainLevel { Input = input });
                 var response = new IkusNetGetInputGainLevelResponse(socket);
@@ -97,7 +97,7 @@ namespace CodecControl.Client.Prodys.IkusNet
 
         public async Task<LineStatus> GetLineStatusAsync(string hostAddress, int line)
         {
-            using (var socket = await _socketPool.GetSocket(hostAddress))
+            using (var socket = await _socketPool.TakeSocket(hostAddress))
             {
                 SendCommand(socket, new CommandIkusNetGetLineStatus { Line = (IkusNetLine)line });
                 var response = new IkusNetGetLineStatusResponse(socket);
@@ -113,7 +113,7 @@ namespace CodecControl.Client.Prodys.IkusNet
 
         public async Task<string> GetLoadedPresetNameAsync(string hostAddress, string lastPresetName)
         {
-            using (var socket = await _socketPool.GetSocket(hostAddress))
+            using (var socket = await _socketPool.TakeSocket(hostAddress))
             {
                 SendCommand(socket, new CommandIkusNetGetLoadedPresetName { LastLoadedPresetName = lastPresetName });
                 var response = new IkusNetGetLoadedPresetNameResponse(socket);
@@ -123,7 +123,7 @@ namespace CodecControl.Client.Prodys.IkusNet
 
         public async Task<VuValues> GetVuValuesAsync(string hostAddress)
         {
-            using (var socket = await _socketPool.GetSocket(hostAddress))
+            using (var socket = await _socketPool.TakeSocket(hostAddress))
             {
                 SendCommand(socket, new CommandIkusNetGetVuMeters());
                 var response = new IkusNetGetVumetersResponse(socket);
@@ -139,7 +139,7 @@ namespace CodecControl.Client.Prodys.IkusNet
 
         public async Task<AudioMode> GetAudioModeAsync(string hostAddress)
         {
-            using (var socket = await _socketPool.GetSocket(hostAddress))
+            using (var socket = await _socketPool.TakeSocket(hostAddress))
             {
                 // Get encoder algoritm
                 SendCommand(socket, new CommandIkusNetGetEncoderAudioMode());
@@ -161,7 +161,7 @@ namespace CodecControl.Client.Prodys.IkusNet
         {
             var audioStatus = new AudioStatus();
 
-            using (var socket = await _socketPool.GetSocket(hostAddress))
+            using (var socket = await _socketPool.TakeSocket(hostAddress))
             {
                 SendCommand(socket, new CommandIkusNetGetVuMeters());
                 var vuResponse = new IkusNetGetVumetersResponse(socket);
@@ -288,11 +288,11 @@ namespace CodecControl.Client.Prodys.IkusNet
         }
         #endregion
 
-        #region Private methods
+        #region Private methods 
 
         private async Task<bool> SendConfigurationCommandAsync(string hostAddress, ICommandBase cmd)
         {
-            using (var socket = await _socketPool.GetSocket(hostAddress))
+            using (var socket = await _socketPool.TakeSocket(hostAddress))
             {
                 SendCommand(socket, cmd);
                 var ackResponse = new AcknowledgeResponse(socket);

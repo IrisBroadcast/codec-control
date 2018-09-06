@@ -35,7 +35,7 @@ namespace CodecControl.Web.Controllers
         {
             return await Execute(sipAddress, async (codecApi, codecInformation) =>
                 {
-                    return await codecApi.CheckIfAvailableAsync(codecInformation.Ip); 
+                    return await codecApi.CheckIfAvailableAsync(codecInformation.Ip);
                 });
         }
 
@@ -155,7 +155,7 @@ namespace CodecControl.Web.Controllers
             return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
                 var loadedPreset = await codecApi.GetLoadedPresetNameAsync(codecInformation.Ip, string.Empty);
-                return new PresetViewModel {LoadedPreset = loadedPreset};
+                return new PresetViewModel { LoadedPreset = loadedPreset };
             });
 
         }
@@ -164,7 +164,8 @@ namespace CodecControl.Web.Controllers
         [HttpGet]
         public async Task<ActionResult<VuValuesViewModel>> GetVuValues(string sipAddress)
         {
-            return await Execute(sipAddress, async (codecApi, codecInformation) => {
+            return await Execute(sipAddress, async (codecApi, codecInformation) =>
+            {
                 var vuValues = await codecApi.GetVuValuesAsync(codecInformation.Ip);
 
                 return new VuValuesViewModel
@@ -181,7 +182,8 @@ namespace CodecControl.Web.Controllers
         [HttpGet]
         public async Task<ActionResult<AudioModeViewModel>> GetAudioMode(string sipAddress)
         {
-            return await Execute(sipAddress, async (codecApi, codecInformation) => {
+            return await Execute(sipAddress, async (codecApi, codecInformation) =>
+            {
                 AudioMode result = await codecApi.GetAudioModeAsync(codecInformation.Ip);
 
                 return new AudioModeViewModel
@@ -243,7 +245,7 @@ namespace CodecControl.Web.Controllers
         {
             return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
-                return await codecApi.RebootAsync(codecInformation.Ip); 
+                return await codecApi.RebootAsync(codecInformation.Ip);
             });
         }
 
@@ -268,46 +270,52 @@ namespace CodecControl.Web.Controllers
             });
 
         }
-        
-        private async Task<ActionResult<TResult>> Execute<TResult>(string sipAddress, Func<ICodecApi, CodecInformation, Task<TResult>> f)
+
+        private async Task<ActionResult<TResult>> Execute<TResult>(string sipAddress, Func<ICodecApi, CodecInformation, Task<TResult>> func)
         {
-            if (string.IsNullOrEmpty(sipAddress))
+            using (new TimeMeasurer("CodecControl"))
             {
-                log.Info("Invalid request. Missing SIP address");
-                return BadRequest();
-            }
+                try
+                {
+                    if (string.IsNullOrEmpty(sipAddress))
+                    {
+                        log.Info("Invalid request. Missing SIP address");
+                        return BadRequest();
+                    }
 
-            var codecInformation = _ccmService.GetCodecInformationBySipAddress(sipAddress);
+                    var codecInformation = _ccmService.GetCodecInformationBySipAddress(sipAddress);
 
-            if (codecInformation == null)
-            {
-                log.Info($"Codec {sipAddress} is not currently registered in CCM.");
-                return CodecUnavailable();
-            }
+                    if (codecInformation == null)
+                    {
+                        log.Info($"Codec {sipAddress} is not currently registered in CCM.");
+                        return CodecUnavailable();
+                    }
 
-            var codecApiType = codecInformation?.CodecApiType;
-            var codecApi  = codecApiType != null ? _serviceProvider.GetService(codecApiType) as ICodecApi : null;
+                    var codecApiType = codecInformation?.CodecApiType;
+                    var codecApi = codecApiType != null ? _serviceProvider.GetService(codecApiType) as ICodecApi : null;
 
-            if (codecApi == null || string.IsNullOrEmpty(codecInformation.Ip))
-            {
-                log.Info($"Missing information to connect to codec {sipAddress}");
-                return CodecUnavailable();
-            }
+                    if (codecApi == null || string.IsNullOrEmpty(codecInformation.Ip))
+                    {
+                        log.Info($"Missing information to connect to codec {sipAddress}");
+                        return CodecUnavailable();
+                    }
 
-            try
-            {
-                log.Debug($"Sending codec control command to {sipAddress} on IP {codecInformation.Ip} using API {codecInformation.Api}");
-                return await f(codecApi, codecInformation);
-            }
-            catch (CodecControlException ex)
-            {
-                log.Warn(ex, "Exception when sending codec control command to " + sipAddress);
-                return InternalServerError();
-            }
-            catch (Exception ex)
-            {
-                log.Warn(ex, "Unknown exception when sending codec control command to " + sipAddress);
-                return InternalServerError();
+                    log.Debug($"Sending codec control command to {sipAddress} on IP {codecInformation.Ip} using API {codecInformation.Api}");
+                    using (new TimeMeasurer("Make Codec Request"))
+                    {
+                        return await func(codecApi, codecInformation);
+                    }
+                }
+                catch (CodecControlException ex)
+                {
+                    log.Warn(ex, "Exception when sending codec control command to " + sipAddress);
+                    return InternalServerError();
+                }
+                catch (Exception ex)
+                {
+                    log.Warn(ex, "Unknown exception when sending codec control command to " + sipAddress);
+                    return InternalServerError();
+                }
             }
         }
 

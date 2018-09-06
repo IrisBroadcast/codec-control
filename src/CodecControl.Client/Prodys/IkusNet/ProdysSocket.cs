@@ -35,38 +35,41 @@ namespace CodecControl.Client.Prodys.IkusNet
 
         public static async Task<ProdysSocket> GetConnectedSocketAsync(string address, int sendTimeout = 300)
         {
-            IPAddress ipAddress = GetIpAddress(address);
-
-            if (ipAddress == null)
+            using (new TimeMeasurer("ProdysSocket.GetConnectedSocketAsync"))
             {
-                log.Warn($"Unable to resolve ip address for {address}");
-                throw new UnableToResolveAddressException();
+                IPAddress ipAddress = GetIpAddress(address);
+
+                if (ipAddress == null)
+                {
+                    log.Warn($"Unable to resolve ip address for {address}");
+                    throw new UnableToResolveAddressException();
+                }
+
+                // Try with authenticated connect first
+                // INFO: It seems that authenticated connect works also when authentication is not active on the codec. At least on some firmware versions...
+
+                // TODO: Reuse connection if authenticated connect failes.
+
+                ProdysSocket connectedSocket = await ConnectAsync(ipAddress, new CsConnect2(), sendTimeout);
+
+                if (connectedSocket != null)
+                {
+                    return connectedSocket;
+                }
+
+                log.Warn("Unable to connect to codec at {0} using authenticated connect.", ipAddress);
+
+                // Otherwise, try non authenticated connect
+                connectedSocket = await ConnectAsync(ipAddress, new CsConnect(), sendTimeout);
+
+                if (connectedSocket != null)
+                {
+                    return connectedSocket;
+                }
+
+                log.Warn("Unable to connect to codec at {0}. Both authenticated and unauthenticated connect failed.", ipAddress);
+                throw new UnableToConnectException(); 
             }
-
-            // Try with authenticated connect first
-            // INFO: It seems that authenticated connect works also when authentication is not active on the codec. At least on some firmware versions...
-
-            // TODO: Reuse connection if authenticated connect failes.
-
-            ProdysSocket connectedSocket = await ConnectAsync(ipAddress, new CsConnect2(), sendTimeout);
-
-            if (connectedSocket != null)
-            {
-                return connectedSocket;
-            }
-
-            log.Warn("Unable to connect to codec at {0} using authenticated connect.", ipAddress);
-
-            // Otherwise, try non authenticated connect
-            connectedSocket = await ConnectAsync(ipAddress, new CsConnect(), sendTimeout);
-
-            if (connectedSocket != null)
-            {
-                return connectedSocket;
-            }
-
-            log.Warn("Unable to connect to codec at {0}. Both authenticated and unauthenticated connect failed.", ipAddress);
-            throw new UnableToConnectException();
         }
 
         private static IPAddress GetIpAddress(string address)

@@ -6,20 +6,23 @@ using System.Threading.Tasks;
 using CodecControl.Client;
 using CodecControl.Web.Interfaces;
 using Newtonsoft.Json;
+using NLog;
 
 namespace CodecControl.Web.Services
 {
     public class CcmService : ICcmService
     {
-        private readonly ApplicationSettings _appSettings;
         // TODO: Listen to CCM hub and reload list when necessary
 
+        protected static readonly Logger log = LogManager.GetCurrentClassLogger();
+        private const int ReloadIntervalInSeconds = 60;
+        private readonly ApplicationSettings _appSettings;
         private List<CodecInformation> _codecInformationList;
         private DateTime _discardTime;
-        private readonly int _reloadIntervalInSeconds = 60;
-
+        
         public CcmService(ApplicationSettings appSettings)
         {
+            log.Info("CCMService constructor");
             _appSettings = appSettings;
             _discardTime = DateTime.Now;
         }
@@ -30,6 +33,7 @@ namespace CodecControl.Web.Services
             {
                 if (DateTime.Now > _discardTime)
                 {
+                    log.Info("Discarding current CCM list");
                     _codecInformationList = null;
                 }
                 return _codecInformationList ?? (_codecInformationList = LoadCodecInformationListAsync().Result);
@@ -38,23 +42,36 @@ namespace CodecControl.Web.Services
 
         private async Task<List<CodecInformation>> LoadCodecInformationListAsync()
         {
-            // TODO: Connect to CCM and retrieve codec information
-            var client = new HttpClient();
-
-            var uri = new Uri(_appSettings.CcmHostUri, "api/codecinformation");
-
-            var response = await client.GetAsync(uri);
-            if (response.IsSuccessStatusCode)
+            using (new TimeMeasurer("Load codec information from CCM"))
             {
-                string stringData = await response.Content.ReadAsStringAsync();
-                List<CodecInformation> codecInformationList = JsonConvert.DeserializeObject<List<CodecInformation>>(stringData);
+                Uri uri = null;
+                try
+                {
+                    log.Info("Loading codec information from CCM");
+                    var client = new HttpClient();
 
-                _discardTime = DateTime.Now.AddSeconds(_reloadIntervalInSeconds);
-                return codecInformationList;
-            }
-            else
-            {
-                return new List<CodecInformation>();
+                    uri = new Uri(_appSettings.CcmHostUri, "api/codecinformation");
+
+                    var response = await client.GetAsync(uri);
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        log.Warn("Failed to retrieve codec information list from CCM");
+                        return new List<CodecInformation>();
+                    }
+
+                    string stringData = await response.Content.ReadAsStringAsync();
+                    var codecInformationList = JsonConvert.DeserializeObject<List<CodecInformation>>(stringData);
+                    log.Info($"Found information for #{codecInformationList.Count} codecs in CCM list");
+
+                    _discardTime = DateTime.Now.AddSeconds(ReloadIntervalInSeconds);
+                    return codecInformationList;
+                }
+                catch (Exception ex)
+                {
+                    log.Error(ex, $"Exception when retrieving codec information from CCM ({uri?.AbsoluteUri})");
+                    return new List<CodecInformation>();
+                }
             }
         }
 

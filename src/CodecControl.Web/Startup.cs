@@ -1,4 +1,5 @@
 ﻿using CodecControl.Client.Prodys.IkusNet;
+using CodecControl.Client.SR.BaresipRest;
 using CodecControl.Web.Controllers;
 using CodecControl.Web.Interfaces;
 using CodecControl.Web.Services;
@@ -28,8 +29,14 @@ namespace CodecControl.Web
             // Dependency injection
             services.AddSingleton<ICcmService, CcmService>();
             services.AddSingleton<SocketPool>();
+<<<<<<< HEAD
             services.AddTransient<IkusNetApi>();
+=======
+
+>>>>>>> nlog configuration
             services.AddTransient<SocketProxy>();
+            services.AddTransient<IkusNetApi>();
+            services.AddTransient<BaresipRestApi>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }

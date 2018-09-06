@@ -273,22 +273,30 @@ namespace CodecControl.Web.Controllers
         {
             if (string.IsNullOrEmpty(sipAddress))
             {
+                log.Info("Invalid request. Missing SIP address");
                 return BadRequest();
             }
 
-            var codecInfo = _ccmService.GetCodecInformationBySipAddress(sipAddress);
-            CodecInformation codecInformation = codecInfo?.CodecApiType == null ? null : codecInfo;
+            var codecInformation = _ccmService.GetCodecInformationBySipAddress(sipAddress);
+
+            if (codecInformation == null)
+            {
+                log.Info($"Codec {sipAddress} is not currently registered in CCM.");
+                return CodecUnavailable();
+            }
 
             var codecApiType = codecInformation?.CodecApiType;
             var codecApi  = codecApiType != null ? _serviceProvider.GetService(codecApiType) as ICodecApi : null;
 
-            if (codecInformation == null || codecApi == null)
+            if (codecApi == null || string.IsNullOrEmpty(codecInformation.Ip))
             {
+                log.Info($"Missing information to connect to codec {sipAddress}");
                 return CodecUnavailable();
             }
 
             try
             {
+                log.Debug($"Sending codec control command to {sipAddress} on IP {codecInformation.Ip} using API {codecInformation.Api}");
                 return await f(codecApi, codecInformation);
             }
             catch (CodecControlException ex)

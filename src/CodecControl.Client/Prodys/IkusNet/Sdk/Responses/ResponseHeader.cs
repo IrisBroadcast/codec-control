@@ -9,7 +9,7 @@ namespace CodecControl.Client.Prodys.IkusNet.Sdk.Responses
 
         public override string ToString()
         {
-            return string.Format("Command={0}, Length={1}", Command, Length);
+            return $"Command={Command}, Length={Length}";
         }
     }
 }

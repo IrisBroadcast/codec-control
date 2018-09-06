@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace CodecControl.Client.Prodys.IkusNet.Sdk.Responses
+namespace CodecControl.Client.Prodys.IkusNet.Sdk
 {
     public static class ByteArrayExtensions
     {

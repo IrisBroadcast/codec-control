@@ -14,7 +14,11 @@ namespace CodecControl.Client.Prodys.IkusNet.Sdk.Responses
             socket.Receive(buffer);
             var command = (Command) ConvertHelper.DecodeUInt(buffer, 0);
             var length = (int) ConvertHelper.DecodeUInt(buffer, 4);
-            
+
+            // Read variable part of header
+            var result = new byte[length];
+            socket.Receive(result);
+
             if (command != expectedCommand || length != expectedResponseLength)
             {
                 throw new Exception(string.Format(
@@ -22,9 +26,6 @@ namespace CodecControl.Client.Prodys.IkusNet.Sdk.Responses
                     command, length, expectedCommand, expectedResponseLength));
             }
 
-            // Read variable part of header
-            var result = new byte[length];
-            socket.Receive(result);
             return result;
         }
     }

@@ -11,10 +11,6 @@ namespace CodecControl.Client.Prodys.IkusNet.Sdk.Responses
         public int ProgramTxRight { get; private set; }
         public int ProgramRxLeft { get; private set; }
         public int ProgramRxRight { get; private set; }
-        public int TalkbackTxLeft { get; private set; }
-        public int TalkbackTxRight { get; private set; }
-        public int TalkbackRxLeft { get; private set; }
-        public int TalkbackRxRight { get; private set; }
 
         public IkusNetGetVumetersResponse(SocketProxy socket)
         {

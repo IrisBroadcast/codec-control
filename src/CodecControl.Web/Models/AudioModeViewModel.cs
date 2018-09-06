@@ -10,6 +10,5 @@ namespace CodecControl.Web.Models
 
         public string EncoderAudioModeString => EncoderAudioMode.Description();
         public string DecoderAudioModeString => DecoderAudioMode.Description();
-        public string Error { get; set; }
     }
 }

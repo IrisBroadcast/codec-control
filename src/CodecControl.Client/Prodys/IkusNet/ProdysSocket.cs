@@ -45,6 +45,9 @@ namespace CodecControl.Client.Prodys.IkusNet
 
             // Try with authenticated connect first
             // INFO: It seems that authenticated connect works also when authentication is not active on the codec. At least on some firmware versions...
+
+            // TODO: Reuse connection if authenticated connect failes.
+
             ProdysSocket connectedSocket = await ConnectAsync(ipAddress, new CsConnect2(), sendTimeout);
 
             if (connectedSocket != null)
@@ -100,8 +103,8 @@ namespace CodecControl.Client.Prodys.IkusNet
                     return null;
                 }
 
-                var bytes = connectCmd.GetBytes();
-                var sent = socket.Send(bytes);
+                var sendBytes = connectCmd.GetBytes();
+                var sent = socket.Send(sendBytes);
 
                 if (sent <= 0 || !socket.Connected)
                 {

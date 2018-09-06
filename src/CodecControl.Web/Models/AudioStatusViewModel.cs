@@ -9,7 +9,6 @@ namespace CodecControl.Web.Models
         public VuValues VuValues { get; set; }
         public List<InputStatus> InputStatuses { get; set; }
         public List<bool> Gpos { get; set; }
-        public string Error { get; set; }
 
     }
 }

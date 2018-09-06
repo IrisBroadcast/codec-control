@@ -29,11 +29,6 @@ namespace CodecControl.Web
             // Dependency injection
             services.AddSingleton<ICcmService, CcmService>();
             services.AddSingleton<SocketPool>();
-<<<<<<< HEAD
-            services.AddTransient<IkusNetApi>();
-=======
-
->>>>>>> nlog configuration
             services.AddTransient<SocketProxy>();
             services.AddTransient<IkusNetApi>();
             services.AddTransient<BaresipRestApi>();

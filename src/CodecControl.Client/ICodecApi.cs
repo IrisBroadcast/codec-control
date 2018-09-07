@@ -17,6 +17,7 @@ namespace CodecControl.Client
         Task<bool?> GetGpoAsync(string ip, int gpio);
         Task<bool> GetInputEnabledAsync(string ip, int input);
         Task<int> GetInputGainLevelAsync(string ip, int input);
+        Task<(bool, int)> GetInputGainAndStatusAsync(string ip, int input);
         Task<LineStatus> GetLineStatusAsync(string ip, int line);
         Task<string> GetLoadedPresetNameAsync(string ip, string lastPresetName);
         Task<VuValues> GetVuValuesAsync(string ip);

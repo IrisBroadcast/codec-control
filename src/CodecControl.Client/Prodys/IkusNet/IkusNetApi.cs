@@ -19,20 +19,18 @@ namespace CodecControl.Client.Prodys.IkusNet
         {
             _socketPool = socketPool;
         }
+
         public async Task<bool> CheckIfAvailableAsync(string ip)
         {
             try
             {
                 using (var socket = await _socketPool.TakeSocket(ip))
                 {
-                    // TODO: Skicka dummy-kommando till kodaren.
-                    if (socket != null)
-                    {
-                        return true;
-                    }
-                    return false;
+                    // Send dummy command to codec.
+                    SendCommand(socket, new CommandIkusNetGetVuMeters());
+                    var dummResponse = new IkusNetGetVumetersResponse(socket);
+                    return true; // Success
                 }
-                
             }
             catch (Exception ex)
             {
@@ -41,9 +39,9 @@ namespace CodecControl.Client.Prodys.IkusNet
         }
 
         #region Get Commands
-        
+
         // Endast för test
-        public async Task<string> GetDeviceNameAsync( string hostAddress)
+        public async Task<string> GetDeviceNameAsync(string hostAddress)
         {
             using (var socket = await _socketPool.TakeSocket(hostAddress))
             {
@@ -92,6 +90,22 @@ namespace CodecControl.Client.Prodys.IkusNet
                 SendCommand(socket, new CommandIkusNetGetInputGainLevel { Input = input });
                 var response = new IkusNetGetInputGainLevelResponse(socket);
                 return response.GainLeveldB;
+            }
+        }
+
+        public async Task<(bool, int)> GetInputGainAndStatusAsync(string hostAddress, int input)
+        {
+            // Works only on Quantum codec, not Quantum ST
+            using (var socket = await _socketPool.TakeSocket(hostAddress))
+            {
+                SendCommand(socket, new CommandIkusNetGetInputEnabled { Input = input });
+                var inputEnabledResponse = new IkusNetGetInputEnabledResponse(socket);
+                var enabled = inputEnabledResponse.Enabled;
+
+                SendCommand(socket, new CommandIkusNetGetInputGainLevel { Input = input });
+                var gainLevelResponse = new IkusNetGetInputGainLevelResponse(socket);
+                var gain = gainLevelResponse.GainLeveldB;
+                return (enabled, gain);
             }
         }
 
@@ -230,7 +244,7 @@ namespace CodecControl.Client.Prodys.IkusNet
         {
             // TODO: first check codec call status. Do not execute the call method if the codec is already in a call.
             // Some codecs will hangup the current call and dial up the new call without hesitation.
-            
+
             var cmd = new CommandIkusNetCall
             {
                 Address = callee,
@@ -304,7 +318,7 @@ namespace CodecControl.Client.Prodys.IkusNet
         {
             return socket.Send(command.GetBytes());
         }
-        
+
         #endregion
 
 

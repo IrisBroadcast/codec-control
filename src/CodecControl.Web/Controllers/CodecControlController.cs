@@ -68,9 +68,10 @@ namespace CodecControl.Web.Controllers
                         });
                     }
                 }
+
                 catch (Exception ex)
                 {
-                    // TODO: Log warning
+                    log.Warn(ex, $"Exception when getting GPOs from codec {sipAddress}");
                 }
 
                 return model;
@@ -94,20 +95,15 @@ namespace CodecControl.Web.Controllers
                 return model;
             });
         }
-
-
+        
         [Route("GetInputGainAndStatus")]
         [HttpGet]
         public async Task<ActionResult<InputGainAndStatusViewModel>> GetInputGainAndStatus(string sipAddress, int input)
         {
             return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
-                var model = new InputGainAndStatusViewModel
-                {
-                    Enabled = await codecApi.GetInputEnabledAsync(codecInformation.Ip, input),
-                    GainLevel = await codecApi.GetInputGainLevelAsync(codecInformation.Ip, input)
-                };
-                return model;
+                var (enabled, gain) = await codecApi.GetInputGainAndStatusAsync(codecInformation.Ip, input);
+                return new InputGainAndStatusViewModel { Enabled = enabled, GainLevel = gain };
             });
         }
 
@@ -211,7 +207,9 @@ namespace CodecControl.Web.Controllers
             {
                 await codecApi.SetGpoAsync(codecInformation.Ip, number, active);
                 var gpoActive = await codecApi.GetGpoAsync(codecInformation.Ip, number) ?? false;
-                return new GpoViewModel { Number = number, Active = gpoActive };
+                return new GpoViewModel {
+                    Number = number,
+                    Active = gpoActive };
             });
         }
 

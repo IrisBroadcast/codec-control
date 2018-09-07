@@ -58,6 +58,13 @@ namespace CodecControl.Client.SR.BaresipRest
             return gainObject?.Value ?? 0;
         }
 
+        public async Task<(bool, int)> GetInputGainAndStatusAsync(string ip, int input)
+        {
+            var enabled = await GetInputEnabledAsync(ip, input);
+            var gain = await GetInputGainLevelAsync(ip, input);
+            return (enabled, gain);
+        }
+
         public async Task<LineStatus> GetLineStatusAsync(string ip, int line)
         {
             var url = CreateUrl(ip, "api/linestatus");
@@ -108,11 +115,20 @@ namespace CodecControl.Client.SR.BaresipRest
         }
 
 
-        public async Task<string> GetLoadedPresetNameAsync(string ip, string lastPresetName) { throw new NotImplementedException(); }
+        public async Task<string> GetLoadedPresetNameAsync(string ip, string lastPresetName)
+        {
+            throw new NotImplementedException();
+        }
 
-        public async Task<VuValues> GetVuValuesAsync(string ip) { throw new NotImplementedException(); }
+        public async Task<VuValues> GetVuValuesAsync(string ip)
+        {
+            throw new NotImplementedException();
+        }
 
-        public async Task<AudioMode> GetAudioModeAsync(string ip) { throw new NotImplementedException(); } // Encoder / Decoder
+        public async Task<AudioMode> GetAudioModeAsync(string ip)
+        {
+            throw new NotImplementedException();
+        } // Encoder / Decoder
 
 
         public async Task<AudioStatus> GetAudioStatusAsync(string ip, int nrOfInputs, int nrOfGpos)
@@ -153,7 +169,10 @@ namespace CodecControl.Client.SR.BaresipRest
             }
         }
 
-        public async Task<bool> SetGpoAsync(string ip, int gpo, bool active) { throw new NotImplementedException(); }
+        public async Task<bool> SetGpoAsync(string ip, int gpo, bool active)
+        {
+            throw new NotImplementedException();
+        }
 
         public async Task<bool> SetInputEnabledAsync(string ip, int input, bool enabled)
         {
@@ -174,7 +193,10 @@ namespace CodecControl.Client.SR.BaresipRest
             throw new NotImplementedException();
         }
 
-        public async Task<bool> RebootAsync(string ip) { throw new NotImplementedException(); }
+        public async Task<bool> RebootAsync(string ip)
+        {
+            throw new NotImplementedException();
+        }
         
         private Uri CreateUrl(string ip, string path)
         {

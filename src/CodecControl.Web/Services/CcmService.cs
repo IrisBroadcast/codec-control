@@ -12,10 +12,12 @@ namespace CodecControl.Web.Services
 {
     public class CcmService : ICcmService
     {
+        
         // TODO: Listen to CCM hub and reload list when necessary
 
         protected static readonly Logger log = LogManager.GetCurrentClassLogger();
-        private const int ReloadIntervalInSeconds = 60;
+
+        private readonly int _reloadIntervalInSeconds;
         private readonly ApplicationSettings _appSettings;
         private List<CodecInformation> _codecInformationList;
         private DateTime _discardTime;
@@ -24,6 +26,7 @@ namespace CodecControl.Web.Services
         {
             log.Info("CCMService constructor");
             _appSettings = appSettings;
+            _reloadIntervalInSeconds = appSettings.CcmCodecInformationReloadInterval;
             _discardTime = DateTime.Now;
         }
 
@@ -31,6 +34,7 @@ namespace CodecControl.Web.Services
         {
             get
             {
+                // TODO: Discard old list only when new list has been successfully downloaded from CCM.
                 if (DateTime.Now > _discardTime)
                 {
                     log.Info("Discarding current CCM list");
@@ -64,7 +68,7 @@ namespace CodecControl.Web.Services
                     var codecInformationList = JsonConvert.DeserializeObject<List<CodecInformation>>(stringData);
                     log.Info($"Found information for #{codecInformationList.Count} codecs in CCM list");
 
-                    _discardTime = DateTime.Now.AddSeconds(ReloadIntervalInSeconds);
+                    _discardTime = DateTime.Now.AddSeconds(_reloadIntervalInSeconds);
                     return codecInformationList;
                 }
                 catch (Exception ex)

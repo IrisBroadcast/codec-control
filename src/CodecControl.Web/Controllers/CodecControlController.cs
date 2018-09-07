@@ -20,8 +20,6 @@ namespace CodecControl.Web.Controllers
         private readonly IServiceProvider _serviceProvider;
         private readonly ICcmService _ccmService;
 
-        private readonly string No_Gpo_Found = "Ingen GPO kunde hittas";
-
         public CodecControlController(ICcmService ccmService, IServiceProvider serviceProvider)
         {
             _ccmService = ccmService;

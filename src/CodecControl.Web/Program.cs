@@ -13,7 +13,7 @@ namespace CodecControl.Web
             var logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
             try
             {
-                logger.Debug("init main");
+                logger.Debug("CodecControl starting");
                 CreateWebHostBuilder(args)
                     .Build()
                     .Run();

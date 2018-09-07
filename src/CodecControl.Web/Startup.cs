@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using CodecControl.Client.Prodys.IkusNet;
 using CodecControl.Client.SR.BaresipRest;
-using CodecControl.Web.Controllers;
 using CodecControl.Web.Interfaces;
 using CodecControl.Web.Services;
 using Microsoft.AspNetCore.Builder;
@@ -31,14 +30,19 @@ namespace CodecControl.Web
             services.AddSingleton(appSettings);
 
             // Dependency injection
+            AddDependencyInjection(services);
+
+            services.AddDirectoryBrowser();
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+        }
+
+        private static void AddDependencyInjection(IServiceCollection services)
+        {
             services.AddSingleton<ICcmService, CcmService>();
             services.AddSingleton<SocketPool>();
             services.AddTransient<SocketProxy>();
             services.AddTransient<IkusNetApi>();
             services.AddTransient<BaresipRestApi>();
-
-            services.AddDirectoryBrowser();
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -55,7 +59,7 @@ namespace CodecControl.Web
             // Serve log files as static files
             app.UseFileServer(new FileServerOptions
             {
-                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "logFiles")),
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "logFiles")),
                 RequestPath = "/log",
                 EnableDirectoryBrowsing = true,
                 StaticFileOptions =

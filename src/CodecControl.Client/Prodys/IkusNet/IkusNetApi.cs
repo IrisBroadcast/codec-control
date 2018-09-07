@@ -10,6 +10,9 @@ using NLog;
 
 namespace CodecControl.Client.Prodys.IkusNet
 {
+    // TODO: Split to Quantum och Quantum ST API
+    // Quantum ST doesn't support input control.
+
     public class IkusNetApi : ICodecApi
     {
         private readonly SocketPool _socketPool;

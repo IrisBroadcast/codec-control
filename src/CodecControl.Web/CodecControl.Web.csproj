@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="logFiles\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

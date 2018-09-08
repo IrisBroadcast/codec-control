@@ -84,7 +84,7 @@ namespace CodecControl.Web.Controllers
         {
             return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
-                var audioStatus = await codecApi.GetAudioStatusAsync(codecInformation.Ip, nrOfInputs, nrOfGpos);
+                var audioStatus = await codecApi.GetAudioStatusAsync(codecInformation.Ip, codecInformation.NrOfInputs, nrOfGpos);
 
                 var model = new AudioStatusViewModel()
                 {

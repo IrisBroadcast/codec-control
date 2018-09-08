@@ -1,17 +1,25 @@
 ﻿using System;
-using CodecControl.Web.Controllers.Base;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CodecControl.Web.Controllers
 {
     [Route("")]
-    public class HomeController : ApiControllerBase
+    public class HomeController : Controller
     {
-        [HttpGet]
-        [Route("")]
-        public string Get()
+        private readonly ApplicationSettings _appSettings;
+
+        public HomeController(ApplicationSettings appSettings)
         {
-            return $"Codec Control. {DateTime.Now:yyyy-MM-dd HH:mm:ss}";
+            _appSettings = appSettings;
         }
+
+        [Route("")]
+        public IActionResult Index()
+        {
+            ViewData["Version"] = _appSettings.Version;
+            return View();
+        }
+
+
     }
 }

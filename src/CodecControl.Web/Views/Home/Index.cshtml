@@ -1,0 +1,25 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Codec Control</h2>
+<div>@DateTime.Now</div>
+<div>Version @ViewData["Version"]</div>
+
+<table>
+    <tr>
+        <td>mtu-25@contrib.sr.se</td>
+        <td><button onclick="subscribe('mtu-25@contrib.sr.se')">Subscribe</button></td>
+        <td><button onclick="unsubscribe('mtu-25@contrib.sr.se')">Unsubscribe</button></td>
+    </tr>
+</table>
+
+<script src="~/lib/signalr/signalr.js"></script>
+<script src="~/js/codeccontrol.js"></script>
+
+
+
+
+
+

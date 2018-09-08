@@ -1,8 +1,5 @@
 ﻿using System.IO;
-using CodecControl.Client.Prodys.IkusNet;
-using CodecControl.Client.SR.BaresipRest;
-using CodecControl.Web.Interfaces;
-using CodecControl.Web.Services;
+using CodecControl.Web.Hubs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -29,20 +26,12 @@ namespace CodecControl.Web
             Configuration.GetSection("Application").Bind(appSettings);
             services.AddSingleton(appSettings);
 
-            // Dependency injection
-            AddDependencyInjection(services);
+            services.ConfigureDepencencyInjection();
 
             services.AddDirectoryBrowser();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-        }
 
-        private static void AddDependencyInjection(IServiceCollection services)
-        {
-            services.AddSingleton<ICcmService, CcmService>();
-            services.AddSingleton<SocketPool>();
-            services.AddTransient<SocketProxy>();
-            services.AddTransient<IkusNetApi>();
-            services.AddTransient<BaresipRestApi>();
+            services.AddSignalR();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -55,6 +44,8 @@ namespace CodecControl.Web
             {
                 app.UseHsts();
             }
+
+            app.UseStaticFiles();
 
             // Serve log files as static files
             app.UseFileServer(new FileServerOptions
@@ -70,6 +61,11 @@ namespace CodecControl.Web
                         ctx.Context.Response.Headers.Append("Cache-Control", "no-cache");
                     }
                 }
+            });
+
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<AudioStatusHub>("/audiostatusHub");
             });
 
             app.UseHttpsRedirection();

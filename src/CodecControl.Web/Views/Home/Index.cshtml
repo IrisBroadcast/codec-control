@@ -6,18 +6,49 @@
 <h2>Codec Control</h2>
 <div>@DateTime.Now</div>
 <div>Version @ViewData["Version"]</div>
+<br />
 
-<table>
-    <tr>
-        <td>mtu-25@contrib.sr.se</td>
-        <td><button onclick="subscribe('mtu-25@contrib.sr.se')">Subscribe</button></td>
-        <td><button onclick="unsubscribe('mtu-25@contrib.sr.se')">Unsubscribe</button></td>
-    </tr>
-</table>
+<div id="app">
+    <div class="codecs" v-for="codec in codecs">
+        <div class="codec-name">{{codec.sipAddress}}</div>
+        <button v-on:click="subscribe(codec.sipAddress)">Subscribe</button>
+        <button v-on:click="unsubscribe(codec.sipAddress)">Unsubscribe</button>
+        <span class="right">
+            Rx {{codec.audioStatus.vuValues.rxLeft}} / {{codec.audioStatus.vuValues.rxRight}}
+            Tx:{{codec.audioStatus.vuValues.txLeft}} / {{codec.audioStatus.vuValues.txRight}}
+        </span>
+        <span class="updated">{{codec.updated}}</span>
+    </div>
+</div>
 
-<script src="~/lib/signalr/signalr.js"></script>
+<style>
+    .codecs {
+        width: 700px;
+    }
+
+    .codec-name {
+        width: 200px;
+        float: left
+    }
+
+    .codecs button {
+        width: 100px
+    }
+
+    .codecs span .right {
+        float: right;
+    }
+
+    .codecs .updated {
+        float: right;
+        font-size: smaller;
+    }
+</style>
+
+<script src="~/lib/signalr/dist/browser/signalr.js"></script>
+<script src="~/lib/vue/dist/vue.js"></script>
+<script src="~/lib/axios/dist/axios.js"></script>
 <script src="~/js/codeccontrol.js"></script>
-
 
 
 

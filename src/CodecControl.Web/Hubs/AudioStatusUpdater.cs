@@ -132,7 +132,7 @@ namespace CodecControl.Web.Hubs
 
         private async Task SendAudioStatus(string sipAddress, AudioStatus audioStatus)
         {
-            await _hub.Clients.Group(sipAddress).SendAsync("AudioStatus", audioStatus);
+            await _hub.Clients.Group(sipAddress).SendAsync("AudioStatus", sipAddress, audioStatus);
         }
 
     }

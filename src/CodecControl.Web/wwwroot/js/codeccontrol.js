@@ -2,20 +2,21 @@
 
 var connection = new signalR.HubConnectionBuilder().withUrl("/audioStatusHub").build();
 
-connection.on("AudioStatus", function (audioStatus) {
-    console.log(audioStatus);
-    //var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    //var encodedMsg = user + " says " + msg;
-    //var li = document.createElement("li");
-    //li.textContent = encodedMsg;
-    //document.getElementById("messagesList").appendChild(li);
+connection.on("AudioStatus", function (sipAddress, audioStatus) {
+    console.log(sipAddress, audioStatus);
+    var codecs = app.codecs.filter(c => c.sipAddress === sipAddress);
+    console.log("codecs", codecs);
+    var codec = codecs[0];
+    codec.audioStatus = audioStatus;
+    codec.updated = Date.now();
 });
 
 connection.start().catch(function (err) {
     return console.error(err.toString());
 });
 
-var subscribe = function(sipAddress) {
+var subscribe = function (sipAddress) {
+    console.log("subscribe to " + sipAddress);
     connection.invoke("subscribe", sipAddress).catch(function (err) {
         return console.error(err.toString());
     });
@@ -23,17 +24,47 @@ var subscribe = function(sipAddress) {
 };
 
 var unsubscribe = function (sipAddress) {
+    console.log("unsubscribe to " + sipAddress);
     connection.invoke("unsubscribe", sipAddress).catch(function (err) {
         return console.error(err.toString());
     });
     event.preventDefault();
 };
 
-//document.getElementById("sendButton").addEventListener("click", function (event) {
-//    var user = document.getElementById("userInput").value;
-//    var message = document.getElementById("messageInput").value;
-//    connection.invoke("SendMessage", user, message).catch(function (err) {
-//        return console.error(err.toString());
-//    });
-//    event.preventDefault();
-//});
+var app = new Vue({
+    el: '#app',
+    data: {
+        codecs: []
+    },
+    methods: {
+        subscribe: subscribe,
+        unsubscribe: unsubscribe
+    }
+});
+
+// Call CCM and fill codecs list.
+axios.get('https://uccm.sr.se/api/codecinformation')
+    .then(function (response) {
+        let codecInformation = response.data;
+        var codecs = codecInformation
+            .filter(s => { return s.Api === "IkusNet"; })
+            .map(s => {
+                return {
+                    sipAddress: s.SipAddress,
+                    updated: Date.now(),
+                    audioStatus: {
+                        vuValues: {
+                            txLeft: 0,
+                            txRight: 0,
+                            rxLeft: 0,
+                            rxRight: 0
+                        }
+                    }
+                };
+            });
+        console.log(codecs);
+        app.codecs = codecs;
+    })
+    .catch(function (error) {
+        console.log(error);
+    });

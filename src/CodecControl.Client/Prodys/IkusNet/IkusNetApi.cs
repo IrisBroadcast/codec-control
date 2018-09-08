@@ -193,6 +193,7 @@ namespace CodecControl.Client.Prodys.IkusNet
 
                 audioStatus.InputStatuses = new List<InputStatus>();
 
+                // Works only on Quantum codec, not Quantum ST
                 for (int input = 0; input < nrOfInputs; input++)
                 {
                     SendCommand(socket, new CommandIkusNetGetInputEnabled { Input = input });

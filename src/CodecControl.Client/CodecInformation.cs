@@ -16,11 +16,15 @@ namespace CodecControl.Client
         {
             get
             {
-                switch (Api?.ToLower())
+                Enum.TryParse(Api, true, out CodecApiTypes apiType);
+
+                switch (apiType)
                 {
-                    case "ikusnet":
+                    case CodecApiTypes.IkusNet:
                         return typeof(IkusNetApi);
-                    case "baresiprest":
+                    case CodecApiTypes.IkusNetST:
+                        return typeof(IkusNetBaseApi);
+                    case CodecApiTypes.BareSipRest:
                         return typeof(BaresipRestApi);
                     default:
                         // TODO: Log as warning

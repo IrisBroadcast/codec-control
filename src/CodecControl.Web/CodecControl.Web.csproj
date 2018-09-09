@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\lib\" />
+    <Folder Include="wwwroot\logFiles\" />
   </ItemGroup>
 
 </Project>

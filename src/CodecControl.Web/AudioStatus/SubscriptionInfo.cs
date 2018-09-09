@@ -1,4 +1,6 @@
-﻿namespace CodecControl.Web.Hubs
+﻿using CodecControl.Client;
+
+namespace CodecControl.Web.Hubs
 {
     public class SubscriptionInfo
     {

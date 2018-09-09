@@ -36,15 +36,10 @@ namespace CodecControl.Client
                 _stopwatch.Start();
             }
         }
-
+         
         private void Log(string s)
         {
             log.Log(_level, s);
-
-            if (_level <= LogLevel.Debug)
-            {
-                Debug.WriteLine(s);
-            }
         }
 
         public TimeSpan ElapsedTime => _isEnabled ? _stopwatch.Elapsed : TimeSpan.Zero;

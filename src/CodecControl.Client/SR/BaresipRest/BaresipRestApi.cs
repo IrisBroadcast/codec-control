@@ -187,7 +187,7 @@ namespace CodecControl.Client.SR.BaresipRest
             var response = await HttpService.PostJsonAsync(url, new { input = input, value = gainLevel});
             return gainLevel; // TODO: Return real input level
         }
-
+          
         public async Task<bool> LoadPresetAsync(string ip, string presetName)
         {
             throw new NotImplementedException();

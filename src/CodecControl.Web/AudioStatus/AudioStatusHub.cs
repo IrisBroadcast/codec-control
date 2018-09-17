@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 
-namespace CodecControl.Web.Hubs
+namespace CodecControl.Web.AudioStatus
 {
     // Contains methods for the client to call
     // For methods Server->Client see AudioStatusUpdater

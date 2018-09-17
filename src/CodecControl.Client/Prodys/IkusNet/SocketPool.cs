@@ -9,7 +9,7 @@ namespace CodecControl.Client.Prodys.IkusNet
 {
 
     /// <summary>
-    /// Håller dictionary med uppkopplade sockets där ip-adress är nyckel
+    /// Holds a dictionary with connected sockets with ip address as key.
     /// </summary>
     public class SocketPool : IDisposable
     {
@@ -28,9 +28,9 @@ namespace CodecControl.Client.Prodys.IkusNet
 
         public async Task<SocketProxy> TakeSocket(string ipAddress)
         {
-            using (new TimeMeasurer("SocketPool.TakeSocket"))
+            using (new TimeMeasurer("Taking socket"))
             {
-                log.Info($"Taking socket for {ipAddress}");
+                //log.Info($"Taking socket for {ipAddress}");
 
                 var dictionaryForIpAddress = _dictionary.GetOrAdd(ipAddress, s =>
                 {
@@ -44,7 +44,7 @@ namespace CodecControl.Client.Prodys.IkusNet
                     return new SocketProxy(socket, this);
                 }
 
-                log.Info($"Socket to IP {ipAddress} not found in pool.");
+                //log.Info($"Socket to IP {ipAddress} not found in pool.");
                 socket = await ProdysSocket.GetConnectedSocketAsync(ipAddress);
                 log.Info($"New socket to IP {ipAddress} created. (Socket #{socket.GetHashCode()})");
                 return new SocketProxy(socket, this);
@@ -97,8 +97,9 @@ namespace CodecControl.Client.Prodys.IkusNet
                     }
 
                     var nrOfSockets = socketsBag.Count;
-                    log.Info($"Found #{nrOfSockets} sockets for IP {ipAddress}");
+                    log.Info($"Found #{nrOfSockets} socket(s) for IP {ipAddress}");
 
+                    // Remove all sockets and re-add non-exired ones.
                     var list = new List<ProdysSocket>();
 
                     while (!socketsBag.IsEmpty)

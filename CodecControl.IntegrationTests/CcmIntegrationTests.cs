@@ -2,7 +2,7 @@
 using CodecControl.Web.Services;
 using Xunit;
 
-namespace CodecControl.IntegrationTests.Baresip
+namespace CodecControl.IntegrationTests
 {
     public class CcmIntegrationTests
     {

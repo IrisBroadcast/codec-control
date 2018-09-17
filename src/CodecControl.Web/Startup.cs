@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using CodecControl.Web.Hubs;
+using CodecControl.Web.AudioStatus;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;

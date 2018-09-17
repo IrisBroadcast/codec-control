@@ -1,4 +1,4 @@
-﻿using CodecControl.Web.Hubs;
+﻿using CodecControl.Web.AudioStatus;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CodecControl.Web.Controllers

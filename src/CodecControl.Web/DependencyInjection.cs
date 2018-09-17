@@ -1,6 +1,6 @@
 ﻿using CodecControl.Client.Prodys.IkusNet;
 using CodecControl.Client.SR.BaresipRest;
-using CodecControl.Web.Hubs;
+using CodecControl.Web.AudioStatus;
 using CodecControl.Web.Interfaces;
 using CodecControl.Web.Services;
 using Microsoft.Extensions.DependencyInjection;

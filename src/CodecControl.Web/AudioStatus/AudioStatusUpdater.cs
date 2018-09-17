@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CodecControl.Client;
-using CodecControl.Client.Models;
 using CodecControl.Web.Interfaces;
 using Microsoft.AspNetCore.SignalR;
 using NLog;
 
-namespace CodecControl.Web.Hubs
+namespace CodecControl.Web.AudioStatus
 {
     public class AudioStatusUpdater
     {
@@ -143,7 +142,7 @@ namespace CodecControl.Web.Hubs
             }
         }
 
-        private async Task SendAudioStatusToClients(string sipAddress, AudioStatus audioStatus)
+        private async Task SendAudioStatusToClients(string sipAddress, Client.Models.AudioStatus audioStatus)
         {
             await _hub.Clients.Group(sipAddress).SendAsync("AudioStatus", sipAddress, audioStatus);
         }

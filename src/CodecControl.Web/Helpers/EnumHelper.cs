@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 
-namespace CodecControl.Web.Controllers
+namespace CodecControl.Web.Helpers
 {
    
 

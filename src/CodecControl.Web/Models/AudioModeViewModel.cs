@@ -1,5 +1,6 @@
 ﻿using CodecControl.Client.Models;
 using CodecControl.Web.Controllers;
+using CodecControl.Web.Helpers;
 
 namespace CodecControl.Web.Models
 {

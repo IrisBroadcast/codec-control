@@ -1,4 +1,5 @@
-﻿using CodecControl.Web;
+﻿using CodecControl.IntegrationTests.Helpers;
+using CodecControl.Web;
 using CodecControl.Web.Services;
 using Xunit;
 
@@ -6,7 +7,7 @@ namespace CodecControl.IntegrationTests
 {
     public class CcmIntegrationTests
     {
-        [Fact(Skip = "Integration test")]
+        [RunnableInDebugOnlyFact]
         public void should_get_list_of_controllable_codecs_from_ccm()
         {
             var appSettings = new ApplicationSettings

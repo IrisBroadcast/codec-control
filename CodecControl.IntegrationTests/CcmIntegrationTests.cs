@@ -1,4 +1,5 @@
-﻿using CodecControl.Data.Database;
+﻿using System.Threading.Tasks;
+using CodecControl.Data.Database;
 using CodecControl.IntegrationTests.Helpers;
 using CodecControl.Web;
 using CodecControl.Web.Services;
@@ -11,7 +12,7 @@ namespace CodecControl.IntegrationTests
     public class CcmIntegrationTests
     {
         [RunnableInDebugOnlyFact]
-        public void should_get_list_of_controllable_codecs_from_ccm()
+        public async Task should_get_list_of_controllable_codecs_from_ccm()
         {
             var appSettings = new ApplicationSettings
             {
@@ -28,7 +29,7 @@ namespace CodecControl.IntegrationTests
 
             var sut = new CcmService(appSettings, serviceProvider);
 
-            var list = sut.CodecInformationList;
+            var list = await sut.GetCodecInformationList();
             Assert.NotNull(list);
             Assert.False(string.IsNullOrEmpty(list[0].SipAddress));
         }

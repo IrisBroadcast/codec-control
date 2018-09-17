@@ -279,7 +279,7 @@ namespace CodecControl.Web.Controllers
                         return BadRequest();
                     }
 
-                    var codecInformation = _ccmService.GetCodecInformationBySipAddress(sipAddress);
+                    var codecInformation = await _ccmService.GetCodecInformationBySipAddress(sipAddress);
 
                     if (codecInformation == null)
                     {

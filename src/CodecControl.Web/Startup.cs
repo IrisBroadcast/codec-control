@@ -39,6 +39,8 @@ namespace CodecControl.Web
             services.AddDirectoryBrowser();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
+            services.AddLazyCache();
+
             services.AddSignalR();
         }
 
@@ -52,7 +54,6 @@ namespace CodecControl.Web
             {
                 app.UseHsts();
             }
-
             app.UseStaticFiles();
 
             // Serve log files as static files

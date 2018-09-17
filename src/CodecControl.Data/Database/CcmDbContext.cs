@@ -10,6 +10,7 @@ namespace CodecControl.Data.Database
         {
         }
 
+
         public DbSet<RegisteredSipEntity> RegisteredSips { get; set; }
     }
 }

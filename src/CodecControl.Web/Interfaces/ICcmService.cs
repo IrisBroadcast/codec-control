@@ -1,9 +1,10 @@
-﻿using CodecControl.Client;
+﻿using System.Threading.Tasks;
+using CodecControl.Client;
 
 namespace CodecControl.Web.Interfaces
 {
     public interface ICcmService
     {
-        CodecInformation GetCodecInformationBySipAddress(string sipAddress);
+        Task<CodecInformation> GetCodecInformationBySipAddress(string sipAddress);
     }
 }

@@ -72,7 +72,6 @@ namespace CodecControl.Client.SR.BaresipRest
 
             return new LineStatus
             {
-                RemoteAddress = "",
                 DisconnectReason = MapToDisconnectReason(lineStatus.Call.Code),
                 StatusCode = MapToLineStatusCode(lineStatus.State)
             };

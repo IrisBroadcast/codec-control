@@ -4,20 +4,13 @@ namespace CodecControl.Client.Models
 {
     public enum LineStatusCode
     {
-        [Description("Ingen tillgänglig förbindelse")] NoPhysicalLine = 0,
-        [Description("Nedkopplad")] Disconnected,
-        [Description("Kopplar ned")] Disconnecting,
-        [Description("Ringer")] Calling, // Ringer upp
-        [Description("Mottagning av samtal")] ReceivingCall,
-        [Description("Samtal uppringt")] ConnectedCalled, // Uppkopplad. Ringde upp samtalet.
-        [Description("Samtal mottaget")] ConnectedReceived, // Uppkopplad. Tog emot samtalet.
-        [Description("Ej tillgänglig")] NotAvailable,
-        [Description("Förhandlar om dynamisk IP-adresstilldelning")] NegotiatingDhcp,
-        [Description("Återansluter")] Reconnecting,
-        [Description("Testar förbindelsen")] ConnectedTestingLine,
-        [Description("Laddar upp filen")] ConnectedUploadingFile,
-        [Description("Laddar ner filen")] ConnectedDownloadingFile,
-        [Description("Initiering")] Initializing,
-        [Description("Kan inte läsa status")] ErrorGettingStatus = 333
+        NoPhysicalLine = 0,
+        Disconnected,
+        Disconnecting,
+        Calling, // Ringer upp
+        ReceivingCall,
+        ConnectedCalled, // Uppkopplad. Ringde upp samtalet.
+        ConnectedReceived, // Uppkopplad. Tog emot samtalet.
+        Unknown
     }
 }

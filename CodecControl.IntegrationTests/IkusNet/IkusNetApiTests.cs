@@ -53,7 +53,6 @@ namespace CodecControl.IntegrationTests.IkusNet
             var sut = new IkusNetApi(new SocketPool());
 
             LineStatus lineStatus = await sut.GetLineStatusAsync(CodecInformation.Ip, 0);
-            Assert.Equal("", lineStatus.RemoteAddress);
             Assert.Equal(LineStatusCode.NoPhysicalLine, lineStatus.StatusCode);
             Assert.Equal(DisconnectReason.None, lineStatus.DisconnectReason);
         }

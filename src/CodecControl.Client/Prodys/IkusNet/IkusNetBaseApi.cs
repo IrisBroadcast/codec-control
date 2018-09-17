@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CodecControl.Client.Exceptions;
 using CodecControl.Client.Models;
 using CodecControl.Client.Prodys.IkusNet.Sdk.Commands;
 using CodecControl.Client.Prodys.IkusNet.Sdk.Commands.Base;
@@ -99,10 +100,35 @@ namespace CodecControl.Client.Prodys.IkusNet
 
                 return new LineStatus
                 {
-                    RemoteAddress = response.Address,
-                    StatusCode = (LineStatusCode)response.LineStatus,
-                    DisconnectReason = (DisconnectReason)response.DisconnectionCode,
+                    StatusCode = MapToLineStatus(response.LineStatus),
+                    DisconnectReason = MapToDisconnectReason(response.DisconnectionCode)
                 };
+            }
+        }
+
+        private static DisconnectReason MapToDisconnectReason(IkusNetStreamingDisconnectionReason ikusNetStreamingDisconnectionReason)
+        {
+            return (DisconnectReason)ikusNetStreamingDisconnectionReason;
+        }
+
+        private static LineStatusCode MapToLineStatus(IkusNetLineStatus ikusNetLineStatus)
+        {
+            switch (ikusNetLineStatus)
+            {
+                case IkusNetLineStatus.Disconnected:
+                    return LineStatusCode.Disconnected;
+                case IkusNetLineStatus.Calling:
+                    return LineStatusCode.Calling;
+                case IkusNetLineStatus.ReceivingCall:
+                    return LineStatusCode.ReceivingCall;
+                case IkusNetLineStatus.ConnectedReceived:
+                    return LineStatusCode.ConnectedReceived;
+                case IkusNetLineStatus.ConnectedCalled:
+                    return LineStatusCode.ConnectedCalled;
+                case IkusNetLineStatus.Disconnecting:
+                    return LineStatusCode.Disconnecting;
+                default:
+                    return LineStatusCode.Unknown;
             }
         }
 

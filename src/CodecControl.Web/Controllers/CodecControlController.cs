@@ -6,6 +6,7 @@ using CodecControl.Client;
 using CodecControl.Client.Exceptions;
 using CodecControl.Client.Models;
 using CodecControl.Web.Controllers.Base;
+using CodecControl.Web.Helpers;
 using CodecControl.Web.Interfaces;
 using CodecControl.Web.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -127,17 +128,10 @@ namespace CodecControl.Web.Controllers
                 var model = new LineStatusViewModel();
                 LineStatus lineStatus = await codecApi.GetLineStatusAsync(codecInformation.Ip, line);
 
-                if (lineStatus == null || lineStatus.StatusCode == LineStatusCode.ErrorGettingStatus)
-                {
-                    model.Error = LineStatusCode.ErrorGettingStatus.ToString();
-                }
-                else
-                {
-                    model.Status = lineStatus.StatusCode.ToString();
-                    model.DisconnectReason = lineStatus.DisconnectReason;
-                    model.RemoteAddress = lineStatus.RemoteAddress;
-                    model.LineStatus = lineStatus.StatusCode;
-                }
+                model.LineStatus = lineStatus.StatusCode.ToString();
+                model.DisconnectReasonCode = (int) lineStatus.DisconnectReason;
+                model.DisconnectReasonDescription = lineStatus.DisconnectReason.Description();
+
                 return model;
             });
         }
@@ -207,9 +201,7 @@ namespace CodecControl.Web.Controllers
             {
                 await codecApi.SetGpoAsync(codecInformation.Ip, number, active);
                 var gpoActive = await codecApi.GetGpoAsync(codecInformation.Ip, number) ?? false;
-                return new GpoViewModel {
-                    Number = number,
-                    Active = gpoActive };
+                return new GpoViewModel { Number = number, Active = gpoActive };
             });
         }
 

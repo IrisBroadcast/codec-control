@@ -31,4 +31,5 @@ namespace CodecControl.Client
         Task<bool> LoadPresetAsync(string ip, string presetName);
         Task<bool> RebootAsync(string ip);
     }
+    
 }

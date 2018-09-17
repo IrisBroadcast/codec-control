@@ -1,4 +1,4 @@
-﻿namespace CodecControl.Web.Services
+﻿namespace CodecControl.Web.Cache
 {
     public static class CacheKeys
     {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CodecControl.Client;
+using CodecControl.Web.CCM;
 using CodecControl.Web.Interfaces;
 using Microsoft.AspNetCore.SignalR;
 using NLog;
@@ -14,13 +15,13 @@ namespace CodecControl.Web.AudioStatus
         protected static readonly Logger log = LogManager.GetCurrentClassLogger();
 
         private readonly IHubContext<AudioStatusHub> _hub;
-        private readonly ICcmService _ccmService;
+        private readonly CcmService _ccmService;
         private readonly IServiceProvider _serviceProvider;
         private readonly List<SubscriptionInfo> _subscriptions = new List<SubscriptionInfo>();
         private readonly TimeSpan _pollDelay = TimeSpan.FromMilliseconds(500);
         private bool _isPolling;
 
-        public AudioStatusUpdater(IHubContext<AudioStatusHub> hub, ICcmService ccmService, IServiceProvider serviceProvider)
+        public AudioStatusUpdater(IHubContext<AudioStatusHub> hub, CcmService ccmService, IServiceProvider serviceProvider)
         {
             log.Debug("AudioStatusUpdater constructor");
             _hub = hub;

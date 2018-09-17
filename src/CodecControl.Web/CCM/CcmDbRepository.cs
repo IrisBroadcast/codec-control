@@ -8,7 +8,7 @@ using CodecControl.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace CodecControl.Web.Services
+namespace CodecControl.Web.CCM
 {
     public class CcmDbRepository : ICcmRepository
     {

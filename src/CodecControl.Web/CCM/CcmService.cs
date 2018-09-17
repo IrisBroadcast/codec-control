@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CodecControl.Client;
+using CodecControl.Web.Cache;
 using CodecControl.Web.Interfaces;
 using LazyCache;
 using NLog;
 
-namespace CodecControl.Web.Services
+namespace CodecControl.Web.CCM
 {
-    public class CcmService : ICcmService
+    public class CcmService
     {
         // TODO: Listen to CCM hub and reload list when necessary
 
@@ -22,7 +23,6 @@ namespace CodecControl.Web.Services
         public CcmService(ApplicationSettings appSettings, ICcmRepository ccmRepository, IAppCache cache)
         {
             log.Info("CCMService constructor");
-            //_serviceScope = serviceProvider.CreateScope();
             _ccmRepository = ccmRepository;
             _cache = cache;
             _reloadIntervalInSeconds = appSettings.CcmCodecInformationReloadInterval;
@@ -41,6 +41,11 @@ namespace CodecControl.Web.Services
                 () => _ccmRepository.GetCodecInformationList(),
                 DateTime.Now.AddSeconds(_reloadIntervalInSeconds));
             return list;
+        }
+
+        public void ClearCodecInformationFromCache()
+        {
+            _cache.Remove(CacheKeys.Codecinformationlist);
         }
 
     }

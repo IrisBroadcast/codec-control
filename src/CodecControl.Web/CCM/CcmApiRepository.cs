@@ -6,7 +6,7 @@ using CodecControl.Client;
 using Newtonsoft.Json;
 using NLog;
 
-namespace CodecControl.Web.Services
+namespace CodecControl.Web.CCM
 {
     public class CcmApiRepository : ICcmRepository
     {

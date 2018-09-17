@@ -5,12 +5,13 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using CodecControl.Client;
 using CodecControl.Web.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using NLog;
 
 namespace CodecControl.Web.Services
 {
-    public class CcmService : ICcmService
+    public class CcmService : ICcmService, IDisposable
     {
         
         // TODO: Listen to CCM hub and reload list when necessary
@@ -21,10 +22,12 @@ namespace CodecControl.Web.Services
         private readonly ApplicationSettings _appSettings;
         private List<CodecInformation> _codecInformationList;
         private DateTime _discardTime;
+        private IServiceScope _serviceScope;
         
-        public CcmService(ApplicationSettings appSettings)
+        public CcmService(ApplicationSettings appSettings, IServiceProvider serviceProvider)
         {
             log.Info("CCMService constructor");
+            _serviceScope = serviceProvider.CreateScope();
             _appSettings = appSettings;
             _reloadIntervalInSeconds = appSettings.CcmCodecInformationReloadInterval;
             _discardTime = DateTime.Now;
@@ -84,6 +87,11 @@ namespace CodecControl.Web.Services
         {
             return CodecInformationList.FirstOrDefault(c => c.SipAddress == sipAddress);
 
+        }
+
+        public void Dispose()
+        {
+            _serviceScope?.Dispose();
         }
     }
 }

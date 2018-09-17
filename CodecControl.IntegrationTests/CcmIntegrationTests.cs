@@ -1,6 +1,9 @@
-﻿using CodecControl.IntegrationTests.Helpers;
+﻿using CodecControl.Data.Database;
+using CodecControl.IntegrationTests.Helpers;
 using CodecControl.Web;
 using CodecControl.Web.Services;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace CodecControl.IntegrationTests
@@ -14,7 +17,16 @@ namespace CodecControl.IntegrationTests
             {
                 CcmHost = "http://uccm.sr.se"
             };
-            var sut = new CcmService(appSettings);
+            var connectionString = "";
+            var serviceProvider = new ServiceCollection()
+                .AddDbContext<CcmDbContext>(options =>
+                {
+                    options.UseMySql(connectionString);
+                })
+                .AddTransient<CcmDbContext>()
+                .BuildServiceProvider();
+
+            var sut = new CcmService(appSettings, serviceProvider);
 
             var list = sut.CodecInformationList;
             Assert.NotNull(list);

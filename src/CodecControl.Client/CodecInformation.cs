@@ -22,8 +22,8 @@ namespace CodecControl.Client
                 {
                     case CodecApiTypes.IkusNet:
                         return typeof(IkusNetApi);
-                    case CodecApiTypes.IkusNetST:
-                        return typeof(IkusNetBaseApi);
+                    case CodecApiTypes.IkusNetSt:
+                        return typeof(IkusNetStApi);
                     case CodecApiTypes.BareSipRest:
                         return typeof(BaresipRestApi);
                     default:

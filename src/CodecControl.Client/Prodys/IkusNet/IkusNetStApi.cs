@@ -1,25 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using CodecControl.Client.Exceptions;
 using CodecControl.Client.Models;
 using CodecControl.Client.Prodys.IkusNet.Sdk.Commands;
-using CodecControl.Client.Prodys.IkusNet.Sdk.Commands.Base;
 using CodecControl.Client.Prodys.IkusNet.Sdk.Enums;
 using CodecControl.Client.Prodys.IkusNet.Sdk.Responses;
-using NLog;
 
 namespace CodecControl.Client.Prodys.IkusNet
 {
     // This API is intended for Quantum ST that lacks controllable inputs.
-    public class IkusNetBaseApi : ICodecApi
-    {
-        protected readonly SocketPool SocketPool;
-        protected static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-        public IkusNetBaseApi(SocketPool socketPool)
+    public class IkusNetStApi : IkusNetApiBase, ICodecApi
+    {
+
+        public IkusNetStApi(SocketPool socketPool) :base(socketPool)
         {
-            SocketPool = socketPool;
         }
 
         public async Task<bool> CheckIfAvailableAsync(string ip)
@@ -73,21 +68,21 @@ namespace CodecControl.Client.Prodys.IkusNet
             }
         }
 
-        public virtual async Task<bool> GetInputEnabledAsync(string hostAddress, int input)
+        public virtual Task<bool> GetInputEnabledAsync(string hostAddress, int input)
         {
-            // Works only on Quantum codec, not Quantum ST
+            // Not implemented in Quantum ST
             throw new NotImplementedException();
         }
 
-        public virtual async Task<int> GetInputGainLevelAsync(string hostAddress, int input)
+        public virtual Task<int> GetInputGainLevelAsync(string hostAddress, int input)
         {
-            // Works only on Quantum codec, not Quantum ST
+            // Not implemented in Quantum ST
             throw new NotImplementedException();
         }
 
-        public virtual async Task<(bool, int)> GetInputGainAndStatusAsync(string hostAddress, int input)
+        public virtual Task<(bool, int)> GetInputGainAndStatusAsync(string hostAddress, int input)
         {
-            // Works only on Quantum codec, not Quantum ST
+            // Not implemented in Quantum ST
             throw new NotImplementedException();
         }
 
@@ -100,64 +95,22 @@ namespace CodecControl.Client.Prodys.IkusNet
 
                 return new LineStatus
                 {
-                    StatusCode = MapToLineStatus(response.LineStatus),
-                    DisconnectReason = MapToDisconnectReason(response.DisconnectionCode)
+                    StatusCode = IkusNetMapper.MapToLineStatus(response.LineStatus),
+                    DisconnectReason = IkusNetMapper.MapToDisconnectReason(response.DisconnectionCode)
                 };
             }
         }
-
-        private static DisconnectReason MapToDisconnectReason(IkusNetStreamingDisconnectionReason ikusNetStreamingDisconnectionReason)
-        {
-            return (DisconnectReason)ikusNetStreamingDisconnectionReason;
-        }
-
-        private static LineStatusCode MapToLineStatus(IkusNetLineStatus ikusNetLineStatus)
-        {
-            switch (ikusNetLineStatus)
-            {
-                case IkusNetLineStatus.Disconnected:
-                    return LineStatusCode.Disconnected;
-                case IkusNetLineStatus.Calling:
-                    return LineStatusCode.Calling;
-                case IkusNetLineStatus.ReceivingCall:
-                    return LineStatusCode.ReceivingCall;
-                case IkusNetLineStatus.ConnectedReceived:
-                    return LineStatusCode.ConnectedReceived;
-                case IkusNetLineStatus.ConnectedCalled:
-                    return LineStatusCode.ConnectedCalled;
-                case IkusNetLineStatus.Disconnecting:
-                    return LineStatusCode.Disconnecting;
-                default:
-                    return LineStatusCode.Unknown;
-            }
-        }
-
-        public async Task<string> GetLoadedPresetNameAsync(string hostAddress, string lastPresetName)
-        {
-            using (var socket = await SocketPool.TakeSocket(hostAddress))
-            {
-                SendCommand(socket, new CommandIkusNetGetLoadedPresetName { LastLoadedPresetName = lastPresetName });
-                var response = new IkusNetGetLoadedPresetNameResponse(socket);
-                return response.PresetName;
-            }
-        }
-
+        
         public async Task<VuValues> GetVuValuesAsync(string hostAddress)
         {
             using (var socket = await SocketPool.TakeSocket(hostAddress))
             {
                 SendCommand(socket, new CommandIkusNetGetVuMeters());
                 var response = new IkusNetGetVumetersResponse(socket);
-                return new VuValues
-                {
-                    TxLeft = response.ProgramTxLeft,
-                    TxRight = response.ProgramTxRight,
-                    RxLeft = response.ProgramRxLeft,
-                    RxRight = response.ProgramRxRight
-                };
+                return IkusNetMapper.MapToVuValues(response);
             }
         }
-
+        
         public async Task<AudioMode> GetAudioModeAsync(string hostAddress)
         {
             using (var socket = await SocketPool.TakeSocket(hostAddress))
@@ -172,12 +125,12 @@ namespace CodecControl.Client.Prodys.IkusNet
 
                 return new AudioMode
                 {
-                    EncoderAudioAlgoritm = (AudioAlgorithm)encoderResponse.AudioAlgorithm,
-                    DecoderAudioAlgoritm = (AudioAlgorithm)decoderResponse.AudioAlgorithm
+                    EncoderAudioAlgoritm = IkusNetMapper.MapToAudioAlgorithm(encoderResponse.AudioAlgorithm),
+                    DecoderAudioAlgoritm = IkusNetMapper.MapToAudioAlgorithm(decoderResponse.AudioAlgorithm)
                 };
             }
         }
-
+        
         public virtual async Task<AudioStatus> GetAudioStatusAsync(string hostAddress, int nrOfInputs, int nrOfGpos)
         {
             var audioStatus = new AudioStatus();
@@ -186,17 +139,9 @@ namespace CodecControl.Client.Prodys.IkusNet
             {
                 SendCommand(socket, new CommandIkusNetGetVuMeters());
                 var vuResponse = new IkusNetGetVumetersResponse(socket);
+                audioStatus.VuValues = IkusNetMapper.MapToVuValues(vuResponse);
 
-                audioStatus.VuValues = new VuValues
-                {
-                    TxLeft = vuResponse.ProgramTxLeft,
-                    TxRight = vuResponse.ProgramTxRight,
-                    RxLeft = vuResponse.ProgramRxLeft,
-                    RxRight = vuResponse.ProgramRxRight
-                };
-
-
-                // Works only on Quantum codec, not Quantum ST
+                // // Input status not implemented in Quantum ST
                 audioStatus.InputStatuses = new List<InputStatus>();
 
                 audioStatus.Gpos = new List<bool>();
@@ -243,21 +188,9 @@ namespace CodecControl.Client.Prodys.IkusNet
             return await SendConfigurationCommandAsync(hostAddress, cmd);
         }
 
-        public async Task<bool> LoadPresetAsync(string hostAddress, string preset)
-        {
-            var cmd = new CommandIkusNetPresetLoad { PresetToLoad = preset };
-            return await SendConfigurationCommandAsync(hostAddress, cmd);
-        }
-
         public async Task<bool> RebootAsync(string hostAddress)
         {
             var cmd = new CommandIkusNetReboot();
-            return await SendConfigurationCommandAsync(hostAddress, cmd);
-        }
-
-        public async Task<bool> SetDeviceName(string hostAddress, string newDeviceName)
-        {
-            var cmd = new CommandIkusNetSysSetDeviceName { DeviceName = newDeviceName };
             return await SendConfigurationCommandAsync(hostAddress, cmd);
         }
 
@@ -267,41 +200,18 @@ namespace CodecControl.Client.Prodys.IkusNet
             return await SendConfigurationCommandAsync(hostAddress, cmd);
         }
 
-        public virtual async Task<bool> SetInputEnabledAsync(string hostAddress, int input, bool enabled)
+        public virtual Task<bool> SetInputEnabledAsync(string hostAddress, int input, bool enabled)
         {
-            // Fungerar endast på Quantum-kodare, ej Quantum ST
-            var cmd = new CommandIkusNetSetInputEnabled { Input = input, Enabled = enabled };
-            return await SendConfigurationCommandAsync(hostAddress, cmd);
+            // Not implemented in Quantum ST
+            throw new NotImplementedException();
         }
 
-        public virtual async Task<int> SetInputGainLevelAsync(string hostAddress, int input, int gainLevel)
+        public virtual Task<int> SetInputGainLevelAsync(string hostAddress, int input, int gainLevel)
         {
-            // Fungerar endast på Quantum-kodare, ej Quantum ST
-            var cmd = new CommandIkusNetSetInputGainLevel { GainLeveldB = gainLevel, Input = input };
-            await SendConfigurationCommandAsync(hostAddress, cmd);
-            return gainLevel; // TODO: Check value and return real input level
+            // Not implemented in Quantum ST
+            throw new NotImplementedException();
         }
         #endregion
-
-        #region Protected methods 
-
-        protected async Task<bool> SendConfigurationCommandAsync(string hostAddress, ICommandBase cmd)
-        {
-            using (var socket = await SocketPool.TakeSocket(hostAddress))
-            {
-                SendCommand(socket, cmd);
-                var ackResponse = new AcknowledgeResponse(socket);
-                return ackResponse.Acknowleged;
-            }
-        }
-
-        protected int SendCommand(SocketProxy socket, ICommandBase command)
-        {
-            return socket.Send(command.GetBytes());
-        }
-
-        #endregion
-
 
     }
 }

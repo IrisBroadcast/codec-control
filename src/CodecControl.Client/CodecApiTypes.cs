@@ -2,7 +2,7 @@
 {
     public enum CodecApiTypes {
         IkusNet,
-        IkusNetST,
+        IkusNetSt,
         BareSipRest
     }
 }

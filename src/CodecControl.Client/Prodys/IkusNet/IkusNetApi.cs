@@ -9,7 +9,7 @@ namespace CodecControl.Client.Prodys.IkusNet
     /// <summary>
     /// This API is intended for Quantum with controllable inputs.
     /// </summary>
-    public class IkusNetApi : IkusNetBaseApi
+    public class IkusNetApi : IkusNetStApi
     {
         public IkusNetApi(SocketPool socketPool) : base(socketPool)
         {
@@ -124,17 +124,17 @@ namespace CodecControl.Client.Prodys.IkusNet
 
         public override async Task<bool> SetInputEnabledAsync(string hostAddress, int input, bool enabled)
         {
-            // Fungerar endast på Quantum-kodare, ej Quantum ST
             var cmd = new CommandIkusNetSetInputEnabled { Input = input, Enabled = enabled };
             return await SendConfigurationCommandAsync(hostAddress, cmd);
         }
 
         public override async Task<int> SetInputGainLevelAsync(string hostAddress, int input, int gainLevel)
         {
-            // Fungerar endast på Quantum-kodare, ej Quantum ST
             var cmd = new CommandIkusNetSetInputGainLevel { GainLeveldB = gainLevel, Input = input };
             await SendConfigurationCommandAsync(hostAddress, cmd);
-            return gainLevel; // TODO: Check value and return real input level
+
+            var readGainLevel = await GetInputGainLevelAsync(hostAddress, input);
+            return readGainLevel; 
         }
 
     }

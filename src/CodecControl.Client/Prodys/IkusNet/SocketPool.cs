@@ -7,8 +7,7 @@ using NLog;
 
 namespace CodecControl.Client.Prodys.IkusNet
 {
-
-    /// <summary>
+   /// <summary>
     /// Holds a dictionary with connected sockets with ip address as key.
     /// </summary>
     public class SocketPool : IDisposable

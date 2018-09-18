@@ -19,7 +19,6 @@ namespace CodecControl.Client
         Task<int> GetInputGainLevelAsync(string ip, int input);
         Task<(bool, int)> GetInputGainAndStatusAsync(string ip, int input);
         Task<LineStatus> GetLineStatusAsync(string ip, int line);
-        Task<string> GetLoadedPresetNameAsync(string ip, string lastPresetName);
         Task<VuValues> GetVuValuesAsync(string ip);
         Task<AudioMode> GetAudioModeAsync(string ip);
         Task<AudioStatus> GetAudioStatusAsync(string hostAddress, int nrOfInputs, int nrOfGpos);
@@ -28,7 +27,7 @@ namespace CodecControl.Client
         Task<bool> SetInputEnabledAsync(string ip, int input, bool enabled);
         Task<int> SetInputGainLevelAsync(string ip, int input, int gainLevel);
         
-        Task<bool> LoadPresetAsync(string ip, string presetName);
+        //Task<bool> LoadPresetAsync(string ip, string presetName);
         Task<bool> RebootAsync(string ip);
     }
     

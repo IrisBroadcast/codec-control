@@ -32,10 +32,7 @@ namespace CodecControl.Web.Controllers
         [HttpGet]
         public async Task<ActionResult<bool>> CheckCodecAvailable(string sipAddress)
         {
-            return await Execute(sipAddress, async (codecApi, codecInformation) =>
-                {
-                    return await codecApi.CheckIfAvailableAsync(codecInformation.Ip);
-                });
+            return await Execute(sipAddress, async (codecApi, codecInformation) => await codecApi.CheckIfAvailableAsync(codecInformation.Ip));
         }
 
         [Route("GetAvailableGpos")]
@@ -136,18 +133,6 @@ namespace CodecControl.Web.Controllers
             });
         }
 
-        [Route("GetLoadedPreset")]
-        [HttpPost]
-        public async Task<ActionResult<PresetViewModel>> GetLoadedPreset(string sipAddress)
-        {
-            return await Execute(sipAddress, async (codecApi, codecInformation) =>
-            {
-                var loadedPreset = await codecApi.GetLoadedPresetNameAsync(codecInformation.Ip, string.Empty);
-                return new PresetViewModel { LoadedPreset = loadedPreset };
-            });
-
-        }
-
         [Route("GetVuValues")]
         [HttpGet]
         public async Task<ActionResult<VuValuesViewModel>> GetVuValues(string sipAddress)
@@ -179,17 +164,6 @@ namespace CodecControl.Web.Controllers
                     EncoderAudioMode = result.EncoderAudioAlgoritm,
                     DecoderAudioMode = result.DecoderAudioAlgoritm
                 };
-            });
-        }
-
-        [Route("LoadPreset")]
-        [HttpPost]
-        public async Task<ActionResult<bool>> LoadPreset(string sipAddress, string name)
-        {
-            return await Execute(sipAddress, async (codecApi, codecInformation) =>
-            {
-                await codecApi.LoadPresetAsync(codecInformation.Ip, name);
-                return true;
             });
         }
 
@@ -231,20 +205,14 @@ namespace CodecControl.Web.Controllers
         [HttpPost]
         public async Task<ActionResult<bool>> RebootCodec(string sipAddress)
         {
-            return await Execute(sipAddress, async (codecApi, codecInformation) =>
-            {
-                return await codecApi.RebootAsync(codecInformation.Ip);
-            });
+            return await Execute(sipAddress, async (codecApi, codecInformation) => await codecApi.RebootAsync(codecInformation.Ip));
         }
 
         [Route("Call")]
         [HttpPost]
         public async Task<ActionResult<bool>> Call(string sipAddress, string callee, string profileName)
         {
-            return await Execute(sipAddress, async (codecApi, codecInformation) =>
-            {
-                return await codecApi.CallAsync(codecInformation.Ip, callee, profileName);
-            });
+            return await Execute(sipAddress, async (codecApi, codecInformation) => await codecApi.CallAsync(codecInformation.Ip, callee, profileName));
         }
 
 
@@ -252,10 +220,7 @@ namespace CodecControl.Web.Controllers
         [HttpPost]
         public async Task<ActionResult<bool>> Hangup(string sipAddress)
         {
-            return await Execute(sipAddress, async (codecApi, codecInformation) =>
-            {
-                return await codecApi.HangUpAsync(codecInformation.Ip);
-            });
+            return await Execute(sipAddress, async (codecApi, codecInformation) => await codecApi.HangUpAsync(codecInformation.Ip));
 
         }
 

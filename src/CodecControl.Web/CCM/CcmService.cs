@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using CodecControl.Client;
 using CodecControl.Web.Cache;
-using CodecControl.Web.Interfaces;
 using LazyCache;
 using NLog;
 
@@ -45,6 +44,7 @@ namespace CodecControl.Web.CCM
 
         public void ClearCodecInformationFromCache()
         {
+            // TODO: Call when change in CCM detected
             _cache.Remove(CacheKeys.Codecinformationlist);
         }
 

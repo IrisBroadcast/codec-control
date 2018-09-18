@@ -13,6 +13,7 @@ namespace CodecControl.Client.SR.BaresipRest
     public class BaresipRestApi : ICodecApi
     {
         protected static readonly Logger log = LogManager.GetCurrentClassLogger();
+        private readonly BaresipMapper _baresipMapper = new BaresipMapper();
 
 
         public async Task<bool> CheckIfAvailableAsync(string ip)
@@ -72,52 +73,16 @@ namespace CodecControl.Client.SR.BaresipRest
 
             return new LineStatus
             {
-                DisconnectReason = MapToDisconnectReason(lineStatus.Call.Code),
-                StatusCode = MapToLineStatusCode(lineStatus.State)
+                DisconnectReason = _baresipMapper.MapToDisconnectReason(lineStatus.Call.Code),
+                StatusCode = _baresipMapper.MapToLineStatusCode(lineStatus.State)
             };
         }
 
-        private DisconnectReason MapToDisconnectReason(int statusCode)
-        {
-            if (statusCode == 0)
-            {
-                return DisconnectReason.SipOk;
-            }
 
-            if (Enum.TryParse(statusCode.ToString(), out DisconnectReason disconnectReason))
-            {
-                return disconnectReason;
-            }
-
-            return DisconnectReason.None;
-        }
-
-        private LineStatusCode MapToLineStatusCode(BaresipState baresipState)
-        {
-            switch (baresipState)
-            {
-                case BaresipState.Idle:
-                    return LineStatusCode.Disconnected;
-                case BaresipState.Calling:
-                    return LineStatusCode.Calling;
-                case BaresipState.ReceivingCall:
-                    return LineStatusCode.ReceivingCall;
-                case BaresipState.ConnectedReceived:
-                    return LineStatusCode.ConnectedReceived;
-                case BaresipState.ConnectedCalled:
-                    return LineStatusCode.ConnectedCalled;
-                case BaresipState.Disconnecting:
-                    return LineStatusCode.Disconnecting;
-                default:
-                    return LineStatusCode.Disconnected;
-            }
-        }
-
-
-        public async Task<string> GetLoadedPresetNameAsync(string ip, string lastPresetName)
-        {
-            throw new NotImplementedException();
-        }
+        //public async Task<string> GetLoadedPresetNameAsync(string ip, string lastPresetName)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         public async Task<VuValues> GetVuValuesAsync(string ip)
         {
@@ -142,22 +107,11 @@ namespace CodecControl.Client.SR.BaresipRest
 
             try
             {
-                // Convert to AudioStatus
                 var audioStatus = new AudioStatus()
                 {
                     Gpos = bareSipAudioStatus.Control.Gpo.Select(gpo => gpo.Active).ToList(),
-                    InputStatuses = bareSipAudioStatus.Inputs.Select(i => new InputStatus()
-                    {
-                        Enabled = i.On,
-                        GainLevel = i.Level
-                    }).ToList(),
-                    VuValues = new VuValues()
-                    {
-                        RxLeft = bareSipAudioStatus.Meters.Rx.L,
-                        RxRight = bareSipAudioStatus.Meters.Rx.R,
-                        TxLeft = bareSipAudioStatus.Meters.Tx.L,
-                        TxRight = bareSipAudioStatus.Meters.Tx.R
-                    }
+                    InputStatuses = bareSipAudioStatus.Inputs.Select(BaresipMapper.MapToInputStatus).ToList(),
+                    VuValues = BaresipMapper.MapToVuValues(bareSipAudioStatus)
                 };
                 return audioStatus;
             }
@@ -187,10 +141,10 @@ namespace CodecControl.Client.SR.BaresipRest
             return gainLevel; // TODO: Return real input level
         }
           
-        public async Task<bool> LoadPresetAsync(string ip, string presetName)
-        {
-            throw new NotImplementedException();
-        }
+        //public async Task<bool> LoadPresetAsync(string ip, string presetName)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         public async Task<bool> RebootAsync(string ip)
         {

@@ -43,7 +43,7 @@ namespace CodecControl.Client.SR.BaresipRest
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<bool?> GetGpoAsync(string ip, int gpio) { throw new NotImplementedException(); }
+        public Task<bool?> GetGpoAsync(string ip, int gpio) { throw new NotImplementedException(); }
 
         public async Task<bool> GetInputEnabledAsync(string ip, int input)
         {
@@ -78,23 +78,16 @@ namespace CodecControl.Client.SR.BaresipRest
             };
         }
 
-
-        //public async Task<string> GetLoadedPresetNameAsync(string ip, string lastPresetName)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        public async Task<VuValues> GetVuValuesAsync(string ip)
+        public Task<VuValues> GetVuValuesAsync(string ip)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<AudioMode> GetAudioModeAsync(string ip)
+        public Task<AudioMode> GetAudioModeAsync(string ip)
         {
             throw new NotImplementedException();
-        } // Encoder / Decoder
-
-
+        }
+        
         public async Task<AudioStatus> GetAudioStatusAsync(string ip, int nrOfInputs, int nrOfGpos)
         {
             return await GetAudioStatusAsync(ip);
@@ -122,7 +115,7 @@ namespace CodecControl.Client.SR.BaresipRest
             }
         }
 
-        public async Task<bool> SetGpoAsync(string ip, int gpo, bool active)
+        public Task<bool> SetGpoAsync(string ip, int gpo, bool active)
         {
             throw new NotImplementedException();
         }
@@ -140,13 +133,8 @@ namespace CodecControl.Client.SR.BaresipRest
             var response = await HttpService.PostJsonAsync(url, new { input = input, value = gainLevel});
             return gainLevel; // TODO: Return real input level
         }
-          
-        //public async Task<bool> LoadPresetAsync(string ip, string presetName)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        public async Task<bool> RebootAsync(string ip)
+        
+        public Task<bool> RebootAsync(string ip)
         {
             throw new NotImplementedException();
         }

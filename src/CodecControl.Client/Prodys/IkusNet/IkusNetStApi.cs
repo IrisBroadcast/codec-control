@@ -29,7 +29,7 @@ namespace CodecControl.Client.Prodys.IkusNet
                     return true; // Success
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }

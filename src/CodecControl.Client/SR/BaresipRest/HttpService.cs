@@ -44,6 +44,7 @@ namespace CodecControl.Client.SR.BaresipRest
                 }
                 catch (Exception ex)
                 {
+                    log.Warn(ex, $"Exception when accessing {url.AbsoluteUri}");
                     return new HttpResponseMessage { StatusCode = HttpStatusCode.NotFound };
                 }
             }

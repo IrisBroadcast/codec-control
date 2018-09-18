@@ -13,17 +13,15 @@ namespace CodecControl.Client.SR.BaresipRest
     public class BaresipRestApi : ICodecApi
     {
         protected static readonly Logger log = LogManager.GetCurrentClassLogger();
-        private readonly BaresipMapper _baresipMapper = new BaresipMapper();
-
-
+        
         public async Task<bool> CheckIfAvailableAsync(string ip)
         {
             // Connect to the unit and check for response on API:port
-            var url = $"http://{ip}:{Sdk.Baresip.ExternalProtocolIpCommandsPort}/api/isavailable";
+            var url = CreateUrl(ip, "/api/isavailable");
 
             using (var client = new HttpClient())
             {
-                client.Timeout = TimeSpan.FromSeconds(5);
+                client.Timeout = TimeSpan.FromSeconds(4);
                 var response = await client.GetAsync(url);
                 return response.IsSuccessStatusCode;
             }
@@ -73,8 +71,8 @@ namespace CodecControl.Client.SR.BaresipRest
 
             return new LineStatus
             {
-                DisconnectReason = _baresipMapper.MapToDisconnectReason(lineStatus.Call.Code),
-                StatusCode = _baresipMapper.MapToLineStatusCode(lineStatus.State)
+                DisconnectReason = BaresipMapper.MapToDisconnectReason(lineStatus.Call.Code),
+                StatusCode = BaresipMapper.MapToLineStatusCode(lineStatus.State)
             };
         }
 

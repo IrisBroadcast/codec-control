@@ -5,7 +5,7 @@ namespace CodecControl.Client.SR.BaresipRest
 {
     public class BaresipMapper
     {
-        public DisconnectReason MapToDisconnectReason(int statusCode)
+        public static DisconnectReason MapToDisconnectReason(int statusCode)
         {
             if (statusCode == 0)
             {
@@ -20,7 +20,7 @@ namespace CodecControl.Client.SR.BaresipRest
             return DisconnectReason.None;
         }
 
-        public LineStatusCode MapToLineStatusCode(BaresipState baresipState)
+        public static LineStatusCode MapToLineStatusCode(BaresipState baresipState)
         {
             switch (baresipState)
             {

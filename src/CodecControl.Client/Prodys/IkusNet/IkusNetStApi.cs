@@ -145,7 +145,7 @@ namespace CodecControl.Client.Prodys.IkusNet
                 audioStatus.InputStatuses = new List<InputStatus>();
 
                 audioStatus.Gpos = new List<bool>();
-
+                 
                 for (int gpo = 0; gpo < nrOfGpos; gpo++)
                 {
                     SendCommand(socket, new CommandIkusNetGetGpo { Gpio = gpo });

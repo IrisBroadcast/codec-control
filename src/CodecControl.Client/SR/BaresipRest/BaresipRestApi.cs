@@ -64,7 +64,7 @@ namespace CodecControl.Client.SR.BaresipRest
             return (enabled, gain);
         }
 
-        public async Task<LineStatus> GetLineStatusAsync(string ip, int line)
+        public async Task<LineStatus> GetLineStatusAsync(string ip)
         {
             var url = CreateUrl(ip, "api/linestatus");
             var lineStatus = await HttpService.GetAsync<BaresipLineStatus>(url);

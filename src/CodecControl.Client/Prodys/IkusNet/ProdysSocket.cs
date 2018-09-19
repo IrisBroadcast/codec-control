@@ -97,7 +97,7 @@ namespace CodecControl.Client.Prodys.IkusNet
                 }
 
                 var endpoint = new IPEndPoint(ipAddress, Sdk.IkusNet.ExternalProtocolIpCommandsPort);
-
+                
                 await socket.ConnectAsync(endpoint); // TODO: timeout ?
 
                 if (!socket.Connected)

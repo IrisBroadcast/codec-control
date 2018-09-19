@@ -86,11 +86,11 @@ namespace CodecControl.Client.Prodys.IkusNet
             throw new NotImplementedException();
         }
 
-        public async Task<LineStatus> GetLineStatusAsync(string hostAddress, int line)
+        public async Task<LineStatus> GetLineStatusAsync(string hostAddress)
         {
             using (var socket = await SocketPool.TakeSocket(hostAddress))
             {
-                SendCommand(socket, new CommandIkusNetGetLineStatus { Line = (IkusNetLine)line });
+                SendCommand(socket, new CommandIkusNetGetLineStatus { Line = IkusNetLine.ProgramL1 });
                 var response = new IkusNetGetLineStatusResponse(socket);
 
                 return new LineStatus

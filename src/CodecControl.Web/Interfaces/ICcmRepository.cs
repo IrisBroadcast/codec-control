@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using CodecControl.Client;
 
-namespace CodecControl.Web.CCM
+namespace CodecControl.Web.Interfaces
 {
     public interface ICcmRepository
     {

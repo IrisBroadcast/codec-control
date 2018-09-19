@@ -133,8 +133,7 @@ namespace CodecControl.Web.AudioStatus
                     return;
                 }
 
-                var nrOfGpos = 2; // TODO: Don't hard code this. Add CCM property.
-                var audioStatus = await codecApi.GetAudioStatusAsync(codecInformation.Ip, codecInformation.NrOfInputs, nrOfGpos);
+                var audioStatus = await codecApi.GetAudioStatusAsync(codecInformation.Ip, codecInformation.NrOfInputs, codecInformation.NrOfGpos);
 
                 var model = new AudioStatusResponse()
                 {

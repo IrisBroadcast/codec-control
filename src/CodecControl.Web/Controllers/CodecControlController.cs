@@ -78,11 +78,11 @@ namespace CodecControl.Web.Controllers
 
         [Route("getaudiostatus")]
         [HttpGet]
-        public async Task<ActionResult<AudioStatusResponse>> GetAudioStatus(string sipAddress, int nrOfInputs = 2, int nrOfGpos = 2)
+        public async Task<ActionResult<AudioStatusResponse>> GetAudioStatus(string sipAddress)
         {
             return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
-                var audioStatus = await codecApi.GetAudioStatusAsync(codecInformation.Ip, codecInformation.NrOfInputs, nrOfGpos);
+                var audioStatus = await codecApi.GetAudioStatusAsync(codecInformation.Ip, codecInformation.NrOfInputs, codecInformation.NrOfGpos);
 
                 var model = new AudioStatusResponse()
                 {

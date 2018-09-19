@@ -10,4 +10,4 @@ namespace CodecControl.Web
 
         public Uri CcmHostUri => new Uri(CcmHost);
     }
-}
+} 

@@ -43,14 +43,14 @@ var app = new Vue({
 });
 
 // Call CCM and fill codecs list.
-axios.get('https://uccm.sr.se/api/codecinformation')
+axios.get("/codecinformation")
     .then(function (response) {
         let codecInformation = response.data;
         var codecs = codecInformation
-            .filter(s => { return s.Api === "IkusNet"; })
+            .filter(s => { return s.api === "IkusNet"; })
             .map(s => {
                 return {
-                    sipAddress: s.SipAddress,
+                    sipAddress: s.sipAddress,
                     updated: Date.now(),
                     audioStatus: {
                         vuValues: {

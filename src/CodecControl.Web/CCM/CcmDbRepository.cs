@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CodecControl.Client;
 using CodecControl.Data.Database;
 using CodecControl.Data.Entities;
+using CodecControl.Web.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 

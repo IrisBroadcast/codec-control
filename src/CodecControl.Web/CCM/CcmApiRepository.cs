@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using CodecControl.Client;
+using CodecControl.Web.Interfaces;
 using Newtonsoft.Json;
 using NLog;
 
@@ -23,7 +24,7 @@ namespace CodecControl.Web.CCM
             using (new TimeMeasurer("Load codec information from CCM"))
             {
                 Uri uri = null;
-                try
+                try 
                 {
                     log.Info("Loading codec information from CCM");
                     var client = new HttpClient();

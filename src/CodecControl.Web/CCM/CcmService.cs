@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CodecControl.Client;
 using CodecControl.Web.Cache;
+using CodecControl.Web.Interfaces;
 using LazyCache;
 using NLog;
 
@@ -31,7 +32,7 @@ namespace CodecControl.Web.CCM
         {
             return (await GetCodecInformationList()).FirstOrDefault(c => c.SipAddress == sipAddress);
 
-        }
+        } 
 
         public async Task<List<CodecInformation>> GetCodecInformationList()
         {

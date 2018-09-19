@@ -1,7 +1,7 @@
 ﻿
 namespace CodecControl.Web.Models
 {
-    public class InputStatusViewModel
+    public class InputStatusResponse
     {
         public bool Enabled { get; set; }
     }

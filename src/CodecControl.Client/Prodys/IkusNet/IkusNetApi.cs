@@ -71,7 +71,7 @@ namespace CodecControl.Client.Prodys.IkusNet
                     RxRight = vuResponse.ProgramRxRight
                 };
 
-                audioStatus.InputStatuses = new List<InputStatus>();
+                audioStatus.InputStatus = new List<InputStatus>();
 
                 // Works only on Quantum codec, not Quantum ST
                 for (int input = 0; input < nrOfInputs; input++)
@@ -84,7 +84,7 @@ namespace CodecControl.Client.Prodys.IkusNet
                     var gainLevelResponse = new IkusNetGetInputGainLevelResponse(socket);
                     var gainLevel = gainLevelResponse.GainLeveldB;
 
-                    audioStatus.InputStatuses.Add(new InputStatus { Enabled = inputEnabled, GainLevel = gainLevel });
+                    audioStatus.InputStatus.Add(new InputStatus { Enabled = inputEnabled, GainLevel = gainLevel });
                 }
 
                 //audioStatus.Gpis = new List<bool>();
@@ -125,7 +125,10 @@ namespace CodecControl.Client.Prodys.IkusNet
         public override async Task<bool> SetInputEnabledAsync(string hostAddress, int input, bool enabled)
         {
             var cmd = new CommandIkusNetSetInputEnabled { Input = input, Enabled = enabled };
-            return await SendConfigurationCommandAsync(hostAddress, cmd);
+            await SendConfigurationCommandAsync(hostAddress, cmd);
+
+            var isEnabled = await GetInputEnabledAsync(hostAddress, input);
+            return isEnabled;
         }
 
         public override async Task<int> SetInputGainLevelAsync(string hostAddress, int input, int gainLevel)

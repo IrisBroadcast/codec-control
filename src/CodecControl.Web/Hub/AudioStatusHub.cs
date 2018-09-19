@@ -20,9 +20,16 @@ namespace CodecControl.Web.AudioStatus
             _audioStatusUpdater.Subscribe(Context.ConnectionId, sipAddress);
         }
 
-        public void Unsubscribe(string sipAddress)
+        public void Unsubscribe(string sipAddress = "")
         {
-            _audioStatusUpdater.Unsubscribe(Context.ConnectionId, sipAddress);
+            if (string.IsNullOrEmpty(sipAddress))
+            {
+                _audioStatusUpdater.Unsubscribe(Context.ConnectionId);
+            }
+            else
+            {
+                _audioStatusUpdater.Unsubscribe(Context.ConnectionId, sipAddress);
+            }
         }
 
         public override async Task OnConnectedAsync()

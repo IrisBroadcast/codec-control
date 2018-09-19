@@ -101,7 +101,7 @@ namespace CodecControl.Client.SR.BaresipRest
                 var audioStatus = new AudioStatus()
                 {
                     Gpos = bareSipAudioStatus.Control.Gpo.Select(gpo => gpo.Active).ToList(),
-                    InputStatuses = bareSipAudioStatus.Inputs.Select(BaresipMapper.MapToInputStatus).ToList(),
+                    InputStatus = bareSipAudioStatus.Inputs.Select(BaresipMapper.MapToInputStatus).ToList(),
                     VuValues = BaresipMapper.MapToVuValues(bareSipAudioStatus)
                 };
                 return audioStatus;

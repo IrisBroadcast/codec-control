@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CodecControl.Client;
 using CodecControl.Web.CCM;
-using CodecControl.Web.Interfaces;
+using CodecControl.Web.Models;
 using Microsoft.AspNetCore.SignalR;
 using NLog;
 
@@ -135,7 +135,15 @@ namespace CodecControl.Web.AudioStatus
 
                 var nrOfGpos = 2; // TODO: Don't hard code this. Add CCM property.
                 var audioStatus = await codecApi.GetAudioStatusAsync(codecInformation.Ip, codecInformation.NrOfInputs, nrOfGpos);
-                await SendAudioStatusToClients(sipAddress, audioStatus);
+
+                var model = new AudioStatusResponse()
+                {
+                    Gpos = audioStatus.Gpos,
+                    InputStatus = audioStatus.InputStatus,
+                    VuValues = audioStatus.VuValues
+                };
+
+                await SendAudioStatusToClients(sipAddress, model);
             }
             catch (Exception ex)
             {
@@ -143,7 +151,7 @@ namespace CodecControl.Web.AudioStatus
             }
         }
 
-        private async Task SendAudioStatusToClients(string sipAddress, Client.Models.AudioStatus audioStatus)
+        private async Task SendAudioStatusToClients(string sipAddress, AudioStatusResponse audioStatus)
         {
             await _hub.Clients.Group(sipAddress).SendAsync("AudioStatus", sipAddress, audioStatus);
         }

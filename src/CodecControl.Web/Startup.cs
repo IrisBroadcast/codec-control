@@ -39,8 +39,18 @@ namespace CodecControl.Web
             services.AddDirectoryBrowser();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            services.AddLazyCache();
+            services.AddCors(options => options.AddPolicy("CorsPolicy", builder =>
+            {
+                builder
+                    .WithOrigins("http://www.ccm.local")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials()
+                    //.AllowAnyOrigin()
+                    ;
+            }));
 
+            services.AddLazyCache();
             services.AddSignalR();
         }
 
@@ -71,6 +81,8 @@ namespace CodecControl.Web
                     }
                 }
             });
+
+            app.UseCors("CorsPolicy");
 
             app.UseSignalR(routes =>
             {

@@ -12,8 +12,8 @@ namespace CodecControl.Web
         public static void ConfigureDepencencyInjection(this IServiceCollection services)
         {
             services.AddSingleton<CcmService>();
-            services.AddTransient<ICcmRepository, CcmDbRepository>();
-            //services.AddTransient<ICcmRepository, CcmApiRepository>();
+            //services.AddTransient<ICcmRepository, CcmDbRepository>();
+            services.AddTransient<ICcmRepository, CcmApiRepository>();
             services.AddTransient<CcmDbContext>();
 
             services.AddSingleton<SocketPool>();

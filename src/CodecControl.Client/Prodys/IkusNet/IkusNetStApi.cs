@@ -142,7 +142,7 @@ namespace CodecControl.Client.Prodys.IkusNet
                 audioStatus.VuValues = IkusNetMapper.MapToVuValues(vuResponse);
 
                 // // Input status not implemented in Quantum ST
-                audioStatus.InputStatuses = new List<InputStatus>();
+                audioStatus.InputStatus = new List<InputStatus>();
 
                 audioStatus.Gpos = new List<bool>();
                  

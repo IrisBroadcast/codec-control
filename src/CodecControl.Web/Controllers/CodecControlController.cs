@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using CodecControl.Client;
 using CodecControl.Client.Exceptions;
 using CodecControl.Client.Models;
+using CodecControl.Web.CCM;
 using CodecControl.Web.Controllers.Base;
 using CodecControl.Web.Helpers;
-using CodecControl.Web.Interfaces;
 using CodecControl.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
@@ -19,32 +19,32 @@ namespace CodecControl.Web.Controllers
         #region Constructor and members
         protected static readonly Logger log = LogManager.GetCurrentClassLogger();
         private readonly IServiceProvider _serviceProvider;
-        private readonly ICcmService _ccmService;
+        private readonly CcmService _ccmService;
 
-        public CodecControlController(ICcmService ccmService, IServiceProvider serviceProvider)
+        public CodecControlController(CcmService ccmService, IServiceProvider serviceProvider)
         {
             _ccmService = ccmService;
             _serviceProvider = serviceProvider;
         }
         #endregion
 
-        [Route("CheckCodecAvailable")]
+        [Route("isavailable")]
         [HttpGet]
-        public async Task<ActionResult<bool>> CheckCodecAvailable(string sipAddress)
+        public async Task<ActionResult<bool>> IsAvailable(string sipAddress)
         {
             return await Execute(sipAddress, async (codecApi, codecInformation) => await codecApi.CheckIfAvailableAsync(codecInformation.Ip));
         }
 
-        [Route("GetAvailableGpos")]
-        [HttpPost]
-        public async Task<ActionResult<AvailableGposViewModel>> GetAvailableGpos(string sipAddress, int nrOfGpos = 10)
+        [Route("getavailablegpos")]
+        [HttpGet]
+        public async Task<ActionResult<AvailableGposResponse>> GetAvailableGpos(string sipAddress, int nrOfGpos = 2)
         {
             return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
                 string gpoNameString = codecInformation.GpoNames;
                 List<string> gpoNames = (gpoNameString ?? string.Empty).Split(',').Select(s => s.Trim()).ToList();
 
-                var model = new AvailableGposViewModel();
+                var model = new AvailableGposResponse();
 
                 try
                 {
@@ -58,7 +58,7 @@ namespace CodecControl.Web.Controllers
                             break;
                         }
 
-                        model.Gpos.Add(new GpoViewModel()
+                        model.Gpos.Add(new AvailableGpo()
                         {
                             Active = active.Value,
                             Name = i < gpoNames.Count ? gpoNames[i] : $"GPO {i}",
@@ -76,53 +76,53 @@ namespace CodecControl.Web.Controllers
             });
         }
 
-        [Route("GetAudioStatus")]
+        [Route("getaudiostatus")]
         [HttpGet]
-        public async Task<ActionResult<AudioStatusViewModel>> GetAudioStatus(string sipAddress, int nrOfInputs = 2, int nrOfGpos = 2)
+        public async Task<ActionResult<AudioStatusResponse>> GetAudioStatus(string sipAddress, int nrOfInputs = 2, int nrOfGpos = 2)
         {
             return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
                 var audioStatus = await codecApi.GetAudioStatusAsync(codecInformation.Ip, codecInformation.NrOfInputs, nrOfGpos);
 
-                var model = new AudioStatusViewModel()
+                var model = new AudioStatusResponse()
                 {
                     Gpos = audioStatus.Gpos,
-                    InputStatuses = audioStatus.InputStatuses,
+                    InputStatus = audioStatus.InputStatus,
                     VuValues = audioStatus.VuValues
                 };
                 return model;
             });
         }
         
-        [Route("GetInputGainAndStatus")]
+        [Route("getinputgainandenabled")]
         [HttpGet]
-        public async Task<ActionResult<InputGainAndStatusViewModel>> GetInputGainAndStatus(string sipAddress, int input)
+        public async Task<ActionResult<InputGainAndEnabledResponse>> GetInputGainAndEnabled(string sipAddress, int input)
         {
             return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
                 var (enabled, gain) = await codecApi.GetInputGainAndStatusAsync(codecInformation.Ip, input);
-                return new InputGainAndStatusViewModel { Enabled = enabled, GainLevel = gain };
+                return new InputGainAndEnabledResponse { Enabled = enabled, GainLevel = gain };
             });
         }
 
-        [Route("GetInputStatus")]
+        [Route("getinputenabled")]
         [HttpGet]
-        public async Task<ActionResult<InputStatusViewModel>> GetInputStatus(string sipAddress, int input)
+        public async Task<ActionResult<InputStatusResponse>> GetInputEnabled(string sipAddress, int input)
         {
             return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
                 var enabled = await codecApi.GetInputEnabledAsync(codecInformation.Ip, input);
-                return new InputStatusViewModel { Enabled = enabled };
+                return new InputStatusResponse { Enabled = enabled };
             });
         }
 
-        [Route("GetLineStatus")]
+        [Route("getlinestatus")]
         [HttpGet]
-        public async Task<ActionResult<LineStatusViewModel>> GetLineStatus(string sipAddress, int line)
+        public async Task<ActionResult<LineStatusResponse>> GetLineStatus(string sipAddress, int line)
         {
             return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
-                var model = new LineStatusViewModel();
+                var model = new LineStatusResponse();
                 LineStatus lineStatus = await codecApi.GetLineStatusAsync(codecInformation.Ip, line);
 
                 model.LineStatus = lineStatus.StatusCode.ToString();
@@ -133,7 +133,7 @@ namespace CodecControl.Web.Controllers
             });
         }
 
-        [Route("GetVuValues")]
+        [Route("getvuvalues")]
         [HttpGet]
         public async Task<ActionResult<VuValuesViewModel>> GetVuValues(string sipAddress)
         {
@@ -151,15 +151,15 @@ namespace CodecControl.Web.Controllers
             });
         }
 
-        [Route("GetAudioMode")]
+        [Route("getaudiomode")]
         [HttpGet]
-        public async Task<ActionResult<AudioModeViewModel>> GetAudioMode(string sipAddress)
+        public async Task<ActionResult<AudioModeResponse>> GetAudioMode(string sipAddress)
         {
             return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
                 AudioMode result = await codecApi.GetAudioModeAsync(codecInformation.Ip);
 
-                return new AudioModeViewModel
+                return new AudioModeResponse
                 {
                     EncoderAudioMode = result.EncoderAudioAlgoritm,
                     DecoderAudioMode = result.DecoderAudioAlgoritm
@@ -167,60 +167,63 @@ namespace CodecControl.Web.Controllers
             });
         }
 
-        [Route("SetGpo")]
-        [HttpGet]
-        public async Task<ActionResult<GpoViewModel>> SetGpo(string sipAddress, int number, bool active)
+        [Route("setgpo")]
+        [HttpPost]
+        public async Task<ActionResult<GpoResponse>> SetGpo([FromBody] GpoRequestParameters request)
         {
-            return await Execute(sipAddress, async (codecApi, codecInformation) =>
+            return await Execute(request.SipAddress, async (codecApi, codecInformation) =>
             {
-                await codecApi.SetGpoAsync(codecInformation.Ip, number, active);
-                var gpoActive = await codecApi.GetGpoAsync(codecInformation.Ip, number) ?? false;
-                return new GpoViewModel { Number = number, Active = gpoActive };
+                await codecApi.SetGpoAsync(codecInformation.Ip, request.Number, request.Active);
+                var gpoActive = await codecApi.GetGpoAsync(codecInformation.Ip, request.Number) ?? false;
+                return new GpoResponse() { Active = gpoActive };
             });
         }
 
-        [Route("SetInputEnabled")]
+        [Route("setinputenabled")]
         [HttpPost]
-        public async Task<ActionResult<InputStatusViewModel>> SetInputEnabled(string sipAddress, int input, bool enabled)
+        public async Task<ActionResult<InputStatusResponse>> SetInputEnabled([FromBody] InputEnabledRequestParameters request)
         {
-            return await Execute(sipAddress, async (codecApi, codecInformation) =>
+            return await Execute(request.SipAddress, async (codecApi, codecInformation) =>
             {
-                var isEnabled = await codecApi.SetInputEnabledAsync(codecInformation.Ip, input, enabled);
-                return new InputStatusViewModel { Enabled = isEnabled };
+                var isEnabled = await codecApi.SetInputEnabledAsync(codecInformation.Ip, request.Input, request.Enabled);
+                return new InputStatusResponse { Enabled = isEnabled };
             });
         }
 
         [HttpPost]
-        [Route("SetInputGainLevel")]
-        public async Task<ActionResult<InputGainLevelViewModel>> SetInputGainLevelAsync(string sipAddress, int input, int level)
+        [Route("setinputgain")]
+        public async Task<ActionResult<InputGainLevelResponse>> SetInputGain([FromBody] InputGainRequestParameters request)
         {
-            return await Execute(sipAddress, async (codecApi, codecInformation) =>
+            return await Execute(request.SipAddress, async (codecApi, codecInformation) =>
             {
-                var gainLevel = await codecApi.SetInputGainLevelAsync(codecInformation.Ip, input, level);
-                return new InputGainLevelViewModel { GainLevel = gainLevel };
+                var gainLevel = await codecApi.SetInputGainLevelAsync(codecInformation.Ip, request.Input, request.Level);
+                return new InputGainLevelResponse { GainLevel = gainLevel };
             });
         }
 
-        [Route("RebootCodec")]
+
+        [Route("reboot")]
         [HttpPost]
-        public async Task<ActionResult<bool>> RebootCodec(string sipAddress)
+        public async Task<ActionResult<bool>> Reboot([FromBody]RequestParameters request)
         {
-            return await Execute(sipAddress, async (codecApi, codecInformation) => await codecApi.RebootAsync(codecInformation.Ip));
+            return await Execute(request.SipAddress, 
+                async (codecApi, codecInformation) => await codecApi.RebootAsync(codecInformation.Ip));
         }
 
-        [Route("Call")]
+        [Route("call")]
         [HttpPost]
-        public async Task<ActionResult<bool>> Call(string sipAddress, string callee, string profileName)
+        public async Task<ActionResult<bool>> Call([FromBody]CallRequestParameters request)
         {
-            return await Execute(sipAddress, async (codecApi, codecInformation) => await codecApi.CallAsync(codecInformation.Ip, callee, profileName));
+            return await Execute(request.SipAddress, 
+                async (codecApi, codecInformation) => await codecApi.CallAsync(codecInformation.Ip, request.Callee, request.ProfileName));
         }
 
 
-        [Route("Hangup")]
+        [Route("hangup")]
         [HttpPost]
-        public async Task<ActionResult<bool>> Hangup(string sipAddress)
+        public async Task<ActionResult<bool>> Hangup([FromBody]RequestParameters request)
         {
-            return await Execute(sipAddress, async (codecApi, codecInformation) => await codecApi.HangUpAsync(codecInformation.Ip));
+            return await Execute(request.SipAddress, async (codecApi, codecInformation) => await codecApi.HangUpAsync(codecInformation.Ip));
 
         }
 
@@ -272,6 +275,35 @@ namespace CodecControl.Web.Controllers
             }
         }
 
+
+        public class RequestParameters
+        {
+            public string SipAddress { get; set; }
+        }
+
+        public class GpoRequestParameters : RequestParameters
+        {
+            public int Number { get; set; }
+            public bool Active { get; set; }
+        }
+
+        public class InputEnabledRequestParameters : RequestParameters
+        {
+            public int Input { get; set; }
+            public bool Enabled { get; set; }
+        }
+
+        public class InputGainRequestParameters : RequestParameters
+        {
+            public int Input { get; set; }
+            public int Level { get; set; }
+        }
+
+        public class CallRequestParameters : RequestParameters
+        {
+            public string Callee { get; set; }
+            public string ProfileName { get; set; }
+        }
     }
 
 }

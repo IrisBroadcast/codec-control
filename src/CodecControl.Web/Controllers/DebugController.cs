@@ -1,4 +1,8 @@
-﻿using CodecControl.Web.AudioStatus;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using CodecControl.Client;
+using CodecControl.Web.AudioStatus;
+using CodecControl.Web.CCM;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CodecControl.Web.Controllers
@@ -7,15 +11,26 @@ namespace CodecControl.Web.Controllers
     public class DebugController : ControllerBase
     {
         private readonly AudioStatusUpdater _audioStatusUpdater;
+        private readonly CcmService _ccmService;
 
-        public DebugController(AudioStatusUpdater audioStatusUpdater)
+        public DebugController(AudioStatusUpdater audioStatusUpdater, CcmService ccmService)
         {
             _audioStatusUpdater = audioStatusUpdater;
+            _ccmService = ccmService;
+        }
+        
+        [Route("subscriptions")]
+        public List<SubscriptionInfo> Subscriptions()
+        {
+            return _audioStatusUpdater.Subscriptions;
         }
 
-        public ActionResult<SubscriptionInfo> Get()
+        [Route("codecinformation")]
+        public async Task<List<CodecInformation>> CodecInformation()
         {
-            return Ok(_audioStatusUpdater.Subscriptions);
+            List<CodecInformation> codecInformations = await _ccmService.GetCodecInformationList();
+            return codecInformations;
         }
+
     }
 }

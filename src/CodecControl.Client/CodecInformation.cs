@@ -1,6 +1,7 @@
 ﻿using System;
 using CodecControl.Client.Prodys.IkusNet;
 using CodecControl.Client.SR.BaresipRest;
+using Newtonsoft.Json;
 
 namespace CodecControl.Client
 {
@@ -13,6 +14,7 @@ namespace CodecControl.Client
         public int NrOfInputs { get; set; }
         public int NrOfGpos { get; set; }
 
+        [JsonIgnore]
         public Type CodecApiType
         {
             get

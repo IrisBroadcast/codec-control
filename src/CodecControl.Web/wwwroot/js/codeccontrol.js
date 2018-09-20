@@ -17,7 +17,11 @@ connection.start().catch(function (err) {
 
 var subscribe = function (sipAddress) {
     console.log("subscribe to " + sipAddress);
-    connection.invoke("subscribe", sipAddress).catch(function (err) {
+    connection.invoke("subscribe", sipAddress)
+        .then(function() {
+            getSubscriptions();
+        })
+        .catch(function (err) {
         return console.error(err.toString());
     });
     event.preventDefault();
@@ -25,46 +29,73 @@ var subscribe = function (sipAddress) {
 
 var unsubscribe = function (sipAddress) {
     console.log("unsubscribe to " + sipAddress);
-    connection.invoke("unsubscribe", sipAddress).catch(function (err) {
+    connection.invoke("unsubscribe", sipAddress)
+        .then(function () {
+            getSubscriptions();
+        })
+        .catch(function (err) {
         return console.error(err.toString());
     });
     event.preventDefault();
+    getSubscriptions();
+};
+
+var getCodecInformation = function () {
+    // Call CCM and fill codecs list.
+    axios.get("/debug/codecinformation")
+        .then(function (response) {
+            let codecInformation = response.data;
+            app.codecInformation = codecInformation;
+            var codecs = codecInformation
+                .filter(s => { return s.api === "IkusNet"; })
+                .map(s => {
+                    return {
+                        sipAddress: s.sipAddress,
+                        updated: Date.now(),
+                        audioStatus: {
+                            vuValues: {
+                                txLeft: 0,
+                                txRight: 0,
+                                rxLeft: 0,
+                                rxRight: 0
+                            }
+                        }
+                    };
+                });
+            console.log(codecs);
+            app.codecs = codecs;
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+};
+
+var getSubscriptions = function() {
+    axios.get("/debug/subscriptions")
+        .then(function (response) {
+            let subscriptions = response.data;
+            console.log("Prenumerationer", subscriptions);
+            app.subscriptions = subscriptions;
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
 };
 
 var app = new Vue({
     el: '#app',
     data: {
-        codecs: []
+        codecs: [],
+        codecInformation: [],
+        subscriptions: []
     },
     methods: {
         subscribe: subscribe,
-        unsubscribe: unsubscribe
+        unsubscribe: unsubscribe,
+        getCodecInformation: getCodecInformation,
+        getSubscriptions: getSubscriptions
     }
 });
 
-// Call CCM and fill codecs list.
-axios.get("/codecinformation")
-    .then(function (response) {
-        let codecInformation = response.data;
-        var codecs = codecInformation
-            .filter(s => { return s.api === "IkusNet"; })
-            .map(s => {
-                return {
-                    sipAddress: s.sipAddress,
-                    updated: Date.now(),
-                    audioStatus: {
-                        vuValues: {
-                            txLeft: 0,
-                            txRight: 0,
-                            rxLeft: 0,
-                            rxRight: 0
-                        }
-                    }
-                };
-            });
-        console.log(codecs);
-        app.codecs = codecs;
-    })
-    .catch(function (error) {
-        console.log(error);
-    });
+getCodecInformation();
+getSubscriptions();

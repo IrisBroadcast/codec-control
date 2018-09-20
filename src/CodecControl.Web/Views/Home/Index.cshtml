@@ -4,8 +4,8 @@
 }
 
 <h2>Codec Control</h2>
-<div>@DateTime.Now</div>
-<div>Version @ViewData["Version"]</div>
+<div class="small">@DateTime.Now</div>
+<div class="small">Version @ViewData["Version"]</div>
 <br />
 
 <div id="app">
@@ -19,9 +19,62 @@
         </span>
         <span class="updated">{{codec.updated}}</span>
     </div>
+    
+    <div>
+        <div class="subheader">Aktuella prenumerationer</div>
+        <button v-on:click="getSubscriptions">Ladda om</button>
+        <table v-if="subscriptions.length > 0">
+            <thead>
+            <tr>
+                <th>Connection id</th>
+                <th>Sip address</th>
+
+            </tr>
+            </thead>
+            <tr v-for="subscription in subscriptions">
+                <td>{{subscription.connectionId}}</td>
+                <td>{{subscription.sipAddress}}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="subheader">Styrbara ljudkodare</div>
+    <button v-on:click="getCodecInformation">Ladda om</button>
+    <table>
+        <thead>
+        <tr>
+            <th>SipAddress</th>
+            <th>IP</th>
+            <th>API</th>
+            <th>GPO-namn</th>
+            <th>#Ingångar</th>
+            <th>#GPO</th>
+        </tr>
+        </thead>
+        <tr v-for="ci in codecInformation">
+            <td v-for="value in ci">{{value}}</td>
+        </tr>
+    </table>
+
 </div>
 
 <style>
+
+    body {
+        margin: 25px;
+        padding: 0;
+        height: 100%;
+        background-color: white;
+        font-family: roboto, Arial, Helvetica, sans-serif;
+        line-height: 2;
+        color: #0F1525;
+        font-size: 11pt;
+    }
+
+    small {
+        font-size: xx-small;
+    }
+
     .codecs {
         width: 700px;
     }
@@ -41,6 +94,27 @@
 
     .codecs .updated {
         float: right;
+        font-size: smaller;
+    }
+
+    .subheader {
+        margin-top: 25px;
+        font-size: large;
+        font-weight: bold;
+    }
+
+    table {
+        border: solid 1px black;
+        line-height: 1;
+    }
+
+    th {
+        font-size: small;
+    }
+
+    td {
+        border-top: 0.1rem solid #c7c7c7;
+        border-right: 0.1rem solid #c7c7c7;
         font-size: smaller;
     }
 </style>

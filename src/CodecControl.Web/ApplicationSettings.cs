@@ -7,7 +7,7 @@ namespace CodecControl.Web
         public string Version { get; set; }
         public string CcmHost { get; set; }
         public int CcmCodecInformationReloadInterval { get; set; } = 60;
-
+        public string CorsPolicyOrigins { get; set; }
         public Uri CcmHostUri => new Uri(CcmHost);
     }
 } 

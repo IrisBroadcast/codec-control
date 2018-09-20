@@ -42,7 +42,7 @@ namespace CodecControl.Web
             services.AddCors(options => options.AddPolicy("CorsPolicy", builder =>
             {
                 builder
-                    .WithOrigins("http://www.ccm.local")
+                    .WithOrigins(appSettings.CorsPolicyOrigins)
                     .AllowAnyMethod()
                     .AllowAnyHeader()
                     .AllowCredentials()

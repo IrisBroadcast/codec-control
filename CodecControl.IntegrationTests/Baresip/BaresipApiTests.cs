@@ -54,7 +54,7 @@ namespace CodecControl.IntegrationTests.Baresip
         {
             var sut = new IkusNetApi(new SocketPool());
 
-            LineStatus lineStatus = await sut.GetLineStatusAsync(_ip, 0);
+            LineStatus lineStatus = await sut.GetLineStatusAsync(_ip);
             Assert.Equal(LineStatusCode.NoPhysicalLine, lineStatus.StatusCode);
             Assert.Equal(DisconnectReason.None, lineStatus.DisconnectReason);
         }

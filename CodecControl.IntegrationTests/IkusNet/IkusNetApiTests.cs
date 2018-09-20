@@ -52,7 +52,7 @@ namespace CodecControl.IntegrationTests.IkusNet
         {
             var sut = new IkusNetApi(new SocketPool());
 
-            LineStatus lineStatus = await sut.GetLineStatusAsync(CodecInformation.Ip, 0);
+            LineStatus lineStatus = await sut.GetLineStatusAsync(CodecInformation.Ip);
             Assert.Equal(LineStatusCode.NoPhysicalLine, lineStatus.StatusCode);
             Assert.Equal(DisconnectReason.None, lineStatus.DisconnectReason);
         }
@@ -82,7 +82,7 @@ namespace CodecControl.IntegrationTests.IkusNet
         public async Task Ikusnet_GetLineStatus()
         {
             var codecApi = new IkusNetApi(new SocketPool());
-            var lineStatus = await codecApi.GetLineStatusAsync(CodecInformation.Ip, 0);
+            var lineStatus = await codecApi.GetLineStatusAsync(CodecInformation.Ip);
             Assert.NotNull(lineStatus);
         }
 

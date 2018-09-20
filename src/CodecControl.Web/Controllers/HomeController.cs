@@ -17,6 +17,8 @@ namespace CodecControl.Web.Controllers
         public IActionResult Index()
         {
             ViewData["Version"] = _appSettings.Version;
+            ViewData["ReleaseDate"] = _appSettings.ReleaseDate;
+
             return View();
         }
 

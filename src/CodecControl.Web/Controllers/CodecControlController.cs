@@ -68,6 +68,10 @@ namespace CodecControl.Web.Controllers
             });
         }
 
+        /// <summary>
+        /// Vu-values är en dB-skala, där 0 = full scale.
+        /// Exempelvis motsvarar 0 dB vid 18dB full scale ett värde på -18.
+        /// </summary>
         [Route("getaudiostatus")]
         [HttpGet]
         public async Task<ActionResult<AudioStatusResponse>> GetAudioStatus(string sipAddress)
@@ -205,17 +209,25 @@ namespace CodecControl.Web.Controllers
         [HttpPost]
         public async Task<ActionResult<bool>> Call([FromBody]CallRequestParameters request)
         {
-            return await Execute(request.SipAddress,
-                async (codecApi, codecInformation) => await codecApi.CallAsync(codecInformation.Ip, request.Callee, request.ProfileName));
-        }
+            var caller = new SipUri(request.SipAddress).UserAtHost;
 
+            string callee = request.Callee; // Kan vara antingen sip-adress eller telefonnr (som saknar domän).
+            if (!callee.IsNumeric())
+            {
+                // Sip-adress. Tolka.
+                callee = new SipUri(callee).UserAtHost;
+            }
+
+            return await Execute(caller,
+                async (codecApi, codecInformation) => await codecApi.CallAsync(codecInformation.Ip, callee, request.ProfileName));
+        }
 
         [Route("hangup")]
         [HttpPost]
         public async Task<ActionResult<bool>> Hangup([FromBody]RequestParameters request)
         {
-            return await Execute(request.SipAddress, async (codecApi, codecInformation) => await codecApi.HangUpAsync(codecInformation.Ip));
-
+            var caller = new SipUri(request.SipAddress).UserAtHost;
+            return await Execute(caller, async (codecApi, codecInformation) => await codecApi.HangUpAsync(codecInformation.Ip));
         }
 
         private async Task<ActionResult<TResult>> Execute<TResult>(string sipAddress, Func<ICodecApi, CodecInformation, Task<TResult>> func)

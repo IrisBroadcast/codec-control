@@ -4,8 +4,7 @@
 }
 
 <h2>Codec Control</h2>
-<div class="small">@DateTime.Now</div>
-<div class="small">Version @ViewData["Version"]</div>
+<div class="small">Version @ViewData["Version"] Released @ViewData["ReleaseDate"]</div>
 <br />
 
 <div id="app">
@@ -19,17 +18,17 @@
         </span>
         <span class="updated">{{codec.updated}}</span>
     </div>
-    
+
     <div>
         <div class="subheader">Aktuella prenumerationer</div>
         <button v-on:click="getSubscriptions">Ladda om</button>
         <table v-if="subscriptions.length > 0">
             <thead>
-            <tr>
-                <th>Connection id</th>
-                <th>Sip address</th>
+                <tr>
+                    <th>Connection id</th>
+                    <th>Sip address</th>
 
-            </tr>
+                </tr>
             </thead>
             <tr v-for="subscription in subscriptions">
                 <td>{{subscription.connectionId}}</td>
@@ -42,14 +41,14 @@
     <button v-on:click="getCodecInformation">Ladda om</button>
     <table>
         <thead>
-        <tr>
-            <th>SipAddress</th>
-            <th>IP</th>
-            <th>API</th>
-            <th>GPO-namn</th>
-            <th>#Ingångar</th>
-            <th>#GPO</th>
-        </tr>
+            <tr>
+                <th>SipAddress</th>
+                <th>IP</th>
+                <th>API</th>
+                <th>GPO-namn</th>
+                <th>#Ingångar</th>
+                <th>#GPO</th>
+            </tr>
         </thead>
         <tr v-for="ci in codecInformation">
             <td v-for="value in ci">{{value}}</td>

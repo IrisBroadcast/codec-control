@@ -42,11 +42,11 @@ namespace CodecControl.Web
             services.AddCors(options => options.AddPolicy("CorsPolicy", builder =>
             {
                 builder
-                    .WithOrigins(appSettings.CorsPolicyOrigins)
+                    //.WithOrigins(appSettings.CorsPolicyOrigins)
                     .AllowAnyMethod()
                     .AllowAnyHeader()
                     .AllowCredentials()
-                    //.AllowAnyOrigin()
+                    .AllowAnyOrigin()
                     ;
             }));
 

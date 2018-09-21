@@ -19,7 +19,7 @@ namespace CodecControl.Client
         {
             _level = level ?? LogLevel.Trace;
 
-            LoggingRule rule = LogManager.Configuration.LoggingRules.FirstOrDefault();
+            LoggingRule rule = LogManager.Configuration?.LoggingRules.FirstOrDefault();
             _isEnabled = rule != null && rule.IsLoggingEnabledForLevel(_level);
 
             if (_isEnabled)

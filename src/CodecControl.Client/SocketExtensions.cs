@@ -38,8 +38,26 @@ namespace CodecControl.Client
             }
             catch (OperationCanceledException)
             {
+                socket.Close();
                 throw new SocketException(ConnectionTimedOutStatusCode);
             }
         }
+
+        public static void Connect(this Socket socket, EndPoint endpoint, int timeout)
+        {
+            var result = socket.BeginConnect(endpoint, null, null);
+
+            bool success = result.AsyncWaitHandle.WaitOne(timeout, true);
+            if (socket.Connected)
+            {
+                socket.EndConnect(result);
+            }
+            else
+            {
+                socket.Close();
+                throw new SocketException(ConnectionTimedOutStatusCode);
+            }
+        }
+
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace CodecControl.Web.Models
+﻿namespace CodecControl.Web.Models.Responses
 {
     public class GpoResponse
     {

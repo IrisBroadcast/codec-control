@@ -8,7 +8,7 @@ namespace CodecControl.Web.Models
         public AudioAlgorithm EncoderAudioMode { get; set; }
         public AudioAlgorithm DecoderAudioMode { get; set; }
 
-        public string EncoderAudioModeString => EncoderAudioMode.Description();
-        public string DecoderAudioModeString => DecoderAudioMode.Description();
+        public string EncoderAudioModeDescription => EncoderAudioMode.Description();
+        public string DecoderAudioModeDescription => DecoderAudioMode.Description();
     }
 }

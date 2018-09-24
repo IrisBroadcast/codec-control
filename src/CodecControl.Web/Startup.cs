@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using CodecControl.Data.Database;
 using CodecControl.Web.AudioStatus;
+using CodecControl.Web.Security;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -64,6 +65,9 @@ namespace CodecControl.Web
             {
                 app.UseHsts();
             }
+
+            app.UseAuthentication();
+
             app.UseStaticFiles();
 
             // Serve log files as static files

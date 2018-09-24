@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CodecControl.Web.Controllers.Base
 {
-    [Route("api/[controller]")]
+    //[Route("api/[controller]")]
     public class ApiControllerBase : ControllerBase
     {
         protected ActionResult CodecUnavailable()

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using CodecControl.Client.Models;
 
-namespace CodecControl.Web.Models
+namespace CodecControl.Web.Models.Responses
 {
     public class AudioStatusResponse 
     {

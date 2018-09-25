@@ -3,24 +3,22 @@
     ViewData["Title"] = "Index";
 }
 
-<h2>Codec Control</h2>
-<div class="small">Version @ViewData["Version"] Released @ViewData["ReleaseDate"]</div>
-<br />
+<div class="header">Codec Control</div>
 
 <div id="app">
     <div class="codecs" v-for="codec in codecs">
         <div class="codec-name">{{codec.sipAddress}}</div>
         <button v-on:click="subscribe(codec.sipAddress)">Subscribe</button>
         <button v-on:click="unsubscribe(codec.sipAddress)">Unsubscribe</button>
-        <span class="right">
+        <span class="vu-values">
             Rx {{codec.audioStatus.vuValues.rxLeft}} / {{codec.audioStatus.vuValues.rxRight}}
             Tx:{{codec.audioStatus.vuValues.txLeft}} / {{codec.audioStatus.vuValues.txRight}}
         </span>
         <span class="updated">{{codec.updated}}</span>
     </div>
 
-    <div>
-        <div class="subheader">Aktuella prenumerationer</div>
+    <div class="unit">
+        <span class="subheader">Aktuella prenumerationer</span>
         <button v-on:click="getSubscriptions">Ladda om</button>
         <table v-if="subscriptions.length > 0">
             <thead>
@@ -37,10 +35,12 @@
         </table>
     </div>
 
-    <div class="subheader">Styrbara ljudkodare</div>
-    <button v-on:click="getCodecInformation">Ladda om</button>
-    <table>
-        <thead>
+    <div class="unit">
+        <span class="subheader">Styrbara ljudkodare</span>
+        <button v-on:click="getCodecInformation">Ladda om</button>
+    
+        <table>
+            <thead>
             <tr>
                 <th>SipAddress</th>
                 <th>IP</th>
@@ -49,11 +49,16 @@
                 <th>#Ingångar</th>
                 <th>#GPO</th>
             </tr>
-        </thead>
-        <tr v-for="ci in codecInformation">
-            <td v-for="value in ci">{{value}}</td>
-        </tr>
-    </table>
+            </thead>
+            <tr v-for="ci in codecInformation">
+                <td v-for="value in ci">{{value}}</td>
+            </tr>
+        </table>
+    </div>
+
+    <br />
+    <div class="small">Version @ViewData["Version"] i drift sedan @ViewData["ReleaseDate"]</div>
+    <div class="small">Server: @ViewData["Server"]</div>
 
 </div>
 
@@ -65,13 +70,24 @@
         height: 100%;
         background-color: white;
         font-family: roboto, Arial, Helvetica, sans-serif;
-        line-height: 2;
+        /*line-height: 2;*/
         color: #0F1525;
         font-size: 11pt;
     }
 
-    small {
-        font-size: xx-small;
+    .header {
+        display: block;
+        font-size: 2em;
+        margin-block-end: 1em;
+        font-weight: bold;
+    }
+
+    .small {
+        font-size: 12px;
+    }
+
+    .unit {
+        margin-top: 45px;
     }
 
     .codecs {
@@ -84,15 +100,15 @@
     }
 
     .codecs button {
-        width: 100px
+        width: 90px
     }
 
-    .codecs span .right {
-        float: right;
+    .codecs .vu-values {
+        width: 170px;
+        display: inline-block;
     }
 
     .codecs .updated {
-        float: right;
         font-size: smaller;
     }
 

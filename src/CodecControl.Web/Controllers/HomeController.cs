@@ -16,6 +16,7 @@ namespace CodecControl.Web.Controllers
         [Route("")]
         public IActionResult Index()
         {
+            ViewData["Server"] = _appSettings.Server;
             ViewData["Version"] = _appSettings.Version;
             ViewData["ReleaseDate"] = _appSettings.ReleaseDate;
 

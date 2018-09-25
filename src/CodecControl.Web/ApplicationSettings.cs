@@ -9,6 +9,7 @@ namespace CodecControl.Web
         public string [] CorsPolicyOrigins { get; set; }
         public string AuthenticatedUserName { get; set; }
         public string AuthenticatedPassword { get; set; }
+        public string Server { get; set; }
         public string ReleaseDate { get; set; }
         public string Version { get; set; }
 

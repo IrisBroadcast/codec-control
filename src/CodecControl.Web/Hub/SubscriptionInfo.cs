@@ -1,4 +1,4 @@
-﻿namespace CodecControl.Web.AudioStatus
+﻿namespace CodecControl.Web.Hub
 {
     public class SubscriptionInfo
     {

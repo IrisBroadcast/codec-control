@@ -13,7 +13,7 @@ namespace CodecControl.Client.SR.BaresipRest
     public class BaresipRestApi : ICodecApi
     {
         protected static readonly Logger log = LogManager.GetCurrentClassLogger();
-        
+
         public async Task<bool> CheckIfAvailableAsync(string ip)
         {
             // Connect to the unit and check for response on API:port
@@ -45,9 +45,9 @@ namespace CodecControl.Client.SR.BaresipRest
 
         public async Task<bool> GetInputEnabledAsync(string ip, int input)
         {
-            var url = CreateUrl(ip, "api/inputenable?input=" + (input + 1) );
-            var gainObject = await HttpService.GetAsync<InputEnableResponse>(url);
-            return gainObject?.Value ?? false;
+            var url = CreateUrl(ip, "api/inputenable?input=" + (input + 1));
+            var response = await HttpService.GetAsync<InputEnableResponse>(url);
+            return response?.Value ?? false;
         }
 
         public async Task<int> GetInputGainLevelAsync(string ip, int input)
@@ -85,7 +85,7 @@ namespace CodecControl.Client.SR.BaresipRest
         {
             throw new NotImplementedException();
         }
-        
+
         public async Task<AudioStatus> GetAudioStatusAsync(string ip, int nrOfInputs, int nrOfGpos)
         {
             return await GetAudioStatusAsync(ip);
@@ -122,21 +122,21 @@ namespace CodecControl.Client.SR.BaresipRest
         {
             var url = CreateUrl(ip, "api/inputenable");
             var response = await HttpService.PostJsonAsync(url, new { input = input, value = enabled });
-            return response.IsSuccessStatusCode;
+            return enabled; // TODO: Return real input enabled value
         }
 
         public async Task<int> SetInputGainLevelAsync(string ip, int input, int gainLevel)
         {
             var url = CreateUrl(ip, "api/inputgain");
-            var response = await HttpService.PostJsonAsync(url, new { input = input, value = gainLevel});
+            var response = await HttpService.PostJsonAsync(url, new { input = input, value = gainLevel });
             return gainLevel; // TODO: Return real input level
         }
-        
+
         public Task<bool> RebootAsync(string ip)
         {
             throw new NotImplementedException();
         }
-        
+
         private Uri CreateUrl(string ip, string path)
         {
             var baseUrl = new Uri($"http://{ip}:{Sdk.Baresip.ExternalProtocolIpCommandsPort}");
@@ -144,18 +144,15 @@ namespace CodecControl.Client.SR.BaresipRest
         }
     }
 
-    public abstract class BaresipResponse
+    public class InputGainResponse
     {
         public bool Success { get; set; }
-    }
-
-    public class InputGainResponse : BaresipResponse
-{
         public int Value { get; set; }
     }
 
-    public class InputEnableResponse : BaresipResponse
+    public class InputEnableResponse
     {
+        public bool Success { get; set; }
         public bool Value { get; set; }
     }
 

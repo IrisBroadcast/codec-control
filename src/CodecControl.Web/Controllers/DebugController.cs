@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using CodecControl.Client;
-using CodecControl.Web.AudioStatus;
 using CodecControl.Web.CCM;
+using CodecControl.Web.Hub;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CodecControl.Web.Controllers

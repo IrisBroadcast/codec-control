@@ -1,7 +1,7 @@
 ﻿using CodecControl.Client.Models;
 using CodecControl.Web.Helpers;
 
-namespace CodecControl.Web.Models
+namespace CodecControl.Web.Models.Responses
 {
     public class AudioModeResponse 
     {

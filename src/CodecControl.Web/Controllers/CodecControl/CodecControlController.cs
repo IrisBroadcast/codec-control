@@ -185,7 +185,7 @@ namespace CodecControl.Web.Controllers.CodecControl
         [Route("increaseinputgain")]
         public async Task<ActionResult<InputGainLevelResponse>> IncreaseInputGain([FromBody]ChangeGainRequest parameters)
         {
-            return await ChangeGain(parameters, true);
+            return await ChangeInputGain(parameters, 1);
         }
 
         [BasicAuthorize]
@@ -193,15 +193,18 @@ namespace CodecControl.Web.Controllers.CodecControl
         [Route("decreaseinputgain")]
         public async Task<ActionResult<InputGainLevelResponse>> DecreaseInputGain([FromBody]ChangeGainRequest parameters)
         {
-            return await ChangeGain(parameters, false);
+            return await ChangeInputGain(parameters, -1);
         }
 
-        private async Task<ActionResult<InputGainLevelResponse>> ChangeGain(ChangeGainRequest request, bool increase)
+        [BasicAuthorize]
+        [HttpPost]
+        [Route("changeinputgain")]
+        public async Task<ActionResult<InputGainLevelResponse>> ChangeInputGain(ChangeGainRequest request, int change)
         {
             return await Execute(request.SipAddress, async (codecApi, codecInformation) =>
             {
                 var gain = await codecApi.GetInputGainLevelAsync(codecInformation.Ip, request.Input);
-                var newGain = gain + (increase ? 1 : -1);
+                var newGain = gain + change;
                 var setGain = await codecApi.SetInputGainLevelAsync(request.SipAddress, request.Input, newGain);
                 return new InputGainLevelResponse { GainLevel = setGain };
             });

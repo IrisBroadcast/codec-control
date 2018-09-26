@@ -4,12 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using CodecControl.Client;
 using CodecControl.Web.CCM;
-using CodecControl.Web.Models;
 using CodecControl.Web.Models.Responses;
 using Microsoft.AspNetCore.SignalR;
 using NLog;
 
-namespace CodecControl.Web.AudioStatus
+namespace CodecControl.Web.Hub
 {
     public class AudioStatusUpdater
     {

@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using CodecControl.Data.Database;
-using CodecControl.Web.AudioStatus;
+using CodecControl.Web.Hub;
 using CodecControl.Web.Security;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -68,6 +68,7 @@ namespace CodecControl.Web
 
             app.UseAuthentication();
 
+            app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             // Serve log files as static files
@@ -93,7 +94,6 @@ namespace CodecControl.Web
                 routes.MapHub<AudioStatusHub>("/audiostatusHub");
             });
 
-            app.UseHttpsRedirection();
             app.UseMvc();
         }
     }

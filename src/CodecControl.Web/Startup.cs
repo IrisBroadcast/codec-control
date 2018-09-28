@@ -1,13 +1,10 @@
 ﻿using System.IO;
-using CodecControl.Data.Database;
 using CodecControl.Web.Hub;
-using CodecControl.Web.Security;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -28,12 +25,6 @@ namespace CodecControl.Web
             ApplicationSettings appSettings = new ApplicationSettings();
             Configuration.GetSection("Application").Bind(appSettings);
             services.AddSingleton(appSettings);
-
-            var connectionString = Configuration.GetConnectionString("CcmDatabase");
-            services.AddDbContext<CcmDbContext>(options =>
-            {
-                options.UseMySql(connectionString);
-            });
 
             services.ConfigureDepencencyInjection();
 

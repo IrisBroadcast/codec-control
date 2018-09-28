@@ -1,4 +1,4 @@
 ﻿namespace CodecControl.Client.Exceptions
 {
-    public class UnableToConnectException : CodecControlException { }
+    public class UnableToConnectException : CodecException { }
 }

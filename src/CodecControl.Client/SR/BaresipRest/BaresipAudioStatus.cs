@@ -2,24 +2,24 @@
 
 namespace CodecControl.Client.SR.BaresipRest
 {
-    public class BaresipAudioStatus
+
+    public class BaresipAudioAlgorithmResponse : BaresipResponse
     {
-        public Meters Meters { get; set; }
+        public string EncoderAudioAlgoritm { get; set; }
+        public string DecoderAudioAlgoritm { get; set; }
+    }
+
+    public class BaresipAudioStatus : BaresipResponse
+    {
         public List<Input> Inputs { get; set; }
         public List<Output> Outputs { get; set; }
         public Control Control { get; set; }
     }
 
-    public class Meters
+    public class BaresipVuValues : BaresipResponse
     {
-        public Levels Tx { get; set; }
-        public Levels Rx { get; set; }
-    }
-
-    public class Levels
-    {
-        public int L { get; set; }
-        public int R { get; set; }
+        public int Tx { get; set; }
+        public int Rx { get; set; }
     }
 
     public class Input

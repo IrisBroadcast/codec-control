@@ -1,53 +1,67 @@
 ﻿using System;
-using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using CodecControl.Client.Exceptions;
 using Newtonsoft.Json;
-using NLog;
 
 namespace CodecControl.Client.SR.BaresipRest
 {
     public class HttpService
     {
-        protected static readonly Logger log = LogManager.GetCurrentClassLogger();
-
-        public static async Task<T> GetAsync<T>(Uri url) where T : class
+        public static async Task<T> GetWithBaresipResponseAsync<T>(Uri url) where T : BaresipResponse
         {
             using (var client = new HttpClient())
             {
+                client.Timeout = TimeSpan.FromSeconds(4);
                 var response = await client.GetAsync(url);
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    log.Warn("Request to {0} failed.", url);
-                    return null;
-                }
-                string jsonString = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<T>(jsonString);
+                return await ParseResponse<T>(response);
             }
         }
 
-        public static async Task<HttpResponseMessage> PostJsonAsync(Uri url, object data = null)
+        public static async Task<T> PostWithBaresipResponseAsync<T>(Uri url, object data = null) where T : BaresipResponse
         {
             using (var client = new HttpClient())
             {
-                try
+                client.Timeout = TimeSpan.FromSeconds(4);
+
+                StringContent content;
+                if (data != null)
                 {
-                    HttpContent content = null;
-                    if (data != null)
-                    {
-                        var s = JsonConvert.SerializeObject(data);
-                        content = new StringContent(s, Encoding.UTF8, "application/json");
-                    }
-                    return await client.PostAsync(url, content);
+                    var s = JsonConvert.SerializeObject(data);
+                    content = new StringContent(s, Encoding.UTF8, "application/json");
                 }
-                catch (Exception ex)
+                else
                 {
-                    log.Warn(ex, $"Exception when accessing {url.AbsoluteUri}");
-                    return new HttpResponseMessage { StatusCode = HttpStatusCode.NotFound };
+                    content = null;
                 }
+
+                var response = await client.PostAsync(url, content);
+                return await ParseResponse<T>(response);
             }
+        }
+
+        private static async Task<T> ParseResponse<T>(HttpResponseMessage response) where T : BaresipResponse
+        {
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new CodecInvocationException($"Request to {response.RequestMessage.RequestUri} returned HTTP status {response.StatusCode}");
+            }
+
+            string jsonString = await response.Content.ReadAsStringAsync();
+            var content = JsonConvert.DeserializeObject<T>(jsonString);
+
+            if (content == null)
+            {
+                throw new CodecInvocationException($"Response from {response.RequestMessage.RequestUri} was invalid");
+            }
+
+            if (!content.Success)
+            {
+                throw new CodecInvocationException($"Response from {response.RequestMessage.RequestUri} indicates operation was unsuccessful");
+            }
+
+            return content;
         }
 
     }

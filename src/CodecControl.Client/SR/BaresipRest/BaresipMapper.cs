@@ -5,6 +5,16 @@ namespace CodecControl.Client.SR.BaresipRest
 {
     public class BaresipMapper
     {
+        public static AudioAlgorithm MapToAudioAlgorithm(string baresipAudioAlgorithm)
+        {
+
+            if (Enum.TryParse(baresipAudioAlgorithm, true, out AudioAlgorithm audioAlgorithm))
+            {
+                return audioAlgorithm;
+            }
+            return AudioAlgorithm.Error;
+        }
+
         public static DisconnectReason MapToDisconnectReason(int statusCode)
         {
             if (statusCode == 0)
@@ -34,8 +44,6 @@ namespace CodecControl.Client.SR.BaresipRest
                     return LineStatusCode.ConnectedReceived;
                 case BaresipState.ConnectedCalled:
                     return LineStatusCode.ConnectedCalled;
-                case BaresipState.Disconnecting:
-                    return LineStatusCode.Disconnecting;
                 default:
                     return LineStatusCode.Disconnected;
             }
@@ -50,15 +58,5 @@ namespace CodecControl.Client.SR.BaresipRest
             };
         }
 
-        public static VuValues MapToVuValues(BaresipAudioStatus bareSipAudioStatus)
-        {
-            return new VuValues()
-            {
-                RxLeft = bareSipAudioStatus.Meters.Rx.L,
-                RxRight = bareSipAudioStatus.Meters.Rx.R,
-                TxLeft = bareSipAudioStatus.Meters.Tx.L,
-                TxRight = bareSipAudioStatus.Meters.Tx.R
-            };
-        }
     }
 }

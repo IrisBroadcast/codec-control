@@ -26,10 +26,9 @@ namespace CodecControl.Web.Controllers
         }
 
         [Route("codecinformation")]
-        public async Task<List<CodecInformation>> CodecInformation()
+        public async Task<CodecInformation> CodecInformation(string sipAddress)
         {
-            List<CodecInformation> codecInformations = await _ccmService.GetCodecInformationList();
-            return codecInformations;
+            return await _ccmService.GetCodecInformationBySipAddress(sipAddress);
         }
 
     }

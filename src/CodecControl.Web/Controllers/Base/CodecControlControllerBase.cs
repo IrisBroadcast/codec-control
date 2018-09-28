@@ -56,14 +56,14 @@ namespace CodecControl.Web.Controllers
                         return await func(codecApi, codecInformation);
                     }
                 }
-                catch (CodecControlException ex)
+                catch (CodecException ex)
                 {
                     log.Warn(ex, "Exception when sending codec control command to " + sipAddress);
                     return InternalServerError();
                 }
                 catch (Exception ex)
                 {
-                    log.Warn(ex, "Unknown exception when sending codec control command to " + sipAddress);
+                    log.Warn(ex, "Exception when sending codec control command to " + sipAddress);
                     return InternalServerError();
                 }
             }

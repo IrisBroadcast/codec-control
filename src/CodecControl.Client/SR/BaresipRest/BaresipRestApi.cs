@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using CodecControl.Client.Models;
-using NLog;
 
 namespace CodecControl.Client.SR.BaresipRest
 {
@@ -12,49 +10,41 @@ namespace CodecControl.Client.SR.BaresipRest
     /// </summary>
     public class BaresipRestApi : ICodecApi
     {
-        protected static readonly Logger log = LogManager.GetCurrentClassLogger();
-
         public async Task<bool> CheckIfAvailableAsync(string ip)
         {
-            // Connect to the unit and check for response on API:port
             var url = CreateUrl(ip, "/api/isavailable");
-
-            using (var client = new HttpClient())
-            {
-                client.Timeout = TimeSpan.FromSeconds(4);
-                var response = await client.GetAsync(url);
-                return response.IsSuccessStatusCode;
-            }
+            var isAvailableResponse = await HttpService.GetWithBaresipResponseAsync<IsAvailableResponse>(url);
+            return isAvailableResponse.Success;
         }
 
         public async Task<bool> CallAsync(string ip, string callee, string profileName)
         {
             var url = CreateUrl(ip, "api/call");
-            var response = await HttpService.PostJsonAsync(url, new { address = callee });
-            return response.IsSuccessStatusCode;
+            var response = await HttpService.PostWithBaresipResponseAsync<BaresipResponse>(url, new { address = callee });
+            return response.Success;
         }
 
         public async Task<bool> HangUpAsync(string ip)
         {
             var url = CreateUrl(ip, "api/hangup");
-            var response = await HttpService.PostJsonAsync(url);
-            return response.IsSuccessStatusCode;
+            var response = await HttpService.PostWithBaresipResponseAsync<BaresipResponse>(url);
+            return response.Success;
         }
 
         public Task<bool?> GetGpoAsync(string ip, int gpio) { throw new NotImplementedException(); }
 
         public async Task<bool> GetInputEnabledAsync(string ip, int input)
         {
-            var url = CreateUrl(ip, "api/inputenable?input=" + (input + 1));
-            var response = await HttpService.GetAsync<InputEnableResponse>(url);
-            return response?.Value ?? false;
+            var url = CreateUrl(ip, $"api/inputenable?input={input}");
+            var inputEnableResponse = await HttpService.GetWithBaresipResponseAsync<InputEnableResponse>(url);
+            return inputEnableResponse.Value;
         }
 
         public async Task<int> GetInputGainLevelAsync(string ip, int input)
         {
-            var url = CreateUrl(ip, "api/inputgain?input=" + (input + 1));
-            var gainObject = await HttpService.GetAsync<InputGainResponse>(url);
-            return gainObject?.Value ?? 0;
+            var url = CreateUrl(ip, $"api/inputgain?input={input}");
+            var inputGainResponse = await HttpService.GetWithBaresipResponseAsync<InputGainResponse>(url);
+            return inputGainResponse.Value;
         }
 
         public async Task<(bool, int)> GetInputGainAndStatusAsync(string ip, int input)
@@ -67,7 +57,7 @@ namespace CodecControl.Client.SR.BaresipRest
         public async Task<LineStatus> GetLineStatusAsync(string ip)
         {
             var url = CreateUrl(ip, "api/linestatus");
-            var lineStatus = await HttpService.GetAsync<BaresipLineStatus>(url);
+            var lineStatus = await HttpService.GetWithBaresipResponseAsync<BaresipLineStatus>(url);
 
             return new LineStatus
             {
@@ -76,41 +66,44 @@ namespace CodecControl.Client.SR.BaresipRest
             };
         }
 
-        public Task<VuValues> GetVuValuesAsync(string ip)
+        public async Task<VuValues> GetVuValuesAsync(string ip)
         {
-            throw new NotImplementedException();
+            var url = CreateUrl(ip, "api/vuvalues");
+            var vuValues = await HttpService.GetWithBaresipResponseAsync<BaresipVuValues>(url);
+
+            return new VuValues
+            {
+                TxLeft = vuValues.Tx,
+                TxRight = vuValues.Tx,
+                RxLeft = vuValues.Rx,
+                RxRight = vuValues.Rx
+            };
         }
 
-        public Task<AudioMode> GetAudioModeAsync(string ip)
+        public async Task<AudioMode> GetAudioModeAsync(string ip)
         {
-            throw new NotImplementedException();
+            var url = CreateUrl(ip, "api/audioalgorithm");
+            var audioAlgorithmResponse = await HttpService.GetWithBaresipResponseAsync<BaresipAudioAlgorithmResponse>(url);
+
+            return new AudioMode
+            {
+                EncoderAudioAlgoritm = BaresipMapper.MapToAudioAlgorithm(audioAlgorithmResponse.EncoderAudioAlgoritm),
+                DecoderAudioAlgoritm = BaresipMapper.MapToAudioAlgorithm(audioAlgorithmResponse.DecoderAudioAlgoritm)
+            };
         }
 
         public async Task<AudioStatus> GetAudioStatusAsync(string ip, int nrOfInputs, int nrOfGpos)
         {
-            return await GetAudioStatusAsync(ip);
-        }
-
-        private async Task<AudioStatus> GetAudioStatusAsync(string ip)
-        {
             var url = CreateUrl(ip, "api/audiostatus");
-            var bareSipAudioStatus = await HttpService.GetAsync<BaresipAudioStatus>(url);
+            var bareSipAudioStatus = await HttpService.GetWithBaresipResponseAsync<BaresipAudioStatus>(url);
 
-            try
+            var audioStatus = new AudioStatus()
             {
-                var audioStatus = new AudioStatus()
-                {
-                    Gpos = bareSipAudioStatus.Control.Gpo.Select(gpo => gpo.Active).ToList(),
-                    InputStatus = bareSipAudioStatus.Inputs.Select(BaresipMapper.MapToInputStatus).ToList(),
-                    VuValues = BaresipMapper.MapToVuValues(bareSipAudioStatus)
-                };
-                return audioStatus;
-            }
-            catch (Exception ex)
-            {
-                log.Warn(ex, "Exception when converting audio status");
-                return null;
-            }
+                Gpos = bareSipAudioStatus.Control.Gpo.Select(gpo => gpo.Active).ToList(),
+                InputStatus = bareSipAudioStatus.Inputs.Select(BaresipMapper.MapToInputStatus).ToList(),
+                VuValues = new VuValues() { TxLeft = -100, TxRight = -100, RxLeft = -100, RxRight = -100 } // Dummy VU values
+            };
+            return audioStatus;
         }
 
         public Task<bool> SetGpoAsync(string ip, int gpo, bool active)
@@ -121,15 +114,15 @@ namespace CodecControl.Client.SR.BaresipRest
         public async Task<bool> SetInputEnabledAsync(string ip, int input, bool enabled)
         {
             var url = CreateUrl(ip, "api/inputenable");
-            var response = await HttpService.PostJsonAsync(url, new { input = input, value = enabled });
-            return enabled; // TODO: Return real input enabled value
+            var response = await HttpService.PostWithBaresipResponseAsync<InputEnableResponse>(url, new { input = input, value = enabled });
+            return response.Value;
         }
 
         public async Task<int> SetInputGainLevelAsync(string ip, int input, int gainLevel)
         {
             var url = CreateUrl(ip, "api/inputgain");
-            var response = await HttpService.PostJsonAsync(url, new { input = input, value = gainLevel });
-            return gainLevel; // TODO: Return real input level
+            var inputgainResponse = await HttpService.PostWithBaresipResponseAsync<InputGainResponse>(url, new { input = input, value = gainLevel });
+            return inputgainResponse.Value;
         }
 
         public Task<bool> RebootAsync(string ip)
@@ -144,16 +137,5 @@ namespace CodecControl.Client.SR.BaresipRest
         }
     }
 
-    public class InputGainResponse
-    {
-        public bool Success { get; set; }
-        public int Value { get; set; }
-    }
-
-    public class InputEnableResponse
-    {
-        public bool Success { get; set; }
-        public bool Value { get; set; }
-    }
 
 }

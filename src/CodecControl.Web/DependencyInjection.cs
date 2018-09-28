@@ -1,9 +1,7 @@
 ﻿using CodecControl.Client.Prodys.IkusNet;
 using CodecControl.Client.SR.BaresipRest;
-using CodecControl.Data.Database;
 using CodecControl.Web.CCM;
 using CodecControl.Web.Hub;
-using CodecControl.Web.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CodecControl.Web
@@ -13,9 +11,7 @@ namespace CodecControl.Web
         public static void ConfigureDepencencyInjection(this IServiceCollection services)
         {
             services.AddSingleton<CcmService>();
-            //services.AddTransient<ICcmRepository, CcmDbRepository>();
-            services.AddTransient<ICcmRepository, CcmApiRepository>();
-            services.AddTransient<CcmDbContext>();
+            services.AddTransient<CcmApiRepository>();
 
             services.AddSingleton<SocketPool>();
             services.AddSingleton<AudioStatusUpdater>();

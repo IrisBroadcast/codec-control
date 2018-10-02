@@ -40,36 +40,6 @@ var unsubscribe = function (sipAddress) {
     getSubscriptions();
 };
 
-var getCodecInformation = function () {
-    // Call CCM and fill codecs list.
-    axios.get("/debug/codecinformation")
-        .then(function (response) {
-            let codecInformation = response.data;
-            app.codecInformation = codecInformation;
-            var codecs = codecInformation
-                .filter(s => { return s.api === "IkusNet"; })
-                .map(s => {
-                    return {
-                        sipAddress: s.sipAddress,
-                        updated: Date.now(),
-                        audioStatus: {
-                            vuValues: {
-                                txLeft: 0,
-                                txRight: 0,
-                                rxLeft: 0,
-                                rxRight: 0
-                            }
-                        }
-                    };
-                });
-            console.log(codecs);
-            app.codecs = codecs;
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
-};
-
 var getSubscriptions = function() {
     axios.get("/debug/subscriptions")
         .then(function (response) {
@@ -82,20 +52,59 @@ var getSubscriptions = function() {
         });
 };
 
+const getCodecInformationBySipAddress = function (sipAddress) {
+    if (!sipAddress) return;
+
+    axios.get("/debug/codecinformation", { params: { sipAddress: sipAddress } })
+        .then(function (response) {
+            let codecInformation = response.data;
+
+            if (!codecInformation || !codecInformation.sipAddress) {
+                console.warn('sipAddress not found');
+                return;
+            }
+            if (app.codecInformation.some(function (ci) { return ci.sipAddress === codecInformation.sipAddress; })) {
+                console.warn('sipAddress already added');
+                return;
+            }
+
+            app.codecInformation.push(codecInformation);
+
+            if (codecInformation.api === 'IkusNet') {
+                app.codecs.push({
+                    sipAddress: codecInformation.sipAddress,
+                    updated: Date.now(),
+                    audioStatus: {
+                        vuValues: {
+                            txLeft: 0,
+                            txRight: 0,
+                            rxLeft: 0,
+                            rxRight: 0
+                        }
+                    }
+                });
+            }
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+};
+
 var app = new Vue({
     el: '#app',
     data: {
         codecs: [],
         codecInformation: [],
-        subscriptions: []
+        subscriptions: [],
+        sipAddress: null
     },
     methods: {
         subscribe: subscribe,
         unsubscribe: unsubscribe,
-        getCodecInformation: getCodecInformation,
-        getSubscriptions: getSubscriptions
+        getSubscriptions: getSubscriptions,
+        getCodecInformationBySipAddress: getCodecInformationBySipAddress
     }
 });
 
-getCodecInformation();
-getSubscriptions();
+//getCodecInformationBySipAddress('mtu-25@contrib.sr.se');
+//getSubscriptions();

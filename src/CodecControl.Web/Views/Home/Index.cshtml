@@ -18,8 +18,10 @@
     </div>
 
     <div class="unit">
-        <span class="subheader">Aktuella prenumerationer</span>
-        <button v-on:click="getSubscriptions">Ladda om</button>
+        <div class="mb-1">
+            <span class="subheader">Aktuella prenumerationer</span>
+            <button v-on:click="getSubscriptions">Ladda om</button>
+        </div>
         <table v-if="subscriptions.length > 0">
             <thead>
                 <tr>
@@ -36,8 +38,15 @@
     </div>
 
     <div class="unit">
-        <span class="subheader">Styrbara ljudkodare</span>
-        <button v-on:click="getCodecInformation">Ladda om</button>
+        <div class="mb-1">
+            <label for="sipAddress" class="subheader">Lägg till styrbar ljudkodare</label>
+            <input id="sipAddress" 
+                   type="text" 
+                   placeholder="sipAddress" 
+                   v-model="sipAddress"
+                   v-on:keydown.enter="getCodecInformationBySipAddress(sipAddress)"/>
+            <button v-on:click="getCodecInformationBySipAddress(sipAddress)" >Lägg till</button>
+        </div>
     
         <table>
             <thead>
@@ -131,6 +140,9 @@
         border-top: 0.1rem solid #c7c7c7;
         border-right: 0.1rem solid #c7c7c7;
         font-size: smaller;
+    }
+    .mb-1 {
+        margin-bottom: 1em;
     }
 </style>
 

@@ -41,6 +41,7 @@
     {
         public int Code { get; set; } // Status code for last call. Usually a SIP Response code, but 0 when last call terminated normally.
         public string Message { get; set; } // Status message for last call.
+        public string RemoteAddress { get; set; }
     }
 
 }

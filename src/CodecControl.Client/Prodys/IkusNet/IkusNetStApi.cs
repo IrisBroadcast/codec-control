@@ -96,7 +96,8 @@ namespace CodecControl.Client.Prodys.IkusNet
                 return new LineStatus
                 {
                     StatusCode = IkusNetMapper.MapToLineStatus(response.LineStatus),
-                    DisconnectReason = IkusNetMapper.MapToDisconnectReason(response.DisconnectionCode)
+                    DisconnectReason = IkusNetMapper.MapToDisconnectReason(response.DisconnectionCode),
+                    RemoteAddress = response.Address
                 };
             }
         }

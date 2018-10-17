@@ -94,6 +94,7 @@ namespace CodecControl.Web.Controllers.CodecControl
                 model.LineStatus = lineStatus.StatusCode.ToString();
                 model.DisconnectReasonCode = (int)lineStatus.DisconnectReason;
                 model.DisconnectReasonDescription = lineStatus.DisconnectReason.Description();
+                model.RemoteAddress = lineStatus.RemoteAddress;
 
                 return model;
             });

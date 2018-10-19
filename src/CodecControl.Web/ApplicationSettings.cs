@@ -6,7 +6,6 @@ namespace CodecControl.Web
     {
         public string CcmHost { get; set; }
         public int CcmCodecInformationReloadInterval { get; set; } = 60;
-        public string [] CorsPolicyOrigins { get; set; }
         public string AuthenticatedUserName { get; set; }
         public string AuthenticatedPassword { get; set; }
         public string ReleaseDate { get; set; }

@@ -61,9 +61,12 @@ namespace CodecControl.Web
             app.UseStaticFiles();
 
             // Serve log files as static files
+            var logFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "logFiles");
+            Directory.CreateDirectory(logFolder);
+
             app.UseFileServer(new FileServerOptions
             {
-                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "logFiles")),
+                FileProvider = new PhysicalFileProvider(logFolder),
                 RequestPath = "/log",
                 EnableDirectoryBrowsing = true,
                 StaticFileOptions =

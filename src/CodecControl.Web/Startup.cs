@@ -37,8 +37,7 @@ namespace CodecControl.Web
                     .AllowAnyMethod()
                     .AllowAnyHeader()
                     .AllowCredentials()
-                    .AllowAnyOrigin()
-                    ;
+                    .AllowAnyOrigin();
             }));
 
             services.AddLazyCache();

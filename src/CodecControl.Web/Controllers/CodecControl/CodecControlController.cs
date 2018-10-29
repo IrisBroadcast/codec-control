@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using CodecControl.Client.Models;
 using CodecControl.Web.CCM;
 using CodecControl.Web.Helpers;
-using CodecControl.Web.Models;
 using CodecControl.Web.Models.Requests;
 using CodecControl.Web.Models.Responses;
 using CodecControl.Web.Security;
@@ -206,7 +205,7 @@ namespace CodecControl.Web.Controllers.CodecControl
             {
                 var gain = await codecApi.GetInputGainLevelAsync(codecInformation.Ip, request.Input);
                 var newGain = gain + change;
-                var setGain = await codecApi.SetInputGainLevelAsync(request.SipAddress, request.Input, newGain);
+                var setGain = await codecApi.SetInputGainLevelAsync(codecInformation.Ip, request.Input, newGain);
                 return new InputGainLevelResponse { GainLevel = setGain };
             });
         }

@@ -222,7 +222,23 @@ namespace CodecControl.Web.Controllers.CodecControl
             });
         }
 
-       
-    }
+        [BasicAuthorize]
+        [HttpPost]
+        [Route("batchenableinputs")]
+        public async Task<ActionResult<BatchEnableInputsResponse>> BatchEnableInputs([FromBody] BatchEnableInputsRequest request)
+        {
+            return await Execute(request.SipAddress, async (codecApi, codecInformation) =>
+            {
+                var result = new BatchEnableInputsResponse { Inputs = new List<InputEnabledStatus>() };
 
+                foreach (var command in request.InputEnableCommands)
+                {
+                    var enabled = await codecApi.SetInputEnabledAsync(codecInformation.Ip, command.Input, command.Enabled);
+                    result.Inputs.Add(new InputEnabledStatus { Enabled = enabled, Input = command.Input });
+                }
+
+                return result;
+            });
+        }
+    }
 }

@@ -1,4 +1,6 @@
-﻿namespace CodecControl.Web.Models.Requests
+﻿using System.Collections.Generic;
+
+namespace CodecControl.Web.Models.Requests
 {
     public class CallRequest
     {
@@ -47,4 +49,15 @@
         public int Input { get; set; }
     }
 
+    public class BatchEnableInputsRequest
+    {
+        public string SipAddress { get; set; }
+        public IEnumerable<InputEnable> InputEnableCommands { get; set; }
+
+        public class InputEnable
+        {
+            public int Input { get; set; }
+            public bool Enabled { get; set; }
+        }
+    }
 }

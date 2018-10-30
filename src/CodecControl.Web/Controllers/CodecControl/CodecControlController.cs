@@ -224,14 +224,14 @@ namespace CodecControl.Web.Controllers.CodecControl
 
         [BasicAuthorize]
         [HttpPost]
-        [Route("batchenableinputs")]
-        public async Task<ActionResult<BatchEnableInputsResponse>> BatchEnableInputs([FromBody] BatchEnableInputsRequest request)
+        [Route("batchsetinputenabled")]
+        public async Task<ActionResult<BatchEnableInputsResponse>> BatchSetInputEnabled([FromBody] BatchInputEnableRequest request)
         {
             return await Execute(request.SipAddress, async (codecApi, codecInformation) =>
             {
-                var result = new BatchEnableInputsResponse { Inputs = new List<InputEnabledStatus>() };
+                var result = new BatchEnableInputsResponse();
 
-                foreach (var command in request.InputEnableCommands)
+                foreach (var command in request.InputEnableRequests)
                 {
                     var enabled = await codecApi.SetInputEnabledAsync(codecInformation.Ip, command.Input, command.Enabled);
                     result.Inputs.Add(new InputEnabledStatus { Enabled = enabled, Input = command.Input });

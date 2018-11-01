@@ -28,4 +28,8 @@
         <Folder Include="wwwroot\logFiles\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Remove="EmptyCSharpFile.cs" />
+      <Compile Remove="EmptyCSharpFile.cs" />
+    </ItemGroup>
 </Project>

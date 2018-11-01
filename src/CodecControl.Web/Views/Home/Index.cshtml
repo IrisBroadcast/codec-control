@@ -1,150 +1,314 @@
 ﻿
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "CodecControl";
 }
 
-<div class="header">Codec Control</div>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="description" content="Codec control gateway" />
+    <title>@ViewBag.Title</title>
 
-<div id="app">
-    <div class="codecs" v-for="codec in codecs">
-        <div class="codec-name">{{codec.sipAddress}}</div>
-        <button v-on:click="subscribe(codec.sipAddress)">Subscribe</button>
-        <button v-on:click="unsubscribe(codec.sipAddress)">Unsubscribe</button>
-        <span class="vu-values">
-            Rx {{codec.audioStatus.vuValues.rxLeft}} / {{codec.audioStatus.vuValues.rxRight}}
-            Tx:{{codec.audioStatus.vuValues.txLeft}} / {{codec.audioStatus.vuValues.txRight}}
-        </span>
-        <span class="updated">{{codec.updated}}</span>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: #ce65da !important;
+            font-family: roboto, Arial, Helvetica, sans-serif !important;
+            -webkit-font-smoothing: subpixel-antialiased;
+            -ms-text-size-adjust: 100%;
+            -webkit-text-size-adjust: 100%;
+            line-height: 1;
+            color: #FFFFF7;
+        }
+
+        .conf-container {
+            margin: 0 auto;
+            padding: 2vh 0 0 0;
+            width: 90vw;
+        }
+
+        .conf-site {
+            font-size: 3vw;
+            font-weight: 300;
+            color: #5c22b3;
+            display: block;
+            float: right;
+        }
+
+        .conf-version {
+            font-size: 8vw;
+            font-weight: 200;
+        }
+
+        .conf-environment {
+            font-size: 16vw;
+            font-weight: 600;
+        }
+
+        .conf-server {
+            font-size: 5vw;
+            font-weight: 400;
+        }
+
+        .conf-started {
+            font-size: 2.5vw;
+            font-weight: 400;
+        }
+
+        .conf-headline {
+            margin-top: 6vh;
+            margin-bottom: 2vh;
+            font-size: 3vw;
+            font-weight: 400;
+            color: #812eb1;
+        }
+
+        a {
+            color: #2e2e2e;
+            text-decoration: none;
+        }
+
+            a:hover {
+                color: #ffffff;
+                text-decoration: underline;
+            }
+
+        .doc-info-table {
+            width: 100%;
+            margin: 3vh 0;
+            background: #e483ef;
+            line-height: 1.5;
+            font-size: 14pt;
+        }
+
+            .doc-info-table th {
+                background: #9a42ce;
+            }
+
+            .doc-info-table td {
+                padding: 5px;
+                border-bottom: 1px solid #aa47b5;
+            }
+
+        .doc-link-ex a {
+            text-transform: capitalize;
+            text-decoration: underline;
+        }
+
+        .doc-xinfo-table {
+            width: 100%;
+            margin-top: 10px;
+            background: #2E4546;
+        }
+
+            .doc-xinfo-table th {
+                background: #292929;
+            }
+
+            .doc-xinfo-table td {
+                padding: 5px;
+                border-bottom: 1px solid #292929;
+            }
+
+        .doc-main-paramname {
+            font-weight: 600;
+            width: 20%;
+        }
+
+        .doc-main-params {
+            font-style: oblique;
+            width: 15%;
+        }
+
+        .doc-main-description {
+            color: #1d649d;
+        }
+
+        .btn {
+            background: #c448d2;
+            line-height: 2;
+            padding: 0.5vh 2vw;
+            margin: 0 1vw 0 0;
+            display: inline-block;
+            color: white;
+            border: 0;
+            font-size: 1em;
+        }
+
+        .current {
+            background: #e7fffa;
+        }
+
+        .input-text {
+            background: #f59eff;
+            line-height: 2;
+            padding: 0.5vh 2vw;
+            margin: 0 1vw 0 0;
+            display: inline-block;
+            font-size: 1em;
+            color: white;
+            border: 0;
+        }
+
+        .header {
+            display: block;
+            font-size: 2em;
+            margin-block-end: 1em;
+            font-weight: bold;
+        }
+
+        .small {
+            font-size: 12px;
+        }
+
+        .unit {
+            margin-top: 45px;
+        }
+
+        .codecs {
+            width: 700px;
+        }
+
+        .codec-name {
+            width: 200px;
+            float: left
+        }
+
+        .codecs button {
+            width: 90px
+        }
+
+        .codecs .vu-values {
+            width: 170px;
+            display: inline-block;
+        }
+
+        .codecs .updated {
+            font-size: smaller;
+        }
+
+        /*.subheader {
+            margin-top: 25px;
+            font-size: large;
+            font-weight: bold;
+        }
+
+        table {
+            border: solid 1px black;
+            line-height: 1;
+        }
+
+        th {
+            font-size: small;
+        }
+
+        td {
+            border-top: 0.1rem solid #c7c7c7;
+            border-right: 0.1rem solid #c7c7c7;
+            font-size: smaller;
+        }*/
+        .mb-1 {
+            margin-bottom: 1em;
+        }
+
+
+    </style>
+
+</head>
+<body>
+
+    <div class="conf-container">
+        <div id="conf-site" class="conf-site">CodecControl - <a href="/">Index</a></div>
+        <div id="conf-version" class="conf-version">v @ViewData["Version"]</div>
+        <div id="conf-environment" class="conf-environment"></div>
+        <div id="conf-started" class="conf-started">@ViewData["ReleaseDate"]</div>
+        <div id="conf-server" class="conf-server">@ViewData["Server"]</div>
     </div>
 
-    <div class="unit">
-        <div class="mb-1">
-            <span class="subheader">Aktuella prenumerationer</span>
-            <button v-on:click="getSubscriptions">Ladda om</button>
+    <div class="conf-container" id="app">
+        <div class="codecs" v-for="codec in codecs">
+            <div class="codec-name">{{codec.sipAddress}}</div>
+            <button v-on:click="subscribe(codec.sipAddress)">Subscribe</button>
+            <button v-on:click="unsubscribe(codec.sipAddress)">Unsubscribe</button>
+            <span class="vu-values">
+                Rx {{codec.audioStatus.vuValues.rxLeft}} / {{codec.audioStatus.vuValues.rxRight}}
+                Tx:{{codec.audioStatus.vuValues.txLeft}} / {{codec.audioStatus.vuValues.txRight}}
+            </span>
+            <span class="updated">{{codec.updated}}</span>
         </div>
-        <table v-if="subscriptions.length > 0">
-            <thead>
-                <tr>
-                    <th>Connection id</th>
-                    <th>Sip address</th>
+        <div class="unit">
+            <div class="conf-headline">
+                Aktuella prenumerationer
+            </div>
+            <a v-on:click="getSubscriptions" class="btn">Ladda om</a>
 
-                </tr>
-            </thead>
-            <tr v-for="subscription in subscriptions">
-                <td>{{subscription.connectionId}}</td>
-                <td>{{subscription.sipAddress}}</td>
-            </tr>
-        </table>
-    </div>
+            <table cellspacing="0" cellpadding="0" border="0" class="doc-info-table">
+                <thead>
+                    <tr>
+                        <th>Connection id</th>
+                        <th>Sip-address</th>
+                    </tr>
+                </thead>
+                <tbody v-if="subscriptions.length > 0">
+                    <tr v-for="subscription in subscriptions">
+                        <td>{{subscription.connectionId}}</td>
+                        <td>{{subscription.sipAddress}}</td>
+                    </tr>
+                </tbody>
+                <tbody v-if="subscriptions.length == 0">
+                    <tr>
+                        <td colspan="2">No active subscriptions</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="unit">
+            <div class="conf-headline">
+                <label for="sipAddress" class="subheader">Lägg till styrbar ljudkodare</label>
+            </div>
 
-    <div class="unit">
-        <div class="mb-1">
-            <label for="sipAddress" class="subheader">Lägg till styrbar ljudkodare</label>
-            <input id="sipAddress" 
-                   type="text" 
-                   placeholder="sipAddress" 
+            <input id="sipAddress"
+                   type="text"
+                   placeholder="sipAddress"
                    v-model="sipAddress"
-                   v-on:keydown.enter="getCodecInformationBySipAddress(sipAddress)"/>
-            <button v-on:click="getCodecInformationBySipAddress(sipAddress)" >Lägg till</button>
+                   v-on:keydown.enter="getCodecInformationBySipAddress(sipAddress)"
+                   class="input-text" />
+            <button v-on:click="getCodecInformationBySipAddress(sipAddress)" class="btn">Lägg till</button>
+
+            <table cellspacing="0" cellpadding="0" border="0" class="doc-info-table">
+                <thead>
+                    <tr>
+                        <th>Sip-address</th>
+                        <th>IP</th>
+                        <th>API</th>
+                        <th>GPO-namn</th>
+                        <th>#Ingångar</th>
+                        <th>#GPO</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="ci in codecInformation">
+                        <td v-for="value in ci">{{value}}</td>
+                    </tr>
+                </tbody>
+                <tbody v-if="codecInformation.length == 0">
+                    <tr>
+                        <td colspan="2">No active codec information</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-    
-        <table>
-            <thead>
-            <tr>
-                <th>SipAddress</th>
-                <th>IP</th>
-                <th>API</th>
-                <th>GPO-namn</th>
-                <th>#Ingångar</th>
-                <th>#GPO</th>
-            </tr>
-            </thead>
-            <tr v-for="ci in codecInformation">
-                <td v-for="value in ci">{{value}}</td>
-            </tr>
-        </table>
+       <!--<br />
+        <div class="small">Version @ViewData["Version"] i drift sedan @ViewData["ReleaseDate"]</div>
+        <div class="small">Server: @ViewData["Server"]</div>-->
     </div>
 
-    <br />
-    <div class="small">Version @ViewData["Version"] i drift sedan @ViewData["ReleaseDate"]</div>
-    <div class="small">Server: @ViewData["Server"]</div>
-
-</div>
-
-<style>
-
-    body {
-        margin: 25px;
-        padding: 0;
-        height: 100%;
-        background-color: white;
-        font-family: roboto, Arial, Helvetica, sans-serif;
-        /*line-height: 2;*/
-        color: #0F1525;
-        font-size: 11pt;
-    }
-
-    .header {
-        display: block;
-        font-size: 2em;
-        margin-block-end: 1em;
-        font-weight: bold;
-    }
-
-    .small {
-        font-size: 12px;
-    }
-
-    .unit {
-        margin-top: 45px;
-    }
-
-    .codecs {
-        width: 700px;
-    }
-
-    .codec-name {
-        width: 200px;
-        float: left
-    }
-
-    .codecs button {
-        width: 90px
-    }
-
-    .codecs .vu-values {
-        width: 170px;
-        display: inline-block;
-    }
-
-    .codecs .updated {
-        font-size: smaller;
-    }
-
-    .subheader {
-        margin-top: 25px;
-        font-size: large;
-        font-weight: bold;
-    }
-
-    table {
-        border: solid 1px black;
-        line-height: 1;
-    }
-
-    th {
-        font-size: small;
-    }
-
-    td {
-        border-top: 0.1rem solid #c7c7c7;
-        border-right: 0.1rem solid #c7c7c7;
-        font-size: smaller;
-    }
-    .mb-1 {
-        margin-bottom: 1em;
-    }
-</style>
+</body>
 
 <script src="~/lib/signalr/dist/browser/signalr.js"></script>
 <script src="~/lib/vue/dist/vue.js"></script>
@@ -152,6 +316,4 @@
 <script src="~/js/codeccontrol.js"></script>
 
 
-
-
-
+</html>

@@ -100,7 +100,7 @@ namespace CodecControl.Client.SR.BaresipRest
 
             var audioStatus = new AudioStatus()
             {
-                Gpos = bareSipAudioStatus.Control.Gpo.Select(gpo => gpo.Active).ToList(),
+                Gpos = bareSipAudioStatus.Control.Gpo.Select(gpo => new GpoStatus() { Index = gpo.Id, Active = gpo.Active }).ToList(),
                 InputStatus = bareSipAudioStatus.Inputs.Select(BaresipMapper.MapToInputStatus).ToList(),
                 VuValues = new VuValues() { TxLeft = -100, TxRight = -100, RxLeft = -100, RxRight = -100 } // Dummy VU values
             };

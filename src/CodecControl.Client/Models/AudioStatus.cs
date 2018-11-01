@@ -6,7 +6,7 @@ namespace CodecControl.Client.Models
     {
         public VuValues VuValues { get; set; }
         public List<InputStatus> InputStatus { get; set; }
-        public List<bool> Gpos { get; set; }
+        public List<GpoStatus> Gpos { get; set; }
 
     }
 }

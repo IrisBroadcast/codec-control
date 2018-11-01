@@ -13,7 +13,7 @@ namespace CodecControl.Client.Prodys.IkusNet
     public class IkusNetStApi : IkusNetApiBase, ICodecApi
     {
 
-        public IkusNetStApi(SocketPool socketPool) :base(socketPool)
+        public IkusNetStApi(SocketPool socketPool) : base(socketPool)
         {
         }
 
@@ -101,7 +101,7 @@ namespace CodecControl.Client.Prodys.IkusNet
                 };
             }
         }
-        
+
         public async Task<VuValues> GetVuValuesAsync(string hostAddress)
         {
             using (var socket = await SocketPool.TakeSocket(hostAddress))
@@ -111,7 +111,7 @@ namespace CodecControl.Client.Prodys.IkusNet
                 return IkusNetMapper.MapToVuValues(response);
             }
         }
-        
+
         public async Task<AudioMode> GetAudioModeAsync(string hostAddress)
         {
             using (var socket = await SocketPool.TakeSocket(hostAddress))
@@ -131,7 +131,7 @@ namespace CodecControl.Client.Prodys.IkusNet
                 };
             }
         }
-        
+
         public virtual async Task<AudioStatus> GetAudioStatusAsync(string hostAddress, int nrOfInputs, int nrOfGpos)
         {
             var audioStatus = new AudioStatus();
@@ -145,8 +145,8 @@ namespace CodecControl.Client.Prodys.IkusNet
                 // // Input status not implemented in Quantum ST
                 audioStatus.InputStatus = new List<InputStatus>();
 
-                audioStatus.Gpos = new List<bool>();
-                 
+                audioStatus.Gpos = new List<GpoStatus>();
+
                 for (int gpo = 0; gpo < nrOfGpos; gpo++)
                 {
                     SendCommand(socket, new CommandIkusNetGetGpo { Gpio = gpo });
@@ -157,8 +157,9 @@ namespace CodecControl.Client.Prodys.IkusNet
                         // Indication of missing GPO for the number. Probably we passed the last one.
                         break;
                     }
-                    audioStatus.Gpos.Add(gpoEnable.Value);
+                    audioStatus.Gpos.Add(new GpoStatus() { Index = gpo, Active = gpoEnable.Value });
                 }
+
             }
 
             return audioStatus;

@@ -17,10 +17,12 @@ namespace CodecControl.Web.Hub
         private readonly IHubContext<AudioStatusHub> _hub;
         private readonly CcmService _ccmService;
         private readonly IServiceProvider _serviceProvider;
-        private readonly List<SubscriptionInfo> _subscriptions = new List<SubscriptionInfo>();
         private readonly TimeSpan _pollDelay = TimeSpan.FromMilliseconds(500);
         private bool _isPolling;
 
+        public List<SubscriptionInfo> Subscriptions { get; } = new List<SubscriptionInfo>();
+        private bool HasSubscriptions => Subscriptions.Any();
+        
         public AudioStatusUpdater(IHubContext<AudioStatusHub> hub, CcmService ccmService, IServiceProvider serviceProvider)
         {
             log.Debug("AudioStatusUpdater constructor");
@@ -40,13 +42,13 @@ namespace CodecControl.Web.Hub
 
             sipAddress = sipAddress.Trim().ToLower();
 
-            if (_subscriptions.Any(s => s.ConnectionId == connectionId && s.SipAddress == sipAddress))
+            if (Subscriptions.Any(s => s.ConnectionId == connectionId && s.SipAddress == sipAddress))
             {
                 // Already subscribing
                 return;
             }
 
-            _subscriptions.Add(new SubscriptionInfo { ConnectionId = connectionId, SipAddress = sipAddress });
+            Subscriptions.Add(new SubscriptionInfo { ConnectionId = connectionId, SipAddress = sipAddress });
             _hub.Groups.AddToGroupAsync(connectionId, sipAddress);
 
             StartCheckCodecs();
@@ -54,8 +56,8 @@ namespace CodecControl.Web.Hub
 
         public void Unsubscribe(string connectionId, string sipAddress)
         {
-            var subscriptions = _subscriptions.Where(s => s.ConnectionId == connectionId && s.SipAddress == sipAddress).ToList();
-            _subscriptions.RemoveAll(s => s.ConnectionId == connectionId && s.SipAddress == sipAddress);
+            var subscriptions = Subscriptions.Where(s => s.ConnectionId == connectionId && s.SipAddress == sipAddress).ToList();
+            Subscriptions.RemoveAll(s => s.ConnectionId == connectionId && s.SipAddress == sipAddress);
             if (subscriptions.Any())
             {
                 _hub.Groups.RemoveFromGroupAsync(connectionId, subscriptions[0].SipAddress);
@@ -64,18 +66,14 @@ namespace CodecControl.Web.Hub
 
         public void Unsubscribe(string connectionId)
         {
-            var subscriptions = _subscriptions.Where(s => s.ConnectionId == connectionId);
-            _subscriptions.RemoveAll(s => s.ConnectionId == connectionId);
+            var subscriptions = Subscriptions.Where(s => s.ConnectionId == connectionId);
+            Subscriptions.RemoveAll(s => s.ConnectionId == connectionId);
 
             foreach (var subscription in subscriptions)
             {
                 _hub.Groups.RemoveFromGroupAsync(connectionId, subscription.SipAddress);
             }
         }
-
-        private bool HasSubscriptions => _subscriptions.Any();
-
-        public List<SubscriptionInfo> Subscriptions => _subscriptions;
 
         private void StartCheckCodecs()
         {
@@ -92,7 +90,7 @@ namespace CodecControl.Web.Hub
                     int waitTime;
                     using (var timeMeasurer = new TimeMeasurer("Checking audio status on all codecs"))
                     {
-                        var sipAddresses = _subscriptions.Select(s => s.SipAddress).Distinct().ToList();
+                        var sipAddresses = Subscriptions.Select(s => s.SipAddress).Distinct().ToList();
                         log.Info($"Checking audio status on #{sipAddresses.Count} codec(s). ({string.Join(",", sipAddresses)})");
 
                         Parallel.ForEach(sipAddresses, async sipAddress =>

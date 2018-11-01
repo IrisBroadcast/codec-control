@@ -53,6 +53,7 @@ namespace CodecControl.Client.SR.BaresipRest
         {
             return new InputStatus()
             {
+                Index = i.Id,
                 Enabled = i.On,
                 GainLevel = i.Level
             };

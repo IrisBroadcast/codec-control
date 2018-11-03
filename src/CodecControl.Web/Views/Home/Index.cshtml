@@ -126,7 +126,7 @@
         }
 
         .doc-main-description {
-            color: #1d649d;
+            color: #5d2a7b;
         }
 
         .btn {
@@ -138,6 +138,7 @@
             color: white;
             border: 0;
             font-size: 1em;
+            cursor: pointer;
         }
 
         .current {
@@ -153,6 +154,11 @@
             font-size: 1em;
             color: white;
             border: 0;
+        }
+
+        ::placeholder {
+            color: white;
+            opacity: 1;
         }
 
         .header {
@@ -192,39 +198,14 @@
             font-size: smaller;
         }
 
-        /*.subheader {
-            margin-top: 25px;
-            font-size: large;
-            font-weight: bold;
-        }
-
-        table {
-            border: solid 1px black;
-            line-height: 1;
-        }
-
-        th {
-            font-size: small;
-        }
-
-        td {
-            border-top: 0.1rem solid #c7c7c7;
-            border-right: 0.1rem solid #c7c7c7;
-            font-size: smaller;
-        }*/
-        .mb-1 {
-            margin-bottom: 1em;
-        }
-
-
     </style>
 
 </head>
 <body>
 
     <div class="conf-container">
-        <div id="conf-site" class="conf-site">CodecControl - <a href="/">Index</a></div>
-        <div id="conf-version" class="conf-version">v @ViewData["Version"]</div>
+        <div id="conf-site" class="conf-site">CodecControl - <a href="/help">Help</a> - <a href="/log">Log</a></div>
+        <div id="conf-version" class="conf-version">@ViewData["Version"]</div>
         <div id="conf-environment" class="conf-environment"></div>
         <div id="conf-started" class="conf-started">@ViewData["ReleaseDate"]</div>
         <div id="conf-server" class="conf-server">@ViewData["Server"]</div>
@@ -243,9 +224,9 @@
         </div>
         <div class="unit">
             <div class="conf-headline">
-                Aktuella prenumerationer
+                Current Subscriptions
             </div>
-            <a v-on:click="getSubscriptions" class="btn">Ladda om</a>
+            <a v-on:click="getSubscriptions" class="btn">Reload</a>
 
             <table cellspacing="0" cellpadding="0" border="0" class="doc-info-table">
                 <thead>
@@ -269,7 +250,7 @@
         </div>
         <div class="unit">
             <div class="conf-headline">
-                <label for="sipAddress" class="subheader">Lägg till styrbar ljudkodare</label>
+                <label for="sipAddress" class="subheader">Add controllable audio-codec</label>
             </div>
 
             <input id="sipAddress"
@@ -278,7 +259,7 @@
                    v-model="sipAddress"
                    v-on:keydown.enter="getCodecInformationBySipAddress(sipAddress)"
                    class="input-text" />
-            <button v-on:click="getCodecInformationBySipAddress(sipAddress)" class="btn">Lägg till</button>
+            <button v-on:click="getCodecInformationBySipAddress(sipAddress)" class="btn">Add</button>
 
             <table cellspacing="0" cellpadding="0" border="0" class="doc-info-table">
                 <thead>
@@ -286,9 +267,9 @@
                         <th>Sip-address</th>
                         <th>IP</th>
                         <th>API</th>
-                        <th>GPO-namn</th>
-                        <th>#Ingångar</th>
-                        <th>#GPO</th>
+                        <th>GPO-name</th>
+                        <th>#Inputs</th>
+                        <th>#GPOs</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -298,7 +279,7 @@
                 </tbody>
                 <tbody v-if="codecInformation.length == 0">
                     <tr>
-                        <td colspan="2">No active codec information</td>
+                        <td colspan="6">No active codec information</td>
                     </tr>
                 </tbody>
             </table>

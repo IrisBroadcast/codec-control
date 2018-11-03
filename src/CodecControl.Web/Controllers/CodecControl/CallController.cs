@@ -48,8 +48,5 @@ namespace CodecControl.Web.Controllers.CodecControl
             return await Execute(request.SipAddress,
                 async (codecApi, codecInformation) => await codecApi.RebootAsync(codecInformation.Ip));
         }
-
-
-
     }
 }

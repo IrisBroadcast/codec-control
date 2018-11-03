@@ -21,9 +21,16 @@ namespace CodecControl.Web.Controllers.CodecControl
 
         [Route("isavailable")]
         [HttpGet]
-        public async Task<ActionResult<bool>> IsAvailable(string sipAddress)
+        public async Task<ActionResult<UnitStatusResponse>> IsAvailable(string sipAddress)
         {
-            return await Execute(sipAddress, async (codecApi, codecInformation) => await codecApi.CheckIfAvailableAsync(codecInformation.Ip));
+            bool available = await Execute(sipAddress, async (codecApi, codecInformation) => await codecApi.CheckIfAvailableAsync(codecInformation.Ip));
+
+            var model = new UnitStatusResponse()
+            {
+                Available = available,
+                IpAddress = ""
+            };
+            return model;
         }
 
         [Route("getavailablegpos")]
@@ -66,7 +73,12 @@ namespace CodecControl.Web.Controllers.CodecControl
             return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
                 var (enabled, gain) = await codecApi.GetInputGainAndStatusAsync(codecInformation.Ip, input);
-                return new InputGainAndEnabledResponse { Enabled = enabled, GainLevel = gain };
+                return new InputGainAndEnabledResponse
+                {
+                    Input = input,
+                    Enabled = enabled,
+                    GainLevel = gain
+                };
             });
         }
 
@@ -77,7 +89,11 @@ namespace CodecControl.Web.Controllers.CodecControl
             return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
                 var enabled = await codecApi.GetInputEnabledAsync(codecInformation.Ip, input);
-                return new InputEnabledResponse { Enabled = enabled };
+                return new InputEnabledResponse
+                { 
+                    Input = input,
+                    Enabled = enabled
+                };
             });
         }
 
@@ -164,7 +180,11 @@ namespace CodecControl.Web.Controllers.CodecControl
             {
                 await codecApi.SetGpoAsync(codecInformation.Ip, request.Number, request.Active);
                 var gpoActive = await codecApi.GetGpoAsync(codecInformation.Ip, request.Number) ?? false;
-                return new GpoResponse() { Active = gpoActive };
+                return new GpoResponse()
+                {
+                    Number = request.Number,
+                    Active = gpoActive
+                };
             });
         }
 
@@ -176,7 +196,11 @@ namespace CodecControl.Web.Controllers.CodecControl
             return await Execute(request.SipAddress, async (codecApi, codecInformation) =>
             {
                 var isEnabled = await codecApi.SetInputEnabledAsync(codecInformation.Ip, request.Input, request.Enabled);
-                return new InputEnabledResponse { Enabled = isEnabled };
+                return new InputEnabledResponse
+                {
+                    Input = request.Input,
+                    Enabled = isEnabled
+                };
             });
         }
 
@@ -206,7 +230,11 @@ namespace CodecControl.Web.Controllers.CodecControl
                 var gain = await codecApi.GetInputGainLevelAsync(codecInformation.Ip, request.Input);
                 var newGain = gain + change;
                 var setGain = await codecApi.SetInputGainLevelAsync(codecInformation.Ip, request.Input, newGain);
-                return new InputGainLevelResponse { GainLevel = setGain };
+                return new InputGainLevelResponse
+                {
+                    Input = request.Input,
+                    GainLevel = setGain
+                };
             });
         }
 
@@ -218,7 +246,11 @@ namespace CodecControl.Web.Controllers.CodecControl
             return await Execute(request.SipAddress, async (codecApi, codecInformation) =>
             {
                 var gainLevel = await codecApi.SetInputGainLevelAsync(codecInformation.Ip, request.Input, request.Level);
-                return new InputGainLevelResponse { GainLevel = gainLevel };
+                return new InputGainLevelResponse
+                {
+                    Input = request.Input,
+                    GainLevel = gainLevel
+                };
             });
         }
 
@@ -234,7 +266,7 @@ namespace CodecControl.Web.Controllers.CodecControl
                 foreach (var command in request.InputEnableRequests)
                 {
                     var enabled = await codecApi.SetInputEnabledAsync(codecInformation.Ip, command.Input, command.Enabled);
-                    result.Inputs.Add(new InputEnabledStatus { Enabled = enabled, Input = command.Input });
+                    result.Inputs.Add(new InputEnabledStatus{ Enabled = enabled, Input = command.Input });
                 }
 
                 return result;

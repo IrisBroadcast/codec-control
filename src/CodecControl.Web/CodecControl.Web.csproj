@@ -32,4 +32,7 @@
       <Compile Remove="EmptyCSharpFile.cs" />
       <Compile Remove="EmptyCSharpFile.cs" />
     </ItemGroup>
+    <ItemGroup>
+      <None Remove="Views\Home\EmptyHTMLFile.html" />
+    </ItemGroup>
 </Project>

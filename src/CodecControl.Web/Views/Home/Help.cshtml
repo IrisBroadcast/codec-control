@@ -1,0 +1,527 @@
+﻿@{
+    ViewData["Title"] = "CodecControl - Help";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="description" content="Codec control gateway" />
+    <title>@ViewBag.Title</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: #ce65da !important;
+            font-family: roboto, Arial, Helvetica, sans-serif !important;
+            -webkit-font-smoothing: subpixel-antialiased;
+            -ms-text-size-adjust: 100%;
+            -webkit-text-size-adjust: 100%;
+            line-height: 1;
+            color: #FFFFF7;
+        }
+
+        .conf-container {
+            margin: 0 auto;
+            padding: 2vh 0 0 0;
+            width: 90vw;
+        }
+
+        .conf-site {
+            font-size: 3vw;
+            font-weight: 300;
+            color: #5c22b3;
+            display: block;
+            float: right;
+        }
+
+        .conf-version {
+            font-size: 8vw;
+            font-weight: 200;
+        }
+
+        .conf-environment {
+            font-size: 16vw;
+            font-weight: 600;
+        }
+
+        .conf-server {
+            font-size: 5vw;
+            font-weight: 400;
+        }
+
+        .conf-started {
+            font-size: 2.5vw;
+            font-weight: 400;
+        }
+
+        .conf-headline {
+            margin-top: 6vh;
+            margin-bottom: 2vh;
+            font-size: 3vw;
+            font-weight: 400;
+            color: #812eb1;
+        }
+
+        a {
+            color: #2e2e2e;
+            text-decoration: none;
+        }
+
+            a:hover {
+                color: #ffffff;
+                text-decoration: underline;
+            }
+
+        .doc-info-table {
+            width: 100%;
+            margin: 3vh 0;
+            background: #e483ef;
+            line-height: 1.5;
+            font-size: 14pt;
+        }
+
+            .doc-info-table th {
+                background: #9a42ce;
+            }
+
+            .doc-info-table td {
+                padding: 5px;
+                border-bottom: 1px solid #aa47b5;
+            }
+
+        .doc-link-ex a {
+            text-transform: capitalize;
+            text-decoration: underline;
+        }
+
+        .doc-xinfo-table {
+            width: 100%;
+            margin-top: 10px;
+            background: #2E4546;
+        }
+
+            .doc-xinfo-table th {
+                background: #292929;
+            }
+
+            .doc-xinfo-table td {
+                padding: 5px;
+                border-bottom: 1px solid #292929;
+            }
+
+        .doc-main-paramname {
+            font-weight: 600;
+            width: 20%;
+        }
+
+        .doc-main-params {
+            font-style: oblique;
+            width: 15%;
+        }
+
+        .doc-main-description {
+            color: #5d2a7b;
+        }
+
+        .docs--response {
+
+        }
+
+        .docs--method {
+            font-size: 2em;
+            background: #a245ad;
+        }
+
+        .docs--apiadr {
+            font-size: 2em;
+            background: #772b80;
+        }
+
+        .btn {
+            background: #c448d2;
+            line-height: 2;
+            padding: 0.5vh 2vw;
+            margin: 0 1vw 0 0;
+            display: inline-block;
+            color: white;
+            border: 0;
+            font-size: 1em;
+            cursor: pointer;
+        }
+
+        .current {
+            background: #e7fffa;
+        }
+
+        .input-text {
+            background: #f59eff;
+            line-height: 2;
+            padding: 0.5vh 2vw;
+            margin: 0 1vw 0 0;
+            display: inline-block;
+            font-size: 1em;
+            color: white;
+            border: 0;
+        }
+
+        ::placeholder {
+            color: white;
+            opacity: 1;
+        }
+
+        .header {
+            display: block;
+            font-size: 2em;
+            margin-block-end: 1em;
+            font-weight: bold;
+        }
+
+        .small {
+            font-size: 12px;
+        }
+
+        .unit {
+            margin-top: 45px;
+        }
+
+        .codecs {
+            width: 700px;
+        }
+
+        .codec-name {
+            width: 200px;
+            float: left
+        }
+
+        .codecs button {
+            width: 90px
+        }
+
+        .codecs .vu-values {
+            width: 170px;
+            display: inline-block;
+        }
+
+        .codecs .updated {
+            font-size: smaller;
+        }
+    </style>
+</head>
+<body>
+    <div class="conf-container">
+        <div id="conf-site" class="conf-site">CodecControl - <a href="/">Index</a> - <a href="/log">Log</a></div>
+        <div id="conf-version" class="conf-version">@ViewData["Version"]</div>
+        <div id="conf-environment" class="conf-environment"></div>
+        <div id="conf-started" class="conf-started">@ViewData["ReleaseDate"]</div>
+        <div id="conf-server" class="conf-server">@ViewData["Server"]</div>
+    </div>
+    <div class="conf-container" id="app">
+
+        <div class="conf-headline">Codec Control - Documentation</div>
+
+        <h2><a id="CallController_4"></a>CallController</h2>
+        <hr>
+
+        <h4><a id="POST_apicodeccontrolcall_7"></a><code class="docs--method">POST</code> <code class="docs--apiadr">/api/codeccontrol/call</code></h4>
+        <p><strong>URL Params</strong></p>
+        <ul>
+        <li><code class="docs--params">None</code></li>
+        </ul>
+        <p><strong>Data Params</strong></p>
+        <ul>
+        <li><code class="docs--params">{ SipAddress : [string] }</code></li>
+        <li><code class="docs--params">{ Callee : [string] }</code></li>
+        <li><code class="docs--params">{ ProfileName : [string] }</code></li>
+        </ul>
+        <p><strong>Response</strong></p>
+        <code class="docs--response">[boolean]
+        </code>
+        <hr>
+
+        <h4><a id="POST_apicodeccontrolhangup_25"></a><code class="docs--method">POST</code> <code class="docs--apiadr">/api/codeccontrol/hangup</code></h4>
+        <p><strong>URL Params</strong></p>
+        <ul>
+        <li><code class="docs--params">None</code></li>
+        </ul>
+        <p><strong>Data Params</strong></p>
+        <ul>    
+        <li><code class="docs--params">{ SipAddress : [string] }</code></li>
+        </ul>
+        <p><strong>Response</strong></p>
+        <code class="docs--response">[boolean]
+        </code>
+        <hr>
+
+        <h4><a id="POST_apicodeccontrolreboot_41"></a><code class="docs--method">POST</code> <code class="docs--apiadr">/api/codeccontrol/reboot</code></h4>
+        <p><strong>URL Params</strong></p>
+        <ul>
+        <li><code class="docs--params">None</code></li>
+        </ul>
+        <p><strong>Data Params</strong></p>
+        <ul>
+        <li><code class="docs--params">{ SipAddress : [string] }</code></li>
+        </ul>
+        <p><strong>Response</strong></p>
+        <code class="docs--response">[boolean]
+        </code>
+        <h2><a id="CodecControlController_57"></a>CodecControlController</h2>
+        <hr>
+
+        <h4><a id="GET_apicodeccontrolisavailable_60"></a><code class="docs--method">GET</code> <code class="docs--apiadr">/api/codeccontrol/isavailable</code></h4>
+        <p><strong>URL Params</strong></p>
+        <ul>
+        <li><code class="docs--params">sipAddress = [string]</code></li>
+        </ul>
+        <p><strong>Data Params</strong></p>
+        <ul>
+        <li><code class="docs--params">None</code></li>
+        </ul>
+        <p><strong>Response</strong></p>
+        <code class="docs--response">Available
+        IpAddress
+        </code>
+        <hr>
+
+        <h4><a id="GET_apicodeccontrolgetavailablegpos_77"></a><code class="docs--method">GET</code> <code class="docs--apiadr">/api/codeccontrol/getavailablegpos</code></h4>
+        <p><strong>URL Params</strong></p>
+        <ul>
+        <li><code class="docs--params">sipAddress = [string]</code></li>
+        </ul>
+        <p><strong>Data Params</strong></p>
+        <ul>
+        <li><code class="docs--params">None</code></li>
+        </ul>
+        <p><strong>Response</strong></p>
+        <code class="docs--response">Active
+        Name
+        Number
+        </code>
+        <hr>
+
+        <h4><a id="GET_apicodeccontrolgetinputgainandenabled_95"></a><code class="docs--method">GET</code> <code class="docs--apiadr">/api/codeccontrol/getinputgainandenabled</code></h4>
+        <p><strong>URL Params</strong></p>
+        <ul>
+        <li><code class="docs--params">sipAddress = [string]</code></li>
+        <li><code class="docs--params">input = [int]</code></li>
+        </ul>
+        <p><strong>Data Params</strong></p>
+        <ul>
+        <li><code class="docs--params">None</code></li>
+        </ul>
+        <p><strong>Response</strong></p>
+        <code class="docs--response">Input
+        Enabled
+        GainLevel
+        </code>
+        <hr>
+
+        <h4><a id="GET_apicodeccontrolgetinputenabled_114"></a><code class="docs--method">GET</code> <code class="docs--apiadr">/api/codeccontrol/getinputenabled</code></h4>
+        <p><strong>URL Params</strong></p>
+        <ul>
+        <li><code class="docs--params">sipAddress = [string]</code></li>
+        <li><code class="docs--params">input = [int]</code></li>
+        </ul>
+        <p><strong>Data Params</strong></p>
+        <ul>
+        <li><code class="docs--params">None</code></li>
+        </ul>
+        <p><strong>Response</strong></p>
+        <code class="docs--response">Input
+        Enabled
+        </code>
+        <hr>
+
+        <h4><a id="GET_apicodeccontrolgetlinestatus_132"></a><code class="docs--method">GET</code> <code class="docs--apiadr">/api/codeccontrol/getlinestatus</code></h4>
+        <p><strong>URL Params</strong></p>
+        <ul>
+        <li><code class="docs--params">sipAddress = [string]</code></li>
+        </ul>
+        <p><strong>Data Params</strong></p>
+        <ul>
+        <li><code class="docs--params">None</code></li>
+        </ul>
+        <p><strong>Response</strong></p>
+        <code class="docs--response">LineStatus
+        DisconnectReasonCode
+        DisconnectReasonDescription
+        RemoteAddress
+        </code>
+        <hr>
+
+        <h4><a id="GET_apicodeccontrolgetvuvalues_151"></a><code class="docs--method">GET</code> <code class="docs--apiadr">/api/codeccontrol/getvuvalues</code></h4>
+        <p><strong>URL Params</strong></p>
+        <ul>
+        <li><code class="docs--params">sipAddress = [string]</code></li>
+        </ul>
+        <p><strong>Data Params</strong></p>
+        <ul>
+        <li><code class="docs--params">None</code></li>
+        </ul>
+        <p><strong>Response</strong></p>
+        <code class="docs--response">RxLeft
+        RxRight
+        TxLeft
+        TxRight
+        </code>
+        <hr>
+
+        <h4><a id="GET_apicodeccontrolgetaudiostatus_170"></a><code class="docs--method">GET</code> <code class="docs--apiadr">/api/codeccontrol/getaudiostatus</code></h4>
+        <p><strong>URL Params</strong></p>
+        <ul>
+        <li><code class="docs--params">sipAddress = [string]</code></li>
+        </ul>
+        <p><strong>Data Params</strong></p>
+        <ul>
+        <li><code class="docs--params">None</code></li>
+        </ul>
+        <p><strong>Response</strong></p>
+        <code class="docs--response">Gpos
+        InputStatus
+        VuValues
+        </code>
+        <hr>
+
+        <h4><a id="GET_apicodeccontrolgetaudiomode_188"></a><code class="docs--method">GET</code> <code class="docs--apiadr">/api/codeccontrol/getaudiomode</code></h4>
+        <p><strong>URL Params</strong></p>
+        <ul>
+        <li><code class="docs--params">sipAddress = [string]</code></li>
+        </ul>
+        <p><strong>Data Params</strong></p>
+        <ul>
+        <li><code class="docs--params">None</code></li>
+        </ul>
+        <p><strong>Response</strong></p>
+        <code class="docs--response">EncoderAudioMode
+        DecoderAudioMode
+        </code>
+        <h2><a id="CodecControlController_205"></a>CodecControlController</h2>
+        <hr>
+
+        <h4><a id="POST_apicodeccontrolsetgpo_208"></a><code class="docs--method">POST</code> <code class="docs--apiadr">/api/codeccontrol/setgpo</code></h4>
+        <p><strong>URL Params</strong></p>
+        <ul>
+        <li><code class="docs--params">None</code></li>
+        </ul>
+        <p><strong>Data Params</strong></p>
+        <ul>
+        <li><code class="docs--params">{ SipAddress : [string] }</code></li>
+        <li><code class="docs--params">{ Number : [integer] }</code></li>
+        <li><code class="docs--params">{ Active : [boolean] }</code></li>
+        </ul>
+        <p><strong>Response</strong></p>
+        <code class="docs--response">Number
+        Active
+        </code>
+        <hr>
+
+        <h4><a id="POST_apicodeccontrolsetinputenabled_227"></a><code class="docs--method">POST</code> <code class="docs--apiadr">/api/codeccontrol/setinputenabled</code></h4>
+        <p><strong>URL Params</strong></p>
+        <ul>
+        <li><code class="docs--params">None</code></li>
+        </ul>
+        <p><strong>Data Params</strong></p>
+        <ul>
+        <li><code class="docs--params">{ SipAddress : [string] }</code></li>
+        <li><code class="docs--params">{ Input : [integer] }</code></li>
+        <li><code class="docs--params">{ Enabled : [boolean] }</code></li>
+        </ul>
+        <p><strong>Response</strong></p>
+        <code class="docs--response">Input
+        Enabled
+        </code>
+        <hr>
+
+        <h4><a id="POST_apicodeccontrolincreaseinputgain_246"></a><code class="docs--method">POST</code> <code class="docs--apiadr">/api/codeccontrol/increaseinputgain</code></h4>
+        <p><strong>URL Params</strong></p>
+        <ul>
+        <li><code class="docs--params">None</code></li>
+        </ul>
+        <p><strong>Data Params</strong></p>
+        <ul>
+        <li><code class="docs--params">{ SipAddress : [string] }</code></li>
+        <li><code class="docs--params">{ Input : [integer] }</code></li>
+        </ul>
+        <p><strong>Response</strong></p>
+        <code class="docs--response">Input
+        GainLevel
+        </code>
+        <hr>
+
+        <h4><a id="POST_apicodeccontroldecreaseinputgain_264"></a><code class="docs--method">POST</code> <code class="docs--apiadr">/api/codeccontrol/decreaseinputgain</code></h4>
+        <p><strong>URL Params</strong></p>
+        <ul>
+        <li><code class="docs--params">None</code></li>
+        </ul>
+        <p><strong>Data Params</strong></p>
+        <ul>
+        <li><code class="docs--params">{ SipAddress : [string] }</code></li>
+        <li><code class="docs--params">{ Input : [integer] }</code></li>
+        </ul>
+        <p><strong>Response</strong></p>
+        <code class="docs--response">Input
+        GainLevel
+        </code>
+        <hr>
+
+        <h4><a id="POST_apicodeccontrolchangeinputgain_282"></a><code class="docs--method">POST</code> <code class="docs--apiadr">/api/codeccontrol/changeinputgain</code></h4>
+        <p><strong>URL Params</strong></p>
+        <ul>
+        <li><code class="docs--params">None</code></li>
+        </ul>
+        <p><strong>Data Params</strong></p>
+        <ul>
+        <li><code class="docs--params">{ SipAddress : [string] }</code></li>
+        <li><code class="docs--params">{ Input : [integer] }</code></li>
+        <li><code class="docs--params">{ Level : [integer] }</code></li>
+        </ul>
+        <p><strong>Response</strong></p>
+        <code class="docs--response">Input
+        GainLevel
+        </code>
+        <hr>
+
+        <h4><a id="POST_apicodeccontrolsetinputgain_301"></a><code class="docs--method">POST</code> <code class="docs--apiadr">/api/codeccontrol/setinputgain</code></h4>
+        <p><strong>URL Params</strong></p>
+        <ul>
+        <li><code class="docs--params">None</code></li>
+        </ul>
+        <p><strong>Data Params</strong></p>
+        <ul>
+        <li><code class="docs--params">{ SipAddress : [string] }</code></li>
+        <li><code class="docs--params">{ Input : [integer] }</code></li>
+        <li><code class="docs--params">{ Level : [integer] }</code></li>
+        </ul>
+        <p><strong>Response</strong></p>
+        <code class="docs--response">Input
+        GainLevel
+        </code>
+        <hr>
+
+        <h4><a id="POST_apicodeccontrolbatchsetinputenabled_320"></a><code class="docs--method">POST</code> <code class="docs--apiadr">/api/codeccontrol/batchsetinputenabled</code></h4>
+        <p><strong>URL Params</strong></p>
+        <ul>
+        <li><code class="docs--params">None</code></li>
+        </ul>
+        <p><strong>Data Params</strong></p>
+        <ul>
+        <li><code class="docs--params">{ SipAddress : [string] }</code></li>
+        <li><code class="docs--params">{ InputEnableRequests : [ { Input : [integer], Enabled : [boolean] } ] }</code></li>
+        </ul>
+        <p><strong>Response</strong></p>
+        <code class="docs--response">Input
+        Enabled
+        </code>
+
+        <br/><br/><br/><br/>
+    </div>
+</body>
+<script src="~/lib/signalr/dist/browser/signalr.js"></script>
+<script src="~/lib/vue/dist/vue.js"></script>
+<script src="~/lib/axios/dist/axios.js"></script>
+<script src="~/js/codeccontrol.js"></script>
+
+</html>

@@ -21,16 +21,16 @@ namespace CodecControl.Web.Controllers.CodecControl
 
         [Route("isavailable")]
         [HttpGet]
-        public async Task<ActionResult<UnitStatusResponse>> IsAvailable(string sipAddress)
+        public async Task<ActionResult<IsAvailableResponse>> IsAvailable(string sipAddress)
         {
-            bool available = await Execute(sipAddress, async (codecApi, codecInformation) => await codecApi.CheckIfAvailableAsync(codecInformation.Ip));
-
-            var model = new UnitStatusResponse()
+            return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
-                Available = available,
-                IpAddress = ""
-            };
-            return model;
+                var available = await codecApi.CheckIfAvailableAsync(codecInformation.Ip);
+                return new IsAvailableResponse()
+                {
+                    Available = available
+                };
+            });
         }
 
         [Route("getavailablegpos")]

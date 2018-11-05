@@ -71,7 +71,6 @@
 **Response**
 ```
 Available
-IpAddress
 ```
 
 ------

@@ -72,7 +72,7 @@
         }
 
             a:hover {
-                color: #ffffff;
+                color: #9a42ce;
                 text-decoration: underline;
             }
 
@@ -84,6 +84,7 @@
 
             .doc-info-table th {
                 background: #9a42ce;
+                color: #f1daff;
             }
 
             .doc-info-table td {
@@ -150,7 +151,7 @@
         }
 
         ::placeholder {
-            color: white;
+            color: #9a42ce;
             opacity: 1;
         }
 
@@ -205,19 +206,54 @@
     </div>
 
     <div class="conf-container" id="app">
-        <div class="codecs" v-for="codec in codecs">
-            <div class="codec-name">{{codec.sipAddress}}</div>
-            <button v-on:click="subscribe(codec.sipAddress)">Subscribe</button>
-            <button v-on:click="unsubscribe(codec.sipAddress)">Unsubscribe</button>
-            <span class="vu-values">
-                Rx {{codec.audioStatus.vuValues.rxLeft}} / {{codec.audioStatus.vuValues.rxRight}}
-                Tx:{{codec.audioStatus.vuValues.txLeft}} / {{codec.audioStatus.vuValues.txRight}}
-            </span>
-            <span class="updated">{{codec.updated}}</span>
-        </div>
+
         <div class="unit">
             <div class="conf-headline">
-                Current Subscriptions
+                Current Codecs Controlled
+            </div>
+
+            <table cellspacing="0" cellpadding="0" border="0" class="doc-info-table">
+                <thead>
+                    <tr>
+                        <th>Sip-address</th>
+                        <th>Vu-values Rx</th>
+                        <th>Vu-values Tx</th>
+                        <th>Codec-updated</th>
+                        <th>Subscribe / Unsubscribe</th>
+                    </tr>
+                </thead>
+                <tbody v-if="codecs.length > 0">
+                    <tr v-for="codec in codecs">
+                        <td>
+                            {{codec.sipAddress}}
+                        </td>
+                        <td>
+                            Rx: {{codec.audioStatus.vuValues.rxLeft}} / {{codec.audioStatus.vuValues.rxRight}}
+                        </td>
+                        <td>
+                            Tx: {{codec.audioStatus.vuValues.txLeft}} / {{codec.audioStatus.vuValues.txRight}}
+                        </td>
+                        <td>
+                            {{codec.updated}}
+                        </td>
+                        <td>
+                            <button v-on:click="subscribe(codec.sipAddress)">Subscribe</button>
+                            <button v-on:click="unsubscribe(codec.sipAddress)">Unsubscribe</button>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody v-if="codecs.length == 0">
+                    <tr>
+                        <td colspan="2">No active codecs</td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+
+        <div class="unit">
+            <div class="conf-headline">
+                Current Client Subscriptions
             </div>
             <a v-on:click="getSubscriptions" class="btn">Reload</a>
 

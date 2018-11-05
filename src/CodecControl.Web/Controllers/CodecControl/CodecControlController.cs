@@ -25,10 +25,10 @@ namespace CodecControl.Web.Controllers.CodecControl
         {
             return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
-                var available = await codecApi.CheckIfAvailableAsync(codecInformation.Ip);
+                var isAvailable = await codecApi.CheckIfAvailableAsync(codecInformation.Ip);
                 return new IsAvailableResponse()
                 {
-                    Available = available
+                    IsAvailable = isAvailable
                 };
             });
         }

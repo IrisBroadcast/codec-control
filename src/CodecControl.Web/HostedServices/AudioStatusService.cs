@@ -77,7 +77,7 @@ namespace CodecControl.Web.HostedServices
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            log.Debug($"Audio Status Service is starting.");
+            log.Info($"Audio Status Service is starting.");
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -104,12 +104,12 @@ namespace CodecControl.Web.HostedServices
 
                 if (!stoppingToken.IsCancellationRequested)
                 {
-                    log.Debug("AudioStatusService has no subscriptions");
+                    log.Trace("AudioStatusService has no subscriptions");
                     await Task.Delay(1000); // Wait until next check for HasSubscriptions
                 }
             }
 
-            log.Debug("AudioStatusService finished");
+            log.Info("AudioStatusService finished");
         }
 
 

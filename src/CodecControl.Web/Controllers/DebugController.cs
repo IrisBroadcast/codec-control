@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using CodecControl.Client;
 using CodecControl.Web.CCM;
+using CodecControl.Web.HostedServices;
 using CodecControl.Web.Hub;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,20 +12,20 @@ namespace CodecControl.Web.Controllers
     [ApiExplorerSettings(IgnoreApi = true)]
     public class DebugController : ControllerBase
     {
-        private readonly AudioStatusUpdater _audioStatusUpdater;
         private readonly CcmService _ccmService;
+        private readonly AudioStatusService _audioStatusService;
 
-        public DebugController(AudioStatusUpdater audioStatusUpdater, CcmService ccmService)
+        public DebugController(CcmService ccmService, AudioStatusService audioStatusService)
         {
-            _audioStatusUpdater = audioStatusUpdater;
             _ccmService = ccmService;
+            _audioStatusService = audioStatusService;
         }
         
         [HttpGet]
         [Route("subscriptions")]
         public List<SubscriptionInfo> Subscriptions()
         {
-            return _audioStatusUpdater.Subscriptions;
+            return _audioStatusService.Subscriptions;
         }
 
         [HttpGet]

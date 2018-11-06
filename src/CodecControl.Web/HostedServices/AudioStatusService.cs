@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using CodecControl.Client;
 using CodecControl.Web.CCM;
+using CodecControl.Web.Hub;
 using CodecControl.Web.Models.Responses;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Hosting;
 using NLog;
 
-namespace CodecControl.Web.Hub
+namespace CodecControl.Web.HostedServices
 {
-    public class AudioStatusUpdater
+    public class AudioStatusService : BackgroundService
     {
         protected static readonly Logger log = LogManager.GetCurrentClassLogger();
 
@@ -18,14 +21,13 @@ namespace CodecControl.Web.Hub
         private readonly CcmService _ccmService;
         private readonly IServiceProvider _serviceProvider;
         private readonly TimeSpan _pollDelay = TimeSpan.FromMilliseconds(500);
-        private bool _isPolling;
 
         public List<SubscriptionInfo> Subscriptions { get; } = new List<SubscriptionInfo>();
         private bool HasSubscriptions => Subscriptions.Any();
-        
-        public AudioStatusUpdater(IHubContext<AudioStatusHub> hub, CcmService ccmService, IServiceProvider serviceProvider)
+
+        public AudioStatusService(IHubContext<AudioStatusHub> hub, CcmService ccmService, IServiceProvider serviceProvider)
         {
-            log.Debug("AudioStatusUpdater constructor");
+            log.Debug("AudioStatusService constructor");
             _hub = hub;
             _ccmService = ccmService;
             _serviceProvider = serviceProvider;
@@ -50,8 +52,6 @@ namespace CodecControl.Web.Hub
 
             Subscriptions.Add(new SubscriptionInfo { ConnectionId = connectionId, SipAddress = sipAddress });
             _hub.Groups.AddToGroupAsync(connectionId, sipAddress);
-
-            StartCheckCodecs();
         }
 
         public void Unsubscribe(string connectionId, string sipAddress)
@@ -75,17 +75,13 @@ namespace CodecControl.Web.Hub
             }
         }
 
-        private void StartCheckCodecs()
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            if (_isPolling || !HasSubscriptions)
-            {
-                return;
-            }
+            log.Debug($"Audio Status Service is starting.");
 
-            Task.Run(async () =>
+            while (!stoppingToken.IsCancellationRequested)
             {
-                _isPolling = true;
-                while (HasSubscriptions)
+                while (HasSubscriptions && !stoppingToken.IsCancellationRequested)
                 {
                     int waitTime;
                     using (var timeMeasurer = new TimeMeasurer("Checking audio status on all codecs"))
@@ -105,16 +101,23 @@ namespace CodecControl.Web.Hub
                     log.Debug($"Waiting {waitTime} ms until next update");
                     await Task.Delay(waitTime);
                 }
-                _isPolling = false;
-            });
 
+                if (!stoppingToken.IsCancellationRequested)
+                {
+                    log.Debug("AudioStatusService has no subscriptions");
+                    await Task.Delay(1000); // Wait until next check for HasSubscriptions
+                }
+            }
+
+            log.Debug("AudioStatusService finished");
         }
+
 
         private async Task CheckAudioStatusOnCodecAsync(string sipAddress)
         {
             try
             {
-                var codecInformation = await  _ccmService.GetCodecInformationBySipAddress(sipAddress);
+                var codecInformation = await _ccmService.GetCodecInformationBySipAddress(sipAddress);
 
                 if (codecInformation == null)
                 {
@@ -152,6 +155,5 @@ namespace CodecControl.Web.Hub
         {
             await _hub.Clients.Group(sipAddress).SendAsync("AudioStatus", sipAddress, audioStatus);
         }
-
     }
 }

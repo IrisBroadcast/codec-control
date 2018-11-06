@@ -1,33 +1,34 @@
 ﻿using System;
 using System.Threading.Tasks;
+using CodecControl.Web.HostedServices;
 
 namespace CodecControl.Web.Hub
 {
     // Contains methods for the client to call
-    // For methods Server->Client see AudioStatusUpdater
+    // For methods Server->Client see AudioStatusService
     public class AudioStatusHub : Microsoft.AspNetCore.SignalR.Hub
     {
-        private readonly AudioStatusUpdater _audioStatusUpdater;
+        private readonly AudioStatusService _audioStatusService;
 
-        public AudioStatusHub(AudioStatusUpdater audioStatusUpdater)
+        public AudioStatusHub(AudioStatusService audioStatusService)
         {
-            _audioStatusUpdater = audioStatusUpdater;
+            _audioStatusService = audioStatusService;
         }
 
         public void Subscribe(string sipAddress)
         {
-            _audioStatusUpdater.Subscribe(Context.ConnectionId, sipAddress);
+            _audioStatusService.Subscribe(Context.ConnectionId, sipAddress);
         }
 
         public void Unsubscribe(string sipAddress = "")
         {
             if (string.IsNullOrEmpty(sipAddress))
             {
-                _audioStatusUpdater.Unsubscribe(Context.ConnectionId);
+                _audioStatusService.Unsubscribe(Context.ConnectionId);
             }
             else
             {
-                _audioStatusUpdater.Unsubscribe(Context.ConnectionId, sipAddress);
+                _audioStatusService.Unsubscribe(Context.ConnectionId, sipAddress);
             }
         }
 
@@ -39,7 +40,7 @@ namespace CodecControl.Web.Hub
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            _audioStatusUpdater.Unsubscribe(Context.ConnectionId);
+            _audioStatusService.Unsubscribe(Context.ConnectionId);
             await base.OnDisconnectedAsync(exception);
         }
 

@@ -2,7 +2,6 @@
 {
     public class GpoResponse
     {
-        public int Number { get; set; }
         public bool Active { get; set; }
     }
     

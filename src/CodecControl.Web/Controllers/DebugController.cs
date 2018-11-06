@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CodecControl.Web.Controllers
 {
     [Route("debug")]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class DebugController : ControllerBase
     {
         private readonly AudioStatusUpdater _audioStatusUpdater;
@@ -19,12 +20,14 @@ namespace CodecControl.Web.Controllers
             _ccmService = ccmService;
         }
         
+        [HttpGet]
         [Route("subscriptions")]
         public List<SubscriptionInfo> Subscriptions()
         {
             return _audioStatusUpdater.Subscriptions;
         }
 
+        [HttpGet]
         [Route("codecinformation")]
         public async Task<CodecInformation> CodecInformation(string sipAddress)
         {

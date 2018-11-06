@@ -1,9 +1,9 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace CodecControl.Web.Controllers
 {
     [Route("")]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class HomeController : Controller
     {
         private readonly ApplicationSettings _appSettings;
@@ -13,6 +13,7 @@ namespace CodecControl.Web.Controllers
             _appSettings = appSettings;
         }
 
+        [HttpGet]
         [Route("")]
         public IActionResult Index()
         {
@@ -23,15 +24,6 @@ namespace CodecControl.Web.Controllers
             return View();
         }
 
-        [Route("help")]
-        public IActionResult Help()
-        {
-            ViewData["Server"] = _appSettings.Server;
-            ViewData["Version"] = "v"+_appSettings.Version;
-            ViewData["ReleaseDate"] = _appSettings.ReleaseDate;
-
-            return View();
-        }
     }
 
 }

@@ -1,8 +1,12 @@
 # Codec Control
+## Description
+
+Gateway for controlling audio-codecs and devices. Exposes one unified restful and websocket interface for multiple proprietary codec-api's. This application use CCM for device discovery.
 
 
 
-## CallController
+## API Documentation
+### CallController
 
 ------
 #### `POST` `/api/codeccontrol/call`
@@ -70,7 +74,7 @@
 
 **Response**
 ```
-Available
+isAvailable
 ```
 
 ------
@@ -202,7 +206,7 @@ DecoderAudioMode
 ```
 
 
-## CodecControlController
+### CodecControlController
 
 ------
 #### `POST` `/api/codeccontrol/setgpo`

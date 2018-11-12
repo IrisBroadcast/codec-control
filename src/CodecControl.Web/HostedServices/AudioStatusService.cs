@@ -33,7 +33,7 @@ namespace CodecControl.Web.HostedServices
             _serviceProvider = serviceProvider;
         }
 
-        public void Subscribe(string connectionId, string sipAddress)
+        public async Task Subscribe(string connectionId, string sipAddress)
         {
             log.Info($"Subscription from connection id {connectionId} to {sipAddress}");
 
@@ -50,8 +50,25 @@ namespace CodecControl.Web.HostedServices
                 return;
             }
 
+            var codecInformation = await _ccmService.GetCodecInformationBySipAddress(sipAddress);
+
+            if (codecInformation == null)
+            {
+                log.Info($"Codec {sipAddress} is not registered in CCM.");
+                return;
+            }
+
+            var codecApiType = codecInformation?.CodecApiType;
+            var codecApi = codecApiType != null ? _serviceProvider.GetService(codecApiType) as ICodecApi : null;
+
+            if (codecApi == null || string.IsNullOrEmpty(codecInformation.Ip))
+            {
+                log.Info($"Codec {sipAddress} is not subscribable");
+                return;
+            }
+            
             Subscriptions.Add(new SubscriptionInfo { ConnectionId = connectionId, SipAddress = sipAddress });
-            _hub.Groups.AddToGroupAsync(connectionId, sipAddress);
+            await _hub.Groups.AddToGroupAsync(connectionId, sipAddress);
         }
 
         public void Unsubscribe(string connectionId, string sipAddress)

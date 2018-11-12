@@ -8,7 +8,7 @@ namespace CodecControl.Web.Controllers.Base
     {
         protected ActionResult CodecUnavailable()
         {
-            return StatusCode((int)HttpStatusCode.ServiceUnavailable, "Codec unavailable");
+            return StatusCode((int)HttpStatusCode.NotFound, "Codec unavailable");
         }
 
         protected ActionResult InternalServerError()

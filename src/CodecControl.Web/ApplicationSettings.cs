@@ -8,6 +8,7 @@ namespace CodecControl.Web
         public int CcmCodecInformationReloadInterval { get; set; } = 60;
         public string AuthenticatedUserName { get; set; }
         public string AuthenticatedPassword { get; set; }
+        public string LogFolder { get; set; }
         public string ReleaseDate { get; set; }
         public string Version { get; set; }
 

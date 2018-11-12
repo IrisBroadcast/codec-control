@@ -58,7 +58,7 @@ namespace CodecControl.Web
             });
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ApplicationSettings applicationSettings)
         {
             if (env.IsDevelopment())
             {
@@ -75,7 +75,7 @@ namespace CodecControl.Web
             app.UseStaticFiles();
 
             // Serve log files as static files
-            var logFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "logFiles");
+            var logFolder = applicationSettings.LogFolder;
             Directory.CreateDirectory(logFolder);
 
             app.UseFileServer(new FileServerOptions

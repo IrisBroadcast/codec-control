@@ -27,7 +27,7 @@
         .conf-container {
             margin: 0 auto;
             padding: 2vh 0 0 0;
-            width: 60vw;
+            margin: 5vw;
         }
 
         .conf-site {
@@ -60,7 +60,6 @@
 
         .conf-headline {
             margin-top: 6vh;
-            /*font-size: 2vw;*/
             font-weight: 400;
         }
 
@@ -96,43 +95,12 @@
             text-decoration: underline;
         }
 
-        /*.doc-xinfo-table {
-            width: 100%;
-            margin-top: 10px;
-            background: #2E4546;
-        }
-
-            .doc-xinfo-table th {
-                background: #292929;
-            }
-
-            .doc-xinfo-table td {
-                padding: 5px;
-                border-bottom: 1px solid #292929;
-            }
-
-        .doc-main-paramname {
-            font-weight: 600;
-            width: 20%;
-        }*/
-
-        /*.doc-main-params {
-            font-style: oblique;
-            width: 15%;
-        }
-
-        .doc-main-description {
-            color: #5d2a7b;
-        }*/
 
         .btn {
-            /*background: #c448d2;*/
             line-height: 2;
             padding: 0.5vh 2vw;
             margin: 0 1vw 0 0;
             display: inline-block;
-            /*color: white;*/
-            /*border: 0;*/
             font-size: 1em;
             cursor: pointer;
         }
@@ -235,7 +203,8 @@
         
         <div class="unit">
             <h2>Debug-sida</h2>
-            <div class="conf-headline">
+
+            <div>
                 <label for="sipAddress" class="subheader">Hämta kodarinformation från CCM </label>
             </div>
 
@@ -247,38 +216,14 @@
                    class="input-text" />
             <button v-on:click="getCodecInformationBySipAddress(sipAddress)">Hämta</button>
 
-            <table cellspacing="0" cellpadding="0" border="0" class="doc-info-table">
-                <thead>
-                    <tr>
-                        <th>Sip-address</th>
-                        <th>IP</th>
-                        <th>API</th>
-                        <th>GPO-name</th>
-                        <th>#Inputs</th>
-                        <th>#GPOs</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="ci in codecInformation">
-                        <td v-for="value in ci">{{value}}</td>
-                    </tr>
-                </tbody>
-                <tbody v-if="codecInformation.length == 0">
-                    <tr>
-                        <td colspan="6">Ingen info</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        
-        <div class="unit">
-            <div class="conf-headline">Kodarinformation</div>
+            <h3>Kodarinformation</h3>
 
             <table cellspacing="0" class="doc-info-table">
                 <thead>
                     <tr>
                         <th>Sip-address</th>
+                        <th>IP</th>
+                        <th>API</th>
                         <th>Vu-values Rx</th>
                         <th>Vu-values Tx</th>
                         <th>Codec-updated</th>
@@ -287,9 +232,9 @@
                 </thead>
                 <tbody v-if="codecs.length > 0">
                     <tr v-for="codec in codecs">
-                        <td>
-                            {{codec.sipAddress}}
-                        </td>
+                        <td>{{codec.sipAddress}}</td>
+                        <td>{{codec.ip}}</td>
+                        <td>{{codec.api}}</td>
                         <td>
                             Rx: {{codec.audioStatus.vuValues.rxLeft}} / {{codec.audioStatus.vuValues.rxRight}}
                         </td>
@@ -307,7 +252,7 @@
                 </tbody>
                 <tbody v-if="codecs.length == 0">
                     <tr>
-                        <td colspan="2">No active codecs</td>
+                        <td colspan="2">Inga kodare</td>
                     </tr>
                 </tbody>
             </table>

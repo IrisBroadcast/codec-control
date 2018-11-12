@@ -19,19 +19,24 @@ namespace CodecControl.Client
         {
             get
             {
-                Enum.TryParse(Api, true, out CodecApiTypes apiType);
-
-                switch (apiType)
+                if (Enum.TryParse(Api, true, out CodecApiTypes apiType))
                 {
-                    case CodecApiTypes.IkusNet:
-                        return typeof(IkusNetApi);
-                    case CodecApiTypes.IkusNetSt:
-                        return typeof(IkusNetStApi);
-                    case CodecApiTypes.BareSipRest:
-                        return typeof(BaresipRestApi);
-                    default:
-                        // TODO: Log as warning
-                        return null;
+                    switch (apiType)
+                    {
+                        case CodecApiTypes.IkusNet:
+                            return typeof(IkusNetApi);
+                        case CodecApiTypes.IkusNetSt:
+                            return typeof(IkusNetStApi);
+                        case CodecApiTypes.BareSipRest:
+                            return typeof(BaresipRestApi);
+                        default:
+                            // TODO: Log as warning
+                            return null;
+                    }
+                }
+                else
+                {
+                    return null;
                 }
             }
         }

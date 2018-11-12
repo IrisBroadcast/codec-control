@@ -27,11 +27,11 @@
         .conf-container {
             margin: 0 auto;
             padding: 2vh 0 0 0;
-            width: 90vw;
+            width: 60vw;
         }
 
         .conf-site {
-            font-size: 3vw;
+            font-size: 2vw;
             font-weight: 300;
             color: #5c22b3;
             display: block;
@@ -39,17 +39,17 @@
         }
 
         .conf-version {
-            font-size: 8vw;
+            font-size: 3vw;
             font-weight: 200;
         }
 
         .conf-environment {
-            font-size: 16vw;
+            font-size: 3vw;
             font-weight: 600;
         }
 
         .conf-server {
-            font-size: 5vw;
+            font-size: 3vw;
             font-weight: 400;
         }
 
@@ -60,10 +60,8 @@
 
         .conf-headline {
             margin-top: 6vh;
-            margin-bottom: 2vh;
-            font-size: 3vw;
+            /*font-size: 2vw;*/
             font-weight: 400;
-            color: #812eb1;
         }
 
         a {
@@ -78,13 +76,15 @@
 
         .doc-info-table {
             width: 100%;
-            margin: 3vh 0;
+            margin: 1vh 0;
             line-height: 1.5;
+            border: 1px solid black;
+            text-align: left;
         }
 
             .doc-info-table th {
-                background: #9a42ce;
-                color: #f1daff;
+                background: antiquewhite;
+                font-size: smaller;
             }
 
             .doc-info-table td {
@@ -96,7 +96,7 @@
             text-decoration: underline;
         }
 
-        .doc-xinfo-table {
+        /*.doc-xinfo-table {
             width: 100%;
             margin-top: 10px;
             background: #2E4546;
@@ -114,25 +114,25 @@
         .doc-main-paramname {
             font-weight: 600;
             width: 20%;
-        }
+        }*/
 
-        .doc-main-params {
+        /*.doc-main-params {
             font-style: oblique;
             width: 15%;
         }
 
         .doc-main-description {
             color: #5d2a7b;
-        }
+        }*/
 
         .btn {
-            background: #c448d2;
+            /*background: #c448d2;*/
             line-height: 2;
             padding: 0.5vh 2vw;
             margin: 0 1vw 0 0;
             display: inline-block;
-            color: white;
-            border: 0;
+            /*color: white;*/
+            /*border: 0;*/
             font-size: 1em;
             cursor: pointer;
         }
@@ -143,15 +143,14 @@
         }
 
         .input-text {
-            line-height: 2;
             padding: 0.5vh 2vw;
             margin: 0 1vw 0 0;
             display: inline-block;
-            font-size: 1em;
+            width:50%
         }
 
         ::placeholder {
-            color: #9a42ce;
+            color: lightgray;
             opacity: 1;
         }
 
@@ -209,10 +208,74 @@
 
         <div class="unit">
             <div class="conf-headline">
-                Current Codecs Controlled
+                Prenumerationer
+                <a v-on:click="getSubscriptions" style="float: right;">Ladda om</a>
+            </div>
+            
+            <table cellspacing="0" cellpadding="0" border="0" class="doc-info-table">
+                <thead>
+                <tr>
+                    <th>Connection id</th>
+                    <th>Sip-address</th>
+                </tr>
+                </thead>
+                <tbody v-if="subscriptions.length > 0">
+                <tr v-for="subscription in subscriptions">
+                    <td>{{subscription.connectionId}}</td>
+                    <td>{{subscription.sipAddress}}</td>
+                </tr>
+                </tbody>
+                <tbody v-if="subscriptions.length == 0">
+                <tr>
+                    <td colspan="2">Inga prenumerationer</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="unit">
+            <h2>Debug-sida</h2>
+            <div class="conf-headline">
+                <label for="sipAddress" class="subheader">Hämta kodarinformation från CCM </label>
             </div>
 
+            <input id="sipAddress"
+                   type="text"
+                   placeholder="sipAddress"
+                   v-model="sipAddress"
+                   v-on:keydown.enter="getCodecInformationBySipAddress(sipAddress)"
+                   class="input-text" />
+            <button v-on:click="getCodecInformationBySipAddress(sipAddress)">Hämta</button>
+
             <table cellspacing="0" cellpadding="0" border="0" class="doc-info-table">
+                <thead>
+                    <tr>
+                        <th>Sip-address</th>
+                        <th>IP</th>
+                        <th>API</th>
+                        <th>GPO-name</th>
+                        <th>#Inputs</th>
+                        <th>#GPOs</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="ci in codecInformation">
+                        <td v-for="value in ci">{{value}}</td>
+                    </tr>
+                </tbody>
+                <tbody v-if="codecInformation.length == 0">
+                    <tr>
+                        <td colspan="6">Ingen info</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        
+        <div class="unit">
+            <div class="conf-headline">Kodarinformation</div>
+
+            <table cellspacing="0" class="doc-info-table">
                 <thead>
                     <tr>
                         <th>Sip-address</th>
@@ -249,69 +312,6 @@
                 </tbody>
             </table>
 
-        </div>
-
-        <div class="unit">
-            <div class="conf-headline">
-                Current Client Subscriptions
-            </div>
-            <a v-on:click="getSubscriptions" class="btn">Reload</a>
-
-            <table cellspacing="0" cellpadding="0" border="0" class="doc-info-table">
-                <thead>
-                    <tr>
-                        <th>Connection id</th>
-                        <th>Sip-address</th>
-                    </tr>
-                </thead>
-                <tbody v-if="subscriptions.length > 0">
-                    <tr v-for="subscription in subscriptions">
-                        <td>{{subscription.connectionId}}</td>
-                        <td>{{subscription.sipAddress}}</td>
-                    </tr>
-                </tbody>
-                <tbody v-if="subscriptions.length == 0">
-                    <tr>
-                        <td colspan="2">No active subscriptions</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="unit">
-            <div class="conf-headline">
-                <label for="sipAddress" class="subheader">Add controllable audio-codec</label>
-            </div>
-
-            <input id="sipAddress"
-                   type="text"
-                   placeholder="sipAddress"
-                   v-model="sipAddress"
-                   v-on:keydown.enter="getCodecInformationBySipAddress(sipAddress)"
-                   class="input-text" />
-            <button v-on:click="getCodecInformationBySipAddress(sipAddress)" class="btn">Add</button>
-
-            <table cellspacing="0" cellpadding="0" border="0" class="doc-info-table">
-                <thead>
-                    <tr>
-                        <th>Sip-address</th>
-                        <th>IP</th>
-                        <th>API</th>
-                        <th>GPO-name</th>
-                        <th>#Inputs</th>
-                        <th>#GPOs</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="ci in codecInformation">
-                        <td v-for="value in ci">{{value}}</td>
-                    </tr>
-                </tbody>
-                <tbody v-if="codecInformation.length == 0">
-                    <tr>
-                        <td colspan="6">No active codec information</td>
-                    </tr>
-                </tbody>
-            </table>
         </div>
 
     </div>

@@ -70,7 +70,7 @@ const getCodecInformationBySipAddress = function (sipAddress) {
 
             app.codecInformation.push(codecInformation);
 
-            if (codecInformation.api === 'IkusNet') {
+            //if (codecInformation.api === 'IkusNet') {
                 app.codecs.push({
                     sipAddress: codecInformation.sipAddress,
                     updated: Date.now(),
@@ -83,7 +83,7 @@ const getCodecInformationBySipAddress = function (sipAddress) {
                         }
                     }
                 });
-            }
+            //}
         })
         .catch(function (error) {
             console.log(error);
@@ -106,5 +106,3 @@ var app = new Vue({
     }
 });
 
-//getCodecInformationBySipAddress('mtu-25@contrib.sr.se');
-//getSubscriptions();

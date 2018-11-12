@@ -114,7 +114,7 @@
             padding: 0.5vh 2vw;
             margin: 0 1vw 0 0;
             display: inline-block;
-            width:50%
+            width: 50%
         }
 
         ::placeholder {
@@ -158,7 +158,6 @@
         .codecs .updated {
             font-size: smaller;
         }
-
     </style>
 
 </head>
@@ -179,28 +178,28 @@
                 Prenumerationer
                 <a v-on:click="getSubscriptions" style="float: right;">Ladda om</a>
             </div>
-            
+
             <table cellspacing="0" cellpadding="0" border="0" class="doc-info-table">
                 <thead>
-                <tr>
-                    <th>Connection id</th>
-                    <th>Sip-address</th>
-                </tr>
+                    <tr>
+                        <th>Connection id</th>
+                        <th>Sip-address</th>
+                    </tr>
                 </thead>
                 <tbody v-if="subscriptions.length > 0">
-                <tr v-for="subscription in subscriptions">
-                    <td>{{subscription.connectionId}}</td>
-                    <td>{{subscription.sipAddress}}</td>
-                </tr>
+                    <tr v-for="subscription in subscriptions">
+                        <td>{{subscription.connectionId}}</td>
+                        <td>{{subscription.sipAddress}}</td>
+                    </tr>
                 </tbody>
                 <tbody v-if="subscriptions.length == 0">
-                <tr>
-                    <td colspan="2">Inga prenumerationer</td>
-                </tr>
+                    <tr>
+                        <td colspan="2">Inga prenumerationer</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
-        
+
         <div class="unit">
             <h2>Debug-sida</h2>
 
@@ -259,6 +258,15 @@
 
         </div>
 
+        <div class="unit">
+            <div>Aktuell lognivå: {{currentLogLevel}}</div>
+
+            <select v-model="selectedLogLevel">
+                <option v-for="level in logLevels" v-bind:value="level">{{ level }}</option>
+            </select>
+            <button v-on:click="setLogLevel(selectedLogLevel)">Ändra lognivå</button>
+        </div>
+
     </div>
 
 </body>
@@ -267,6 +275,9 @@
 <script src="~/lib/vue/dist/vue.js"></script>
 <script src="~/lib/axios/dist/axios.js"></script>
 <script src="~/js/codeccontrol.js"></script>
-
+<script>
+    app.currentLogLevel = '@ViewData["CurrentLogLevel"]'
+    app.selectedLogLevel = app.currentLogLevel;
+</script>
 
 </html>

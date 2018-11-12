@@ -11,17 +11,17 @@ connection.on("AudioStatus", (sipAddress, audioStatus) => {
     codec.updated = Date.now();
 });
 
-connection.start().catch( (err) => {
+connection.start().catch((err) => {
     return console.error(err.toString());
 });
 
 var subscribe = (sipAddress) => {
     console.log("subscribe to " + sipAddress);
     connection.invoke("subscribe", sipAddress)
-        .then( () => {
+        .then(() => {
             getSubscriptions();
         })
-        .catch( (err) => {
+        .catch((err) => {
             return console.error(err.toString());
         });
 };
@@ -29,22 +29,22 @@ var subscribe = (sipAddress) => {
 var unsubscribe = (sipAddress) => {
     console.log("unsubscribe to " + sipAddress);
     connection.invoke("unsubscribe", sipAddress)
-        .then( () => {
+        .then(() => {
             getSubscriptions();
         })
-        .catch( (err) => {
+        .catch((err) => {
             return console.error(err.toString());
         });
 };
 
 var getSubscriptions = () => {
     axios.get("/debug/subscriptions")
-        .then( (response) => {
+        .then((response) => {
             let subscriptions = response.data;
             console.log("Prenumerationer", subscriptions);
             app.subscriptions = subscriptions;
         })
-        .catch( (error) => {
+        .catch((error) => {
             console.log(error);
         });
 };
@@ -53,18 +53,18 @@ const getCodecInformationBySipAddress = (sipAddress) => {
     if (!sipAddress) return;
 
     axios.get("/debug/codecinformation", { params: { sipAddress: sipAddress } })
-        .then( (response) => {
+        .then((response) => {
             let codecInformation = response.data;
 
             if (!codecInformation || !codecInformation.sipAddress) {
                 console.warn('sipAddress not found');
                 return;
             }
-            if (app.codecs.some( (ci) => { return ci.sipAddress === codecInformation.sipAddress; })) {
+            if (app.codecs.some((ci) => { return ci.sipAddress === codecInformation.sipAddress; })) {
                 console.warn('sipAddress already added');
                 return;
             }
-            
+
             app.codecs.push({
                 sipAddress: codecInformation.sipAddress,
                 ip: codecInformation.ip,
@@ -80,8 +80,18 @@ const getCodecInformationBySipAddress = (sipAddress) => {
                 }
             });
         })
-        .catch( (error) => {
+        .catch((error) => {
             console.log(error);
+        });
+};
+
+const setLogLevel = (level) => {
+    console.log('set log level to ' + level);
+    axios.post("/setloglevel", { logLevel: level })
+        .then((response) => {
+            var newLogLevel = response.data;
+            app.currentLogLevel = newLogLevel;
+            console.log('response', newLogLevel);
         });
 };
 
@@ -90,13 +100,17 @@ var app = new Vue({
     data: {
         codecs: [],
         subscriptions: [],
-        sipAddress: null
+        sipAddress: null,
+        currentLogLevel: '',
+        logLevels: ['Trace', 'Debug', 'Info', 'Warn', 'Error'],
+        selectedLogLevel: ''
     },
     methods: {
         subscribe: subscribe,
         unsubscribe: unsubscribe,
         getSubscriptions: getSubscriptions,
-        getCodecInformationBySipAddress: getCodecInformationBySipAddress
+        getCodecInformationBySipAddress: getCodecInformationBySipAddress,
+        setLogLevel: setLogLevel
     }
 });
 

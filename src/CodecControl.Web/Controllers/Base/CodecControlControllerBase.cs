@@ -4,6 +4,7 @@ using CodecControl.Client;
 using CodecControl.Client.Exceptions;
 using CodecControl.Web.CCM;
 using CodecControl.Web.Controllers.Base;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
 
@@ -29,7 +30,7 @@ namespace CodecControl.Web.Controllers
                 {
                     if (string.IsNullOrEmpty(sipAddress))
                     {
-                        log.Info("Invalid request. Missing SIP address");
+                        log.Info($"Invalid request. Missing SIP address in request: {Request.GetDisplayUrl()}");
                         return BadRequest();
                     }
 

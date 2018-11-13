@@ -76,7 +76,7 @@ namespace CodecControl.Web
 
             // Serve log files as static files
             var logFolder = applicationSettings.LogFolder;
-            Directory.CreateDirectory(logFolder);
+            Directory.CreateDirectory(logFolder); 
 
             app.UseFileServer(new FileServerOptions
             {

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CodecControl.Client;
+using CodecControl.Client.Exceptions;
 using CodecControl.Web.CCM;
 using CodecControl.Web.Hub;
 using CodecControl.Web.Models.Responses;
@@ -151,7 +152,8 @@ namespace CodecControl.Web.HostedServices
                     return;
                 }
 
-                var audioStatus = await codecApi.GetAudioStatusAsync(codecInformation.Ip, codecInformation.NrOfInputs, codecInformation.NrOfGpos);
+                var audioStatus = await codecApi.GetAudioStatusAsync(codecInformation.Ip, codecInformation.NrOfInputs,
+                    codecInformation.NrOfGpos);
 
                 var model = new AudioStatusResponse()
                 {
@@ -161,6 +163,10 @@ namespace CodecControl.Web.HostedServices
                 };
 
                 await SendAudioStatusToClients(sipAddress, model);
+            }
+            catch (CodecInvocationException ex)
+            {
+                log.Info($"Failed to check audio status on {sipAddress}. {ex.Message}");
             }
             catch (Exception ex)
             {

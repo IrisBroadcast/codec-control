@@ -57,6 +57,12 @@ namespace CodecControl.Web.Controllers
                         return await func(codecApi, codecInformation);
                     }
                 }
+                catch (CodecInvocationException ex)
+                {
+                    // When response from codec was unparsable or indicates that request was unsuccessful.
+                    log.Info($"Error when sending codec control command to {sipAddress}. {ex.Message}");
+                    return InternalServerError();
+                }
                 catch (CodecException ex)
                 {
                     log.Warn(ex, "Exception when sending codec control command to " + sipAddress);

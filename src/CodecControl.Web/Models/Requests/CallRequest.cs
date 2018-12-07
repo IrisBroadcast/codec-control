@@ -1,8 +1,7 @@
 ﻿namespace CodecControl.Web.Models.Requests
 {
-    public class CallRequest
+    public class CallRequest : RequestBase
     {
-        public string SipAddress { get; set; }
         public string Callee { get; set; }
         public string ProfileName { get; set; }
     }

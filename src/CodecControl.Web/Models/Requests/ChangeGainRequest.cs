@@ -1,8 +1,7 @@
 ﻿namespace CodecControl.Web.Models.Requests
 {
-    public class ChangeGainRequest
+    public class ChangeGainRequest : RequestBase
     {
-        public string SipAddress { get; set; }
         public int Input { get; set; }
     }
 }

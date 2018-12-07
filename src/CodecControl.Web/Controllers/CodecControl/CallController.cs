@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using CodecControl.Web.CCM;
+using CodecControl.Web.Controllers.Base;
 using CodecControl.Web.Helpers;
 using CodecControl.Web.Models.Requests;
 using CodecControl.Web.Security;
@@ -20,6 +21,7 @@ namespace CodecControl.Web.Controllers.CodecControl
         [HttpPost]
         public async Task<ActionResult<bool>> Call([FromBody]CallRequest request)
         {
+            if (request == null) { return BadRequest(); }
             var caller = new SipUri(request.SipAddress).UserAtHost;
 
             string callee = request.Callee; // Kan vara antingen sip-adress eller telefonnr (som saknar domän).
@@ -37,6 +39,7 @@ namespace CodecControl.Web.Controllers.CodecControl
         [HttpPost]
         public async Task<ActionResult<bool>> Hangup([FromBody]HangupRequest request)
         {
+            if (request == null) { return BadRequest(); }
             var caller = new SipUri(request.SipAddress).UserAtHost;
             return await Execute(caller, async (codecApi, codecInformation) => await codecApi.HangUpAsync(codecInformation.Ip));
         }
@@ -45,6 +48,7 @@ namespace CodecControl.Web.Controllers.CodecControl
         [HttpPost]
         public async Task<ActionResult<bool>> Reboot([FromBody]RebootRequest request)
         {
+            if (request == null) { return BadRequest(); }
             return await Execute(request.SipAddress,
                 async (codecApi, codecInformation) => await codecApi.RebootAsync(codecInformation.Ip));
         }

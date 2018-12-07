@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CodecControl.Client.Models;
 using CodecControl.Web.CCM;
+using CodecControl.Web.Controllers.Base;
 using CodecControl.Web.Helpers;
 using CodecControl.Web.Models.Requests;
 using CodecControl.Web.Models.Responses;
@@ -175,6 +176,8 @@ namespace CodecControl.Web.Controllers.CodecControl
         [HttpPost]
         public async Task<ActionResult<GpoResponse>> SetGpo([FromBody] SetGpoRequest request)
         {
+            if (request == null) { return BadRequest(); }
+
             return await Execute(request.SipAddress, async (codecApi, codecInformation) =>
             {
                 await codecApi.SetGpoAsync(codecInformation.Ip, request.Number, request.Active);
@@ -191,6 +194,8 @@ namespace CodecControl.Web.Controllers.CodecControl
         [HttpPost]
         public async Task<ActionResult<InputEnabledResponse>> SetInputEnabled([FromBody] SetInputEnabledRequest request)
         {
+            if (request == null) { return BadRequest(); }
+
             return await Execute(request.SipAddress, async (codecApi, codecInformation) =>
             {
                 var isEnabled = await codecApi.SetInputEnabledAsync(codecInformation.Ip, request.Input, request.Enabled);
@@ -222,6 +227,8 @@ namespace CodecControl.Web.Controllers.CodecControl
         [Route("changeinputgain")]
         public async Task<ActionResult<InputGainLevelResponse>> ChangeInputGain(ChangeGainRequest request, int change)
         {
+            if (request == null) { return BadRequest(); }
+
             return await Execute(request.SipAddress, async (codecApi, codecInformation) =>
             {
                 var gain = await codecApi.GetInputGainLevelAsync(codecInformation.Ip, request.Input);
@@ -239,6 +246,8 @@ namespace CodecControl.Web.Controllers.CodecControl
         [Route("setinputgain")]
         public async Task<ActionResult<InputGainLevelResponse>> SetInputGain([FromBody] SetInputGainRequest request)
         {
+            if (request == null) { return BadRequest(); }
+
             return await Execute(request.SipAddress, async (codecApi, codecInformation) =>
             {
                 var gainLevel = await codecApi.SetInputGainLevelAsync(codecInformation.Ip, request.Input, request.Level);
@@ -254,6 +263,8 @@ namespace CodecControl.Web.Controllers.CodecControl
         [Route("batchsetinputenabled")]
         public async Task<ActionResult<BatchEnableInputsResponse>> BatchSetInputEnabled([FromBody] BatchInputEnableRequest request)
         {
+            if (request == null) { return BadRequest(); }
+
             return await Execute(request.SipAddress, async (codecApi, codecInformation) =>
             {
                 var result = new BatchEnableInputsResponse();

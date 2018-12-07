@@ -1,7 +1,6 @@
 ﻿namespace CodecControl.Web.Models.Requests
 {
-    public class HangupRequest
+    public class HangupRequest : RequestBase
     {
-        public string SipAddress { get; set; }
     }
 }

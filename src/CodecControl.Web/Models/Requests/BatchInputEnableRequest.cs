@@ -2,9 +2,8 @@
 
 namespace CodecControl.Web.Models.Requests
 {
-    public class BatchInputEnableRequest
+    public class BatchInputEnableRequest :RequestBase
     {
-        public string SipAddress { get; set; }
         public List<InputEnableRequest> InputEnableRequests { get; set; }
 
         public class InputEnableRequest

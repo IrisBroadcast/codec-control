@@ -1,8 +1,7 @@
 ﻿namespace CodecControl.Web.Models.Requests
 {
-    public class SetInputEnabledRequest
+    public class SetInputEnabledRequest : RequestBase
     {
-        public string SipAddress { get; set; }
         public int Input { get; set; }
         public bool Enabled { get; set; }
     }

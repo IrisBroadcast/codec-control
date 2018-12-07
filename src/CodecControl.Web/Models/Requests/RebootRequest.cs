@@ -1,7 +1,6 @@
 ﻿namespace CodecControl.Web.Models.Requests
 {
-    public class RebootRequest
+    public class RebootRequest : RequestBase
     {
-        public string SipAddress { get; set; }
     }
 }

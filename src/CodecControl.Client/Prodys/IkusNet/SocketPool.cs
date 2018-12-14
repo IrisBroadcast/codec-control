@@ -123,7 +123,7 @@ namespace CodecControl.Client.Prodys.IkusNet
                     }
 
                     var nrOfSockets = socketsBag.Count;
-                    log.Info($"Found #{nrOfSockets} socket(s) for IP {ipAddress}");
+                    log.Debug($"Found #{nrOfSockets} socket(s) for IP {ipAddress}");
 
                     // Remove all sockets and re-add non-exired ones.
                     var list = new List<ProdysSocket>();

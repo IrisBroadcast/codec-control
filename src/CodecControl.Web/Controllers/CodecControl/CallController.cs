@@ -50,6 +50,9 @@ namespace CodecControl.Web.Controllers.CodecControl
         public async Task<ActionResult<bool>> Call([FromBody]CallRequest request)
         {
             if (request == null) { return BadRequest(); }
+
+            log.Info($"Request to Call. SipAddress={request.SipAddress} Callee={request.Callee} Profile={request.ProfileName}");
+
             var caller = new SipUri(request.SipAddress).UserAtHost;
 
             string callee = request.Callee; // Kan vara antingen sip-adress eller telefonnr (som saknar domän).
@@ -68,6 +71,9 @@ namespace CodecControl.Web.Controllers.CodecControl
         public async Task<ActionResult<bool>> Hangup([FromBody]HangupRequest request)
         {
             if (request == null) { return BadRequest(); }
+
+            log.Info($"Request to Hangup. SipAddress={request.SipAddress}");
+
             var caller = new SipUri(request.SipAddress).UserAtHost;
             return await Execute(caller, async (codecApi, codecInformation) => await codecApi.HangUpAsync(codecInformation.Ip));
         }

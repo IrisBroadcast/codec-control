@@ -33,6 +33,7 @@ using CodecControl.Web.Hub;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
@@ -96,6 +97,11 @@ namespace CodecControl.Web
             {
                 app.UseHsts();
             }
+
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.All
+            });
 
             app.UseAuthentication();
 

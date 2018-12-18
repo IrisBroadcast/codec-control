@@ -32,7 +32,9 @@ using System.Threading.Tasks;
 using CodecControl.Client;
 using CodecControl.Client.Exceptions;
 using CodecControl.Web.CCM;
+using CodecControl.Web.Helpers;
 using CodecControl.Web.Models.Requests;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
@@ -57,11 +59,9 @@ namespace CodecControl.Web.Controllers.Base
             {
                 try
                 {
-
                     if (string.IsNullOrEmpty(sipAddress))
                     {
-                        log.Info($"Invalid request. Missing SIP address in request: {Request.GetDisplayUrl()} " +
-                                 $"[Host={Request.Headers["Host"]}, UserAgent={Request.Headers["User-Agent"]}]");
+                        log.Info($"Invalid request. Missing SIP address in request: {Request.GetDisplayUrl()} [Headers={Request.GetRequestHeadersAsString()}]");
                         return BadRequest();
                     }
 

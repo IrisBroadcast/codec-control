@@ -61,7 +61,8 @@ namespace CodecControl.Web.Controllers.Base
                 {
                     if (string.IsNullOrEmpty(sipAddress))
                     {
-                        log.Info($"Invalid request. Missing SIP address in request: {Request.GetDisplayUrl()} [Headers={Request.GetRequestHeadersAsString()}]");
+                        var remoteIp = Request?.HttpContext?.Connection?.RemoteIpAddress?.ToString() ?? "unknown";
+                        log.Info($"Invalid request. Missing SIP address in request: {Request.GetDisplayUrl()} [Remote IP={remoteIp}, Headers={Request.GetRequestHeadersAsString()}]");
                         return BadRequest();
                     }
 

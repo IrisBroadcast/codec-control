@@ -127,12 +127,15 @@ namespace CodecControl.Web.Controllers.CodecControl
 
         [Route("getlinestatus")]
         [HttpGet]
-        public async Task<ActionResult<LineStatusResponse>> GetLineStatus(string sipAddress)
+        public async Task<ActionResult<LineStatusResponse>> GetLineStatus(string sipAddress, string deviceEncoder = "ProgramL1")
         {
             return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
                 var model = new LineStatusResponse();
-                LineStatus lineStatus = await codecApi.GetLineStatusAsync(codecInformation.Ip);
+
+                string deviceLineEncoder = deviceEncoder ?? "ProgramL1";
+
+                LineStatus lineStatus = await codecApi.GetLineStatusAsync(codecInformation.Ip, deviceLineEncoder);
 
                 model.LineStatus = lineStatus.StatusCode.ToString();
                 model.DisconnectReasonCode = (int)lineStatus.DisconnectReason;

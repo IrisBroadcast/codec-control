@@ -114,11 +114,17 @@ namespace CodecControl.Client.Prodys.IkusNet
             throw new NotImplementedException();
         }
 
-        public async Task<LineStatus> GetLineStatusAsync(string hostAddress)
+        public async Task<LineStatus> GetLineStatusAsync(string hostAddress, string lineEncoder = "ProgramL1")
         {
             using (var socket = await SocketPool.TakeSocket(hostAddress))
             {
-                SendCommand(socket, new CommandIkusNetGetLineStatus { Line = IkusNetLine.ProgramL1 });
+                // If the device have multiple encoders to call with
+                IkusNetLine statusSelectedLine = (IkusNetLine)Enum.Parse(typeof(IkusNetLine), lineEncoder);
+
+                SendCommand(socket, new CommandIkusNetGetLineStatus
+                {
+                    Line = statusSelectedLine
+                });
                 var response = new IkusNetGetLineStatusResponse(socket);
 
                 return new LineStatus

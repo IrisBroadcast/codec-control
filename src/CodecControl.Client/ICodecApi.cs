@@ -46,7 +46,7 @@ namespace CodecControl.Client
         Task<bool> GetInputEnabledAsync(string ip, int input);
         Task<int> GetInputGainLevelAsync(string ip, int input);
         Task<(bool, int)> GetInputGainAndStatusAsync(string ip, int input);
-        Task<LineStatus> GetLineStatusAsync(string ip);
+        Task<LineStatus> GetLineStatusAsync(string ip, string deviceLine);
         Task<VuValues> GetVuValuesAsync(string ip);
         Task<AudioMode> GetAudioModeAsync(string ip);
         Task<AudioStatus> GetAudioStatusAsync(string hostAddress, int nrOfInputs, int nrOfGpos);

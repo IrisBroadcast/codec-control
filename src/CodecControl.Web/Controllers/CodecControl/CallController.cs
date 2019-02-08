@@ -51,7 +51,7 @@ namespace CodecControl.Web.Controllers.CodecControl
         {
             if (request == null) { return BadRequest(); }
 
-            log.Info($"Request to Call. SipAddress={request.SipAddress} Callee={request.Callee} Profile={request.ProfileName} WhichCodec={request.DeviceEncoder}");
+            log.Info($"Request to Call. SipAddress={request.SipAddress} Callee={request.Callee} Profile={request.ProfileName} DeviceEncoder={request.DeviceEncoder}");
 
             var caller = new SipUri(request.SipAddress).UserAtHost;
 
@@ -62,10 +62,10 @@ namespace CodecControl.Web.Controllers.CodecControl
                 callee = new SipUri(callee).UserAtHost;
             }
 
-            string deviceEncoder = request.DeviceEncoder ?? "Program";
+            string callWithDeviceEncoder = request.DeviceEncoder ?? "Program";
 
             return await Execute(caller,
-                async (codecApi, codecInformation) => await codecApi.CallAsync(codecInformation.Ip, callee, request.ProfileName, deviceEncoder));
+                async (codecApi, codecInformation) => await codecApi.CallAsync(codecInformation.Ip, callee, request.ProfileName, callWithDeviceEncoder));
         }
         
         [Route("hangup")]
@@ -74,10 +74,12 @@ namespace CodecControl.Web.Controllers.CodecControl
         {
             if (request == null) { return BadRequest(); }
 
-            log.Info($"Request to Hangup. SipAddress={request.SipAddress}");
+            log.Info($"Request to Hangup. SipAddress={request.SipAddress} DeviceEncoder={request.DeviceEncoder}");
+
+            string hangUpWithDeviceEncoder = request.DeviceEncoder ?? "Program";
 
             var caller = new SipUri(request.SipAddress).UserAtHost;
-            return await Execute(caller, async (codecApi, codecInformation) => await codecApi.HangUpAsync(codecInformation.Ip));
+            return await Execute(caller, async (codecApi, codecInformation) => await codecApi.HangUpAsync(codecInformation.Ip, hangUpWithDeviceEncoder));
         }
 
         [Route("reboot")]

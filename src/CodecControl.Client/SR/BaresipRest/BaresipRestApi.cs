@@ -52,7 +52,7 @@ namespace CodecControl.Client.SR.BaresipRest
             return response.Success;
         }
 
-        public async Task<bool> HangUpAsync(string ip)
+        public async Task<bool> HangUpAsync(string ip, string deviceEncoder)
         {
             var url = CreateUrl(ip, "api/hangup");
             var response = await HttpService.PostWithBaresipResponseAsync<BaresipResponse>(url);

@@ -202,7 +202,7 @@ namespace CodecControl.Client.Prodys.IkusNet
             // Some codecs will hangup the current call and dial up the new call without hesitation.
 
             // If the device have multiple encoders to call with
-            IkusNetCodec selectedEncoder = (IkusNetCodec)Enum.Parse(typeof(IkusNetCodec), deviceEncoder);
+            IkusNetCodec callSelectedEncoder = (IkusNetCodec)Enum.Parse(typeof(IkusNetCodec), deviceEncoder);
 
             var cmd = new CommandIkusNetCall
             {
@@ -210,14 +210,17 @@ namespace CodecControl.Client.Prodys.IkusNet
                 Profile = profileName,
                 CallContent = IkusNetCallContent.Audio,
                 CallType = IkusNetIPCallType.UnicastBidirectional,
-                Codec = selectedEncoder,
+                Codec = callSelectedEncoder,
             };
             return await SendConfigurationCommandAsync(hostAddress, cmd);
         }
 
-        public async Task<bool> HangUpAsync(string hostAddress)
+        public async Task<bool> HangUpAsync(string hostAddress, string deviceEncoder = "Program")
         {
-            var cmd = new CommandIkusNetHangUp { Codec = IkusNetCodec.Program };
+            // If the device have multiple encoders to hang up
+            IkusNetCodec hangupSelectedEncoder = (IkusNetCodec)Enum.Parse(typeof(IkusNetCodec), deviceEncoder);
+
+            var cmd = new CommandIkusNetHangUp { Codec = hangupSelectedEncoder };
             return await SendConfigurationCommandAsync(hostAddress, cmd);
         }
 

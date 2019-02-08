@@ -39,7 +39,7 @@ namespace CodecControl.Client
     public interface ICodecApi
     {
         Task<bool> CallAsync(string hostAddress, string callee, string profileName, string deviceEncoder);
-        Task<bool> HangUpAsync(string hostAddress);
+        Task<bool> HangUpAsync(string hostAddress, string deviceEncoder);
         Task<bool> CheckIfAvailableAsync(string ip);
         
         Task<bool?> GetGpoAsync(string ip, int gpio);

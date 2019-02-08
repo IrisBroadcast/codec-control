@@ -64,8 +64,9 @@ namespace CodecControl.IntegrationTests.IkusNet
 
         //    var address = "sto-s17-01@acip.example.com";
         //    var profile = "Studio";
+        //    var whichCodec = "Program";
 
-        //    bool result = await sut.CallAsync(_hostAddress, address, profile);
+        //    bool result = await sut.CallAsync(_hostAddress, address, profile, whichCodec);
         //    Assert.True(result);
         //}
 

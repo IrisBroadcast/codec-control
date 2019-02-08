@@ -66,8 +66,9 @@ namespace CodecControl.IntegrationTests.Baresip
 
             var callee = "sto-s17-01@acip.example.com";
             var profileName = "Studio";
+            var whichCodec = "Program";
 
-            bool result = await sut.CallAsync(_ip, callee, profileName);
+            bool result = await sut.CallAsync(_ip, callee, profileName, whichCodec);
             Assert.True(result);
         }
 

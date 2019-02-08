@@ -5,5 +5,6 @@
         public string SipAddress { get; set; }
         public string Callee { get; set; }
         public string ProfileName { get; set; }
+        public string WhichCodec { get; set; }
     }
 }

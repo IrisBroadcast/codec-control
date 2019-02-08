@@ -13,7 +13,6 @@ namespace CodecControl.Client.Prodys.IkusNet.Sdk.Responses
             LineStatus = (IkusNetLineStatus)ConvertHelper.DecodeUInt(responseBytes, 256);
             DisconnectionCode = (IkusNetStreamingDisconnectionReason)ConvertHelper.DecodeUInt(responseBytes, 260);
             IpCallType = (IkusNetIPCallType)ConvertHelper.DecodeUInt(responseBytes, 264);
-
         }
 
         public string Address { get; }

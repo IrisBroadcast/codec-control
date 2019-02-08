@@ -29,8 +29,10 @@ namespace CodecControl.Web.Controllers.CodecControl
                 callee = new SipUri(callee).UserAtHost;
             }
 
+            string whichCodec = request.WhichCodec ?? "Program";
+
             return await Execute(caller,
-                async (codecApi, codecInformation) => await codecApi.CallAsync(codecInformation.Ip, callee, request.ProfileName));
+                async (codecApi, codecInformation) => await codecApi.CallAsync(codecInformation.Ip, callee, request.ProfileName, whichCodec));
         }
         
         [Route("hangup")]

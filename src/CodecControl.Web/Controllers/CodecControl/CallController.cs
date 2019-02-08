@@ -51,7 +51,7 @@ namespace CodecControl.Web.Controllers.CodecControl
         {
             if (request == null) { return BadRequest(); }
 
-            log.Info($"Request to Call. SipAddress={request.SipAddress} Callee={request.Callee} Profile={request.ProfileName}");
+            log.Info($"Request to Call. SipAddress={request.SipAddress} Callee={request.Callee} Profile={request.ProfileName} WhichCodec={request.WhichCodec}");
 
             var caller = new SipUri(request.SipAddress).UserAtHost;
 

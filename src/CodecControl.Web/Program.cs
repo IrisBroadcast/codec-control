@@ -41,14 +41,14 @@ namespace CodecControl.Web
             var logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
             try
             {
-                logger.Debug("CodecControl starting");
+                logger.Debug("CodecControl starting ");
                 CreateWebHostBuilder(args)
                     .Build()
                     .Run();
             }
             catch (Exception ex)
             {
-                logger.Error(ex, "Stopped program because of exception");
+                logger.Error(ex, "CodecControl stopped program because of exception");
                 throw;
             }
             finally

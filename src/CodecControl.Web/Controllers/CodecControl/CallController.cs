@@ -51,7 +51,7 @@ namespace CodecControl.Web.Controllers.CodecControl
         {
             if (request == null) { return BadRequest(); }
 
-            log.Info($"Request to Call. SipAddress={request.SipAddress} Callee={request.Callee} Profile={request.ProfileName} WhichCodec={request.WhichCodec}");
+            log.Info($"Request to Call. SipAddress={request.SipAddress} Callee={request.Callee} Profile={request.ProfileName} WhichCodec={request.DeviceEncoder}");
 
             var caller = new SipUri(request.SipAddress).UserAtHost;
 
@@ -62,10 +62,10 @@ namespace CodecControl.Web.Controllers.CodecControl
                 callee = new SipUri(callee).UserAtHost;
             }
 
-            string whichCodec = request.WhichCodec ?? "Program";
+            string deviceEncoder = request.DeviceEncoder ?? "Program";
 
             return await Execute(caller,
-                async (codecApi, codecInformation) => await codecApi.CallAsync(codecInformation.Ip, callee, request.ProfileName, whichCodec));
+                async (codecApi, codecInformation) => await codecApi.CallAsync(codecInformation.Ip, callee, request.ProfileName, deviceEncoder));
         }
         
         [Route("hangup")]

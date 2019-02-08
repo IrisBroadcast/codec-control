@@ -45,7 +45,7 @@ namespace CodecControl.Client.SR.BaresipRest
             return isAvailableResponse.Success;
         }
 
-        public async Task<bool> CallAsync(string ip, string callee, string profileName, string whichCodec)
+        public async Task<bool> CallAsync(string ip, string callee, string profileName, string deviceEncoder)
         {
             var url = CreateUrl(ip, "api/call");
             var response = await HttpService.PostWithBaresipResponseAsync<BaresipResponse>(url, new { address = callee });

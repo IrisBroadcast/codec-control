@@ -38,7 +38,7 @@ namespace CodecControl.Client
     /// </remarks>
     public interface ICodecApi
     {
-        Task<bool> CallAsync(string hostAddress, string callee, string profileName, string whichCodec);
+        Task<bool> CallAsync(string hostAddress, string callee, string profileName, string deviceEncoder);
         Task<bool> HangUpAsync(string hostAddress);
         Task<bool> CheckIfAvailableAsync(string ip);
         

@@ -196,13 +196,13 @@ namespace CodecControl.Client.Prodys.IkusNet
         #endregion
 
         #region Configuration Commands
-        public async Task<bool> CallAsync(string hostAddress, string callee, string profileName, string whichCodec = "Program")
+        public async Task<bool> CallAsync(string hostAddress, string callee, string profileName, string deviceEncoder = "Program")
         {
             // TODO: first check codec call status. Do not execute the call method if the codec is already in a call.
             // Some codecs will hangup the current call and dial up the new call without hesitation.
 
             // If the device have multiple encoders to call with
-            IkusNetCodec selectedCodec = (IkusNetCodec)Enum.Parse(typeof(IkusNetCodec), whichCodec);
+            IkusNetCodec selectedEncoder = (IkusNetCodec)Enum.Parse(typeof(IkusNetCodec), deviceEncoder);
 
             var cmd = new CommandIkusNetCall
             {
@@ -210,7 +210,7 @@ namespace CodecControl.Client.Prodys.IkusNet
                 Profile = profileName,
                 CallContent = IkusNetCallContent.Audio,
                 CallType = IkusNetIPCallType.UnicastBidirectional,
-                Codec = selectedCodec,
+                Codec = selectedEncoder,
             };
             return await SendConfigurationCommandAsync(hostAddress, cmd);
         }

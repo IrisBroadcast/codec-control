@@ -92,9 +92,9 @@ namespace CodecControl.IntegrationTests.IkusNet
 
         //    var address = "sto-s17-01@acip.example.com";
         //    var profile = "Studio";
-        //    var whichCodec = "Program";
+        //    var deviceEncoder = "Program";
 
-        //    bool result = await sut.CallAsync(_hostAddress, address, profile, whichCodec);
+        //    bool result = await sut.CallAsync(_hostAddress, address, profile, deviceEncoder);
         //    Assert.True(result);
         //}
 

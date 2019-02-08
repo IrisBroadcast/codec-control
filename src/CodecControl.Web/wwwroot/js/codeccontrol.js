@@ -2,7 +2,7 @@
 
 var connection = new signalR.HubConnectionBuilder().withUrl("/audioStatusHub").build();
 
-connection.on("AudioStatus", function (sipAddress, audioStatus) {
+connection.on("AudioStatus", (sipAddress, audioStatus) => {
     console.log(sipAddress, audioStatus);
     var codecs = app.codecs.filter(c => c.sipAddress === sipAddress);
     console.log("codecs", codecs);
@@ -11,82 +11,87 @@ connection.on("AudioStatus", function (sipAddress, audioStatus) {
     codec.updated = Date.now();
 });
 
-connection.start().catch(function (err) {
+connection.start().catch((err) => {
     return console.error(err.toString());
 });
 
-var subscribe = function (sipAddress) {
+var subscribe = (sipAddress) => {
     console.log("subscribe to " + sipAddress);
     connection.invoke("subscribe", sipAddress)
-        .then(function() {
+        .then(() => {
             getSubscriptions();
         })
-        .catch(function (err) {
-        return console.error(err.toString());
-    });
-    event.preventDefault();
+        .catch((err) => {
+            return console.error(err.toString());
+        });
 };
 
-var unsubscribe = function (sipAddress) {
+var unsubscribe = (sipAddress) => {
     console.log("unsubscribe to " + sipAddress);
     connection.invoke("unsubscribe", sipAddress)
-        .then(function () {
+        .then(() => {
             getSubscriptions();
         })
-        .catch(function (err) {
-        return console.error(err.toString());
-    });
-    event.preventDefault();
-    getSubscriptions();
+        .catch((err) => {
+            return console.error(err.toString());
+        });
 };
 
-var getSubscriptions = function() {
+var getSubscriptions = () => {
     axios.get("/debug/subscriptions")
-        .then(function (response) {
+        .then((response) => {
             let subscriptions = response.data;
             console.log("Prenumerationer", subscriptions);
             app.subscriptions = subscriptions;
         })
-        .catch(function (error) {
+        .catch((error) => {
             console.log(error);
         });
 };
 
-const getCodecInformationBySipAddress = function (sipAddress) {
+const getCodecInformationBySipAddress = (sipAddress) => {
     if (!sipAddress) return;
 
     axios.get("/debug/codecinformation", { params: { sipAddress: sipAddress } })
-        .then(function (response) {
+        .then((response) => {
             let codecInformation = response.data;
 
             if (!codecInformation || !codecInformation.sipAddress) {
                 console.warn('sipAddress not found');
                 return;
             }
-            if (app.codecInformation.some(function (ci) { return ci.sipAddress === codecInformation.sipAddress; })) {
+            if (app.codecs.some((ci) => { return ci.sipAddress === codecInformation.sipAddress; })) {
                 console.warn('sipAddress already added');
                 return;
             }
 
-            app.codecInformation.push(codecInformation);
-
-            if (codecInformation.api === 'IkusNet') {
-                app.codecs.push({
-                    sipAddress: codecInformation.sipAddress,
-                    updated: Date.now(),
-                    audioStatus: {
-                        vuValues: {
-                            txLeft: 0,
-                            txRight: 0,
-                            rxLeft: 0,
-                            rxRight: 0
-                        }
+            app.codecs.push({
+                sipAddress: codecInformation.sipAddress,
+                ip: codecInformation.ip,
+                api: codecInformation.api,
+                updated: Date.now(),
+                audioStatus: {
+                    vuValues: {
+                        txLeft: 0,
+                        txRight: 0,
+                        rxLeft: 0,
+                        rxRight: 0
                     }
-                });
-            }
+                }
+            });
         })
-        .catch(function (error) {
+        .catch((error) => {
             console.log(error);
+        });
+};
+
+const setLogLevel = (level) => {
+    console.log('set log level to ' + level);
+    axios.post("/setloglevel", { logLevel: level })
+        .then((response) => {
+            var newLogLevel = response.data;
+            app.currentLogLevel = newLogLevel;
+            console.log('response', newLogLevel);
         });
 };
 
@@ -94,17 +99,18 @@ var app = new Vue({
     el: '#app',
     data: {
         codecs: [],
-        codecInformation: [],
         subscriptions: [],
-        sipAddress: null
+        sipAddress: null,
+        currentLogLevel: '',
+        logLevels: ['Trace', 'Debug', 'Info', 'Warn', 'Error'],
+        selectedLogLevel: ''
     },
     methods: {
         subscribe: subscribe,
         unsubscribe: unsubscribe,
         getSubscriptions: getSubscriptions,
-        getCodecInformationBySipAddress: getCodecInformationBySipAddress
+        getCodecInformationBySipAddress: getCodecInformationBySipAddress,
+        setLogLevel: setLogLevel
     }
 });
 
-//getCodecInformationBySipAddress('mtu-25@contrib.sr.se');
-//getSubscriptions();

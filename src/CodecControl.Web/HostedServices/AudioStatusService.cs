@@ -1,9 +1,38 @@
-﻿using System;
+﻿#region copyright
+/*
+ * Copyright (c) 2018 Sveriges Radio AB, Stockholm, Sweden
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. The name of the author may not be used to endorse or promote products
+ *    derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+ * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+ #endregion
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CodecControl.Client;
+using CodecControl.Client.Exceptions;
 using CodecControl.Web.CCM;
 using CodecControl.Web.Hub;
 using CodecControl.Web.Models.Responses;
@@ -33,7 +62,7 @@ namespace CodecControl.Web.HostedServices
             _serviceProvider = serviceProvider;
         }
 
-        public void Subscribe(string connectionId, string sipAddress)
+        public async Task Subscribe(string connectionId, string sipAddress)
         {
             log.Info($"Subscription from connection id {connectionId} to {sipAddress}");
 
@@ -50,8 +79,25 @@ namespace CodecControl.Web.HostedServices
                 return;
             }
 
+            var codecInformation = await _ccmService.GetCodecInformationBySipAddress(sipAddress);
+
+            if (codecInformation == null)
+            {
+                log.Info($"Codec {sipAddress} is not registered in CCM.");
+                return;
+            }
+
+            var codecApiType = codecInformation?.CodecApiType;
+            var codecApi = codecApiType != null ? _serviceProvider.GetService(codecApiType) as ICodecApi : null;
+
+            if (codecApi == null || string.IsNullOrEmpty(codecInformation.Ip))
+            {
+                log.Info($"Codec {sipAddress} is not subscribable");
+                return;
+            }
+            
             Subscriptions.Add(new SubscriptionInfo { ConnectionId = connectionId, SipAddress = sipAddress });
-            _hub.Groups.AddToGroupAsync(connectionId, sipAddress);
+            await _hub.Groups.AddToGroupAsync(connectionId, sipAddress);
         }
 
         public void Unsubscribe(string connectionId, string sipAddress)
@@ -134,7 +180,8 @@ namespace CodecControl.Web.HostedServices
                     return;
                 }
 
-                var audioStatus = await codecApi.GetAudioStatusAsync(codecInformation.Ip, codecInformation.NrOfInputs, codecInformation.NrOfGpos);
+                var audioStatus = await codecApi.GetAudioStatusAsync(codecInformation.Ip, codecInformation.NrOfInputs,
+                    codecInformation.NrOfGpos);
 
                 var model = new AudioStatusResponse()
                 {
@@ -144,6 +191,10 @@ namespace CodecControl.Web.HostedServices
                 };
 
                 await SendAudioStatusToClients(sipAddress, model);
+            }
+            catch (CodecInvocationException ex)
+            {
+                log.Info($"Failed to check audio status on {sipAddress}. {ex.Message}");
             }
             catch (Exception ex)
             {

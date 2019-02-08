@@ -1,4 +1,32 @@
-﻿using System;
+﻿#region copyright
+/*
+ * Copyright (c) 2018 Sveriges Radio AB, Stockholm, Sweden
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. The name of the author may not be used to endorse or promote products
+ *    derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+ * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+ #endregion
+
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
@@ -39,7 +67,7 @@ namespace CodecControl.Client.Prodys.IkusNet
 
                 if (dictionaryForIpAddress.TryTake(out var socket))
                 {
-                    log.Info($"Reusing existing socket for IP {ipAddress} found in pool. (Socket #{socket.GetHashCode()})");
+                    log.Debug($"Reusing existing socket for IP {ipAddress} found in pool. (Socket #{socket.GetHashCode()})");
                     return new SocketProxy(socket, this);
                 }
 
@@ -62,7 +90,7 @@ namespace CodecControl.Client.Prodys.IkusNet
                 return;
             }
 
-            log.Info($"Returning socket for {socket.IpAddress} to pool. (Socket #{socket.GetHashCode()})");
+            log.Debug($"Returning socket for {socket.IpAddress} to pool. (Socket #{socket.GetHashCode()})");
             var dictionaryForIpAddress = _dictionary.GetOrAdd(socket.IpAddress, s => new ConcurrentBag<ProdysSocket>());
             socket.RefreshEvictionTime();
             dictionaryForIpAddress.Add(socket);
@@ -72,7 +100,7 @@ namespace CodecControl.Client.Prodys.IkusNet
         {
             try
             {
-                log.Info("Checking pool for expired sockets.");
+                log.Debug("Checking pool for expired sockets.");
 
                 foreach (KeyValuePair<string, ConcurrentBag<ProdysSocket>> dictionaryForIpAddress in _dictionary)
                 {
@@ -88,15 +116,14 @@ namespace CodecControl.Client.Prodys.IkusNet
                         }
                         else
                         {
-                            log.Warn(
-                                $"Pool entry for IP address {ipAddress} not found when trying to remove it from pool.");
+                            log.Warn($"Pool entry for IP address {ipAddress} not found when trying to remove it from pool.");
                         }
 
                         continue;
                     }
 
                     var nrOfSockets = socketsBag.Count;
-                    log.Info($"Found #{nrOfSockets} socket(s) for IP {ipAddress}");
+                    log.Debug($"Found #{nrOfSockets} socket(s) for IP {ipAddress}");
 
                     // Remove all sockets and re-add non-exired ones.
                     var list = new List<ProdysSocket>();

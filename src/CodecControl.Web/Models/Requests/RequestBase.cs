@@ -26,10 +26,10 @@
  */
  #endregion
 
-namespace CodecControl.Client.Prodys.IkusNet.Sdk.Commands.Base
+namespace CodecControl.Web.Models.Requests
 {
-    public interface ICommandBase
+    public class RequestBase
     {
-        byte[] GetBytes();
+        public string SipAddress { get; set; }
     }
 }

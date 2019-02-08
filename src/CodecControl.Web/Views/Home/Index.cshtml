@@ -27,11 +27,11 @@
         .conf-container {
             margin: 0 auto;
             padding: 2vh 0 0 0;
-            width: 90vw;
+            margin: 5vw;
         }
 
         .conf-site {
-            font-size: 3vw;
+            font-size: 2vw;
             font-weight: 300;
             color: #5c22b3;
             display: block;
@@ -39,17 +39,17 @@
         }
 
         .conf-version {
-            font-size: 8vw;
+            font-size: 3vw;
             font-weight: 200;
         }
 
         .conf-environment {
-            font-size: 16vw;
+            font-size: 3vw;
             font-weight: 600;
         }
 
         .conf-server {
-            font-size: 5vw;
+            font-size: 3vw;
             font-weight: 400;
         }
 
@@ -60,10 +60,7 @@
 
         .conf-headline {
             margin-top: 6vh;
-            margin-bottom: 2vh;
-            font-size: 3vw;
             font-weight: 400;
-            color: #812eb1;
         }
 
         a {
@@ -78,13 +75,15 @@
 
         .doc-info-table {
             width: 100%;
-            margin: 3vh 0;
+            margin: 1vh 0;
             line-height: 1.5;
+            border: 1px solid black;
+            text-align: left;
         }
 
             .doc-info-table th {
-                background: #9a42ce;
-                color: #f1daff;
+                background: antiquewhite;
+                font-size: smaller;
             }
 
             .doc-info-table td {
@@ -96,43 +95,12 @@
             text-decoration: underline;
         }
 
-        .doc-xinfo-table {
-            width: 100%;
-            margin-top: 10px;
-            background: #2E4546;
-        }
-
-            .doc-xinfo-table th {
-                background: #292929;
-            }
-
-            .doc-xinfo-table td {
-                padding: 5px;
-                border-bottom: 1px solid #292929;
-            }
-
-        .doc-main-paramname {
-            font-weight: 600;
-            width: 20%;
-        }
-
-        .doc-main-params {
-            font-style: oblique;
-            width: 15%;
-        }
-
-        .doc-main-description {
-            color: #5d2a7b;
-        }
 
         .btn {
-            background: #c448d2;
             line-height: 2;
             padding: 0.5vh 2vw;
             margin: 0 1vw 0 0;
             display: inline-block;
-            color: white;
-            border: 0;
             font-size: 1em;
             cursor: pointer;
         }
@@ -143,15 +111,14 @@
         }
 
         .input-text {
-            line-height: 2;
             padding: 0.5vh 2vw;
             margin: 0 1vw 0 0;
             display: inline-block;
-            font-size: 1em;
+            width: 50%
         }
 
         ::placeholder {
-            color: #9a42ce;
+            color: lightgray;
             opacity: 1;
         }
 
@@ -191,7 +158,6 @@
         .codecs .updated {
             font-size: smaller;
         }
-
     </style>
 
 </head>
@@ -209,13 +175,54 @@
 
         <div class="unit">
             <div class="conf-headline">
-                Current Codecs Controlled
+                Prenumerationer
+                <a v-on:click="getSubscriptions" style="float: right;">Ladda om</a>
             </div>
 
             <table cellspacing="0" cellpadding="0" border="0" class="doc-info-table">
                 <thead>
                     <tr>
+                        <th>Connection id</th>
                         <th>Sip-address</th>
+                    </tr>
+                </thead>
+                <tbody v-if="subscriptions.length > 0">
+                    <tr v-for="subscription in subscriptions">
+                        <td>{{subscription.connectionId}}</td>
+                        <td>{{subscription.sipAddress}}</td>
+                    </tr>
+                </tbody>
+                <tbody v-if="subscriptions.length == 0">
+                    <tr>
+                        <td colspan="2">Inga prenumerationer</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="unit">
+            <h2>Debug-sida</h2>
+
+            <div>
+                <label for="sipAddress" class="subheader">Hämta kodarinformation från CCM </label>
+            </div>
+
+            <input id="sipAddress"
+                   type="text"
+                   placeholder="sipAddress"
+                   v-model="sipAddress"
+                   v-on:keydown.enter="getCodecInformationBySipAddress(sipAddress)"
+                   class="input-text" />
+            <button v-on:click="getCodecInformationBySipAddress(sipAddress)">Hämta</button>
+
+            <h3>Kodarinformation</h3>
+
+            <table cellspacing="0" class="doc-info-table">
+                <thead>
+                    <tr>
+                        <th>Sip-address</th>
+                        <th>IP</th>
+                        <th>API</th>
                         <th>Vu-values Rx</th>
                         <th>Vu-values Tx</th>
                         <th>Codec-updated</th>
@@ -224,9 +231,9 @@
                 </thead>
                 <tbody v-if="codecs.length > 0">
                     <tr v-for="codec in codecs">
-                        <td>
-                            {{codec.sipAddress}}
-                        </td>
+                        <td>{{codec.sipAddress}}</td>
+                        <td>{{codec.ip}}</td>
+                        <td>{{codec.api}}</td>
                         <td>
                             Rx: {{codec.audioStatus.vuValues.rxLeft}} / {{codec.audioStatus.vuValues.rxRight}}
                         </td>
@@ -244,7 +251,7 @@
                 </tbody>
                 <tbody v-if="codecs.length == 0">
                     <tr>
-                        <td colspan="2">No active codecs</td>
+                        <td colspan="2">Inga kodare</td>
                     </tr>
                 </tbody>
             </table>
@@ -252,66 +259,12 @@
         </div>
 
         <div class="unit">
-            <div class="conf-headline">
-                Current Client Subscriptions
-            </div>
-            <a v-on:click="getSubscriptions" class="btn">Reload</a>
+            <div>Aktuell lognivå: {{currentLogLevel}}</div>
 
-            <table cellspacing="0" cellpadding="0" border="0" class="doc-info-table">
-                <thead>
-                    <tr>
-                        <th>Connection id</th>
-                        <th>Sip-address</th>
-                    </tr>
-                </thead>
-                <tbody v-if="subscriptions.length > 0">
-                    <tr v-for="subscription in subscriptions">
-                        <td>{{subscription.connectionId}}</td>
-                        <td>{{subscription.sipAddress}}</td>
-                    </tr>
-                </tbody>
-                <tbody v-if="subscriptions.length == 0">
-                    <tr>
-                        <td colspan="2">No active subscriptions</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="unit">
-            <div class="conf-headline">
-                <label for="sipAddress" class="subheader">Add controllable audio-codec</label>
-            </div>
-
-            <input id="sipAddress"
-                   type="text"
-                   placeholder="sipAddress"
-                   v-model="sipAddress"
-                   v-on:keydown.enter="getCodecInformationBySipAddress(sipAddress)"
-                   class="input-text" />
-            <button v-on:click="getCodecInformationBySipAddress(sipAddress)" class="btn">Add</button>
-
-            <table cellspacing="0" cellpadding="0" border="0" class="doc-info-table">
-                <thead>
-                    <tr>
-                        <th>Sip-address</th>
-                        <th>IP</th>
-                        <th>API</th>
-                        <th>GPO-name</th>
-                        <th>#Inputs</th>
-                        <th>#GPOs</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="ci in codecInformation">
-                        <td v-for="value in ci">{{value}}</td>
-                    </tr>
-                </tbody>
-                <tbody v-if="codecInformation.length == 0">
-                    <tr>
-                        <td colspan="6">No active codec information</td>
-                    </tr>
-                </tbody>
-            </table>
+            <select v-model="selectedLogLevel">
+                <option v-for="level in logLevels" v-bind:value="level">{{ level }}</option>
+            </select>
+            <button v-on:click="setLogLevel(selectedLogLevel)">Ändra lognivå</button>
         </div>
 
     </div>
@@ -322,6 +275,9 @@
 <script src="~/lib/vue/dist/vue.js"></script>
 <script src="~/lib/axios/dist/axios.js"></script>
 <script src="~/js/codeccontrol.js"></script>
-
+<script>
+    app.currentLogLevel = '@ViewData["CurrentLogLevel"]'
+    app.selectedLogLevel = app.currentLogLevel;
+</script>
 
 </html>

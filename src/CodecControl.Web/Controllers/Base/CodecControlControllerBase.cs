@@ -1,13 +1,45 @@
-﻿using System;
+﻿#region copyright
+/*
+ * Copyright (c) 2018 Sveriges Radio AB, Stockholm, Sweden
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. The name of the author may not be used to endorse or promote products
+ *    derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+ * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+ #endregion
+
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 using CodecControl.Client;
 using CodecControl.Client.Exceptions;
 using CodecControl.Web.CCM;
-using CodecControl.Web.Controllers.Base;
+using CodecControl.Web.Helpers;
+using CodecControl.Web.Models.Requests;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
 
-namespace CodecControl.Web.Controllers
+namespace CodecControl.Web.Controllers.Base
 {
     public class CodecControlControllerBase : ApiControllerBase
     {
@@ -29,7 +61,8 @@ namespace CodecControl.Web.Controllers
                 {
                     if (string.IsNullOrEmpty(sipAddress))
                     {
-                        log.Info("Invalid request. Missing SIP address");
+                        var remoteIp = Request?.HttpContext?.Connection?.RemoteIpAddress?.ToString() ?? "unknown";
+                        log.Info($"Invalid request. Missing SIP address in request: {Request.GetDisplayUrl()} [Remote IP={remoteIp}, Headers={Request.GetRequestHeadersAsString()}]");
                         return BadRequest();
                     }
 
@@ -41,7 +74,7 @@ namespace CodecControl.Web.Controllers
                         return CodecUnavailable();
                     }
 
-                    var codecApiType = codecInformation?.CodecApiType;
+                    var codecApiType = codecInformation.CodecApiType;
                     var codecApi = codecApiType != null ? _serviceProvider.GetService(codecApiType) as ICodecApi : null;
 
                     if (codecApi == null || string.IsNullOrEmpty(codecInformation.Ip))
@@ -55,6 +88,12 @@ namespace CodecControl.Web.Controllers
                     {
                         return await func(codecApi, codecInformation);
                     }
+                }
+                catch (CodecInvocationException ex)
+                {
+                    // When response from codec was unparsable or indicates that request was unsuccessful.
+                    log.Info($"Error when sending codec control command to {sipAddress}. {ex.Message}");
+                    return InternalServerError();
                 }
                 catch (CodecException ex)
                 {

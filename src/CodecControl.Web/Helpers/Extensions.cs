@@ -24,12 +24,18 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- #endregion
+#endregion
 
-namespace CodecControl.Client.Prodys.IkusNet.Sdk.Commands.Base
+using System.Linq;
+using Microsoft.AspNetCore.Http;
+
+namespace CodecControl.Web.Helpers
 {
-    public interface ICommandBase
+    public static class Extensions
     {
-        byte[] GetBytes();
+        public static string GetRequestHeadersAsString(this HttpRequest request)
+        {
+            return string.Join(", ", request.Headers.Select(h => $"{h.Key}={string.Join(",", h.Value)}"));
+        }
     }
 }

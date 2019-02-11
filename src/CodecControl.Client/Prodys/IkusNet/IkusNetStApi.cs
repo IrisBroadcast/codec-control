@@ -114,17 +114,14 @@ namespace CodecControl.Client.Prodys.IkusNet
             throw new NotImplementedException();
         }
 
-        public async Task<LineStatus> GetLineStatusAsync(string hostAddress, string lineEncoder = "ProgramL1")
+        public async Task<LineStatus> GetLineStatusAsync(string hostAddress, string lineEncoder)
         {
             // TODO: Get actual amount of lines from CCM and add to CodecInformation object to determine if it exists
             using (var socket = await SocketPool.TakeSocket(hostAddress))
             {
                 // If the device have multiple encoders to call with
-                if (lineEncoder == null)
-                {
-                    log.Debug($"Trying to GetLineStatus lineEncoder: {lineEncoder} , hostAddress: {hostAddress}");
-                }
-                IkusNetLine statusSelectedLine = (IkusNetLine)Enum.Parse(typeof(IkusNetLine), lineEncoder, true);
+                var deviceLineEncoder = string.IsNullOrEmpty(lineEncoder) ? "ProgramL1" : lineEncoder;
+                IkusNetLine statusSelectedLine = (IkusNetLine)Enum.Parse(typeof(IkusNetLine), deviceLineEncoder, true);
 
                 log.Debug($"Trying to GetLineStatus statusSelectedLine: {statusSelectedLine} , hostAddress: {hostAddress}");
 
@@ -209,13 +206,14 @@ namespace CodecControl.Client.Prodys.IkusNet
         #endregion
 
         #region Configuration Commands
-        public async Task<bool> CallAsync(string hostAddress, string callee, string profileName, string deviceEncoder = "Program")
+        public async Task<bool> CallAsync(string hostAddress, string callee, string profileName, string deviceEncoder)
         {
             // TODO: first check codec call status. Do not execute the call method if the codec is already in a call.
             // Some codecs will hangup the current call and dial up the new call without hesitation.
 
             // If the device have multiple encoders to call with
-            IkusNetCodec callSelectedEncoder = (IkusNetCodec)Enum.Parse(typeof(IkusNetCodec), deviceEncoder, true);
+            var deviceLineEncoder = string.IsNullOrEmpty(deviceEncoder) ? "Program" : deviceEncoder;
+            IkusNetCodec callSelectedEncoder = (IkusNetCodec)Enum.Parse(typeof(IkusNetCodec), deviceLineEncoder, true);
 
             var cmd = new CommandIkusNetCall
             {
@@ -231,7 +229,8 @@ namespace CodecControl.Client.Prodys.IkusNet
         public async Task<bool> HangUpAsync(string hostAddress, string deviceEncoder = "Program")
         {
             // If the device have multiple encoders to hang up
-            IkusNetCodec hangupSelectedEncoder = (IkusNetCodec)Enum.Parse(typeof(IkusNetCodec), deviceEncoder, true);
+            var deviceLineEncoder = string.IsNullOrEmpty(deviceEncoder) ? "Program" : deviceEncoder;
+            IkusNetCodec hangupSelectedEncoder = (IkusNetCodec)Enum.Parse(typeof(IkusNetCodec), deviceLineEncoder, true);
 
             var cmd = new CommandIkusNetHangUp { Codec = hangupSelectedEncoder };
             return await SendConfigurationCommandAsync(hostAddress, cmd);

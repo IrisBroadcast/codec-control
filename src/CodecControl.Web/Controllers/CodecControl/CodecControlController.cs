@@ -52,7 +52,6 @@ namespace CodecControl.Web.Controllers.CodecControl
         [HttpGet]
         public async Task<ActionResult<IsAvailableResponse>> IsAvailable(string sipAddress)
         {
-            
             return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
                 var isAvailable = await codecApi.CheckIfAvailableAsync(codecInformation.Ip);

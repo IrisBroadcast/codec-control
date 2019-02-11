@@ -116,17 +116,24 @@ namespace CodecControl.Client.Prodys.IkusNet
 
         public async Task<LineStatus> GetLineStatusAsync(string hostAddress, string lineEncoder = "ProgramL1")
         {
+            // TODO: Get actual amount of lines from CCM and add to CodecInformation object to determine if it exists
             using (var socket = await SocketPool.TakeSocket(hostAddress))
             {
                 // If the device have multiple encoders to call with
-                IkusNetLine statusSelectedLine = (IkusNetLine)Enum.Parse(typeof(IkusNetLine), lineEncoder);
+                if (lineEncoder == null)
+                {
+                    log.Debug($"Trying to GetLineStatus lineEncoder: {lineEncoder} , hostAddress: {hostAddress}");
+                }
+                IkusNetLine statusSelectedLine = (IkusNetLine)Enum.Parse(typeof(IkusNetLine), lineEncoder, true);
+
+                log.Debug($"Trying to GetLineStatus statusSelectedLine: {statusSelectedLine} , hostAddress: {hostAddress}");
 
                 SendCommand(socket, new CommandIkusNetGetLineStatus
                 {
                     Line = statusSelectedLine
                 });
                 var response = new IkusNetGetLineStatusResponse(socket);
-
+                
                 return new LineStatus
                 {
                     StatusCode = IkusNetMapper.MapToLineStatus(response.LineStatus),
@@ -208,7 +215,7 @@ namespace CodecControl.Client.Prodys.IkusNet
             // Some codecs will hangup the current call and dial up the new call without hesitation.
 
             // If the device have multiple encoders to call with
-            IkusNetCodec callSelectedEncoder = (IkusNetCodec)Enum.Parse(typeof(IkusNetCodec), deviceEncoder);
+            IkusNetCodec callSelectedEncoder = (IkusNetCodec)Enum.Parse(typeof(IkusNetCodec), deviceEncoder, true);
 
             var cmd = new CommandIkusNetCall
             {
@@ -224,7 +231,7 @@ namespace CodecControl.Client.Prodys.IkusNet
         public async Task<bool> HangUpAsync(string hostAddress, string deviceEncoder = "Program")
         {
             // If the device have multiple encoders to hang up
-            IkusNetCodec hangupSelectedEncoder = (IkusNetCodec)Enum.Parse(typeof(IkusNetCodec), deviceEncoder);
+            IkusNetCodec hangupSelectedEncoder = (IkusNetCodec)Enum.Parse(typeof(IkusNetCodec), deviceEncoder, true);
 
             var cmd = new CommandIkusNetHangUp { Codec = hangupSelectedEncoder };
             return await SendConfigurationCommandAsync(hostAddress, cmd);

@@ -62,7 +62,7 @@ namespace CodecControl.Web.Controllers.CodecControl
                 callee = new SipUri(callee).UserAtHost;
             }
 
-            string callWithDeviceEncoder = request.DeviceEncoder ?? "Program";
+            string callWithDeviceEncoder = string.IsNullOrEmpty(request.DeviceEncoder) ?  "Program" : request.DeviceEncoder;
 
             return await Execute(caller,
                 async (codecApi, codecInformation) => await codecApi.CallAsync(codecInformation.Ip, callee, request.ProfileName, callWithDeviceEncoder));
@@ -76,7 +76,7 @@ namespace CodecControl.Web.Controllers.CodecControl
 
             log.Info($"Request to Hangup. SipAddress={request.SipAddress} DeviceEncoder={request.DeviceEncoder}");
 
-            string hangUpWithDeviceEncoder = request.DeviceEncoder ?? "Program";
+            string hangUpWithDeviceEncoder =  string.IsNullOrEmpty(request.DeviceEncoder) ? "Program" : request.DeviceEncoder;
 
             var caller = new SipUri(request.SipAddress).UserAtHost;
             return await Execute(caller, async (codecApi, codecInformation) => await codecApi.HangUpAsync(codecInformation.Ip, hangUpWithDeviceEncoder));

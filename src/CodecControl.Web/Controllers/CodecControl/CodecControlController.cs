@@ -127,13 +127,13 @@ namespace CodecControl.Web.Controllers.CodecControl
 
         [Route("getlinestatus")]
         [HttpGet]
-        public async Task<ActionResult<LineStatusResponse>> GetLineStatus(string sipAddress, string deviceEncoder = "ProgramL1")
+        public async Task<ActionResult<LineStatusResponse>> GetLineStatus(string sipAddress, string deviceEncoder)
         {
             return await Execute(sipAddress, async (codecApi, codecInformation) =>
             {
                 var model = new LineStatusResponse();
 
-                string deviceLineEncoder = deviceEncoder ?? "ProgramL1";
+                string deviceLineEncoder = string.IsNullOrEmpty(deviceEncoder) ? "ProgramL1" : deviceEncoder;
 
                 LineStatus lineStatus = await codecApi.GetLineStatusAsync(codecInformation.Ip, deviceLineEncoder);
 
@@ -258,6 +258,7 @@ namespace CodecControl.Web.Controllers.CodecControl
         [Route("changeinputgain")]
         public async Task<ActionResult<InputGainLevelResponse>> ChangeInputGain(ChangeGainRequest request, int change)
         {
+            // TODO: Shouldn't change be in the ChangeGainRequest Object??
             if (request == null) { return BadRequest(); }
 
             return await Execute(request.SipAddress, async (codecApi, codecInformation) =>

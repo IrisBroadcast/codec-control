@@ -1,0 +1,19 @@
+{
+    "name": "CodecControl",
+    "team": "Unicorn",
+    "tech": [
+        "c#",
+        "dotnet core 2.2",
+        "signalr",
+        "websockets"
+    ],
+    "env": [{
+            "name": "dev",
+            "url": "https://ucodeccontrol.sr.se"
+        },
+        {
+            "name": "prod",
+            "url": "https://codeccontrol.sr.se"
+        }
+    ]
+}

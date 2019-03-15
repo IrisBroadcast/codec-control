@@ -24,21 +24,12 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- #endregion
+#endregion
 
-using System.Net.Sockets;
-using CodecControl.Client.Prodys.IkusNet.Sdk.Enums;
-
-namespace CodecControl.Client.Prodys.IkusNet.Sdk.Responses
+namespace CodecControl.Web.Models.Responses
 {
-    public class IkusNetGetLoadedPresetNameResponse : IkusNetStatusResponseBase
+    public class ResponseBase
     {
-        public string PresetName { get; set; }
-
-        public IkusNetGetLoadedPresetNameResponse(SocketProxy socket)
-        {
-            var responseBytes = GetResponseBytes(socket, Command.IkusNetGetLoadedPresetName, 256);
-            PresetName = responseBytes.ToNullTerminatedString(0, 256);
-        }
+        public string SipAddress { get; set; }
     }
 }

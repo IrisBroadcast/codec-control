@@ -43,6 +43,5 @@ namespace CodecControl.Web.Controllers.Base
         {
             return StatusCode((int)HttpStatusCode.InternalServerError, HttpStatusCode.InternalServerError);
         }
-
     }
 }

@@ -26,19 +26,11 @@
  */
  #endregion
 
-using System.Net.Sockets;
-using CodecControl.Client.Prodys.IkusNet.Sdk.Enums;
 
-namespace CodecControl.Client.Prodys.IkusNet.Sdk.Responses
+namespace CodecControl.Web.Models.Responses
 {
-    public class IkusNetGetLoadedPresetNameResponse : IkusNetStatusResponseBase
+    public class IsOnlineResponse : ResponseBase
     {
-        public string PresetName { get; set; }
-
-        public IkusNetGetLoadedPresetNameResponse(SocketProxy socket)
-        {
-            var responseBytes = GetResponseBytes(socket, Command.IkusNetGetLoadedPresetName, 256);
-            PresetName = responseBytes.ToNullTerminatedString(0, 256);
-        }
+        public bool IsOnline { get; set; }
     }
 }

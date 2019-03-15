@@ -62,6 +62,21 @@ namespace CodecControl.Web.Controllers.CodecControl
             });
         }
 
+        [Route("isonline")]
+        [HttpGet]
+        public async Task<ActionResult<IsOnlineResponse>> IsOnline(string sipAddress)
+        {
+            return await Execute(sipAddress, async (codecApi, codecInformation) =>
+            {
+                var isOnline = await codecApi.CheckIfAvailableAsync(codecInformation.Ip);
+                return new IsOnlineResponse()
+                {
+                    SipAddress = codecInformation.Ip,
+                    IsOnline = isOnline
+                };
+            });
+        }
+
         [Route("getavailablegpos")]
         [HttpGet]
         public async Task<ActionResult<AvailableGposResponse>> GetAvailableGpos(string sipAddress)

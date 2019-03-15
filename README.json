@@ -9,11 +9,15 @@
     ],
     "env": [{
             "name": "dev",
-            "url": "https://ucodeccontrol.sr.se"
+            "url": "https://codeccontrol.dev"
+        },
+        {
+            "name": "stage",
+            "url": "https://ucodeccontrol"
         },
         {
             "name": "prod",
-            "url": "https://codeccontrol.sr.se"
+            "url": "https://codeccontrol"
         }
     ]
 }

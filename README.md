@@ -10,10 +10,10 @@ This application uses CCM for device discovery.
 License
 =======
 
-IRIS CodecControl is (C) Sveriges Radio AB, Stockholm, Sweden 2017
+IRIS Codec Control is (C) Sveriges Radio AB, Stockholm, Sweden 2017
 The code is licensed under the BSD 3-clause license.
 
-The license for CCM is in the LICENSE.txt file
+The license for Codec Control is in the LICENSE.txt file
 
 ## API Documentation
 

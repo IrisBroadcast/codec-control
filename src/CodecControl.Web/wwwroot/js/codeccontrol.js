@@ -111,6 +111,9 @@ var app = new Vue({
         getSubscriptions: getSubscriptions,
         getCodecInformationBySipAddress: getCodecInformationBySipAddress,
         setLogLevel: setLogLevel
+    },
+    mounted(): {
+        this.getSubscriptions()
     }
 });
 

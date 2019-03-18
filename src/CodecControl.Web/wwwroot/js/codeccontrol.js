@@ -3,9 +3,9 @@
 var connection = new signalR.HubConnectionBuilder().withUrl("/audioStatusHub").build();
 
 connection.on("AudioStatus", (sipAddress, audioStatus) => {
-    console.log(sipAddress, audioStatus);
+    console.log("AudioStatus ", sipAddress, audioStatus);
     var codecs = app.codecs.filter(c => c.sipAddress === sipAddress);
-    console.log("codecs", codecs);
+    console.log("Codecs ", codecs);
     var codec = codecs[0];
     codec.audioStatus = audioStatus;
     codec.updated = Date.now();
@@ -16,7 +16,7 @@ connection.start().catch((err) => {
 });
 
 var subscribe = (sipAddress) => {
-    console.log("subscribe to " + sipAddress);
+    console.log("Subscribe to " + sipAddress);
     connection.invoke("subscribe", sipAddress)
         .then(() => {
             getSubscriptions();
@@ -27,7 +27,7 @@ var subscribe = (sipAddress) => {
 };
 
 var unsubscribe = (sipAddress) => {
-    console.log("unsubscribe to " + sipAddress);
+    console.log("Unsubscribe to " + sipAddress);
     connection.invoke("unsubscribe", sipAddress)
         .then(() => {
             getSubscriptions();
@@ -41,12 +41,26 @@ var getSubscriptions = () => {
     axios.get("/debug/subscriptions")
         .then((response) => {
             let subscriptions = response.data;
-            console.log("Prenumerationer", subscriptions);
+            console.log("Subscriptions ", subscriptions);
             app.subscriptions = subscriptions;
         })
         .catch((error) => {
             console.log(error);
         });
+};
+
+var subscriptionLoop = () => {
+    var subLoopCount = 0;
+    var subLoop = setInterval(() => {
+        console.log("Checking subscriptions");
+        subLoopCount++;
+        if(subLoopCount > 3000)
+        {
+            clearInterval(subLoop);
+        }
+        this.getSubscriptions();
+    },
+    5000);
 };
 
 const getCodecInformationBySipAddress = (sipAddress) => {
@@ -60,6 +74,7 @@ const getCodecInformationBySipAddress = (sipAddress) => {
                 console.warn('sipAddress not found');
                 return;
             }
+
             if (app.codecs.some((ci) => { return ci.sipAddress === codecInformation.sipAddress; })) {
                 console.warn('sipAddress already added');
                 return;
@@ -109,11 +124,16 @@ var app = new Vue({
         subscribe: subscribe,
         unsubscribe: unsubscribe,
         getSubscriptions: getSubscriptions,
+        subscriptionLoop: subscriptionLoop,
         getCodecInformationBySipAddress: getCodecInformationBySipAddress,
         setLogLevel: setLogLevel
     },
-    mounted(): {
-        this.getSubscriptions()
+    mounted() {
+        console.log("Mounted app - getting active subscriptions");
+        this.getSubscriptions();
+
+        this.subscriptionLoop();
     }
 });
 
+console.dir(app)

@@ -72,11 +72,13 @@ const getCodecInformationBySipAddress = (sipAddress) => {
 
             if (!codecInformation || !codecInformation.sipAddress) {
                 console.warn('sipAddress not found');
+                app.userFeedback = "SIP-address is not found";
                 return;
             }
 
             if (app.codecs.some((ci) => { return ci.sipAddress === codecInformation.sipAddress; })) {
                 console.warn('sipAddress already added');
+                app.userFeedback = "SIP-address is already added";
                 return;
             }
 
@@ -118,6 +120,7 @@ var app = new Vue({
         sipAddress: null,
         currentLogLevel: '',
         logLevels: ['Trace', 'Debug', 'Info', 'Warn', 'Error'],
+        userFeedback: "",
         selectedLogLevel: ''
     },
     methods: {
@@ -131,9 +134,6 @@ var app = new Vue({
     mounted() {
         console.log("Mounted app - getting active subscriptions");
         this.getSubscriptions();
-
         this.subscriptionLoop();
     }
 });
-
-console.dir(app)

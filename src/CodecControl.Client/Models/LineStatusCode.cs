@@ -33,10 +33,10 @@ namespace CodecControl.Client.Models
         NoPhysicalLine = 0,
         Disconnected,
         Disconnecting,
-        Calling,            // Ringer upp
+        Calling,
         ReceivingCall,
-        ConnectedCalled,    // Uppkopplad. Ringde upp samtalet.
-        ConnectedReceived,  // Uppkopplad. Tog emot samtalet.
+        ConnectedCalled,    // Connected. Made the actual call.
+        ConnectedReceived,  // Connected. Received the call.
         Unknown
     }
 }

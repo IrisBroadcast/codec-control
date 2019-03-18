@@ -141,6 +141,7 @@ namespace CodecControl.Client.Prodys.IkusNet
                 
                 return new LineStatus
                 {
+                    LineEncoder = statusSelectedLineEncoder.ToString(),
                     StatusCode = IkusNetMapper.MapToLineStatus(response.LineStatus),
                     DisconnectReason = IkusNetMapper.MapToDisconnectReason(response.DisconnectionCode),
                     RemoteAddress = response.Address

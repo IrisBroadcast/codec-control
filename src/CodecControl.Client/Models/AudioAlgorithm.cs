@@ -31,11 +31,11 @@ using System.ComponentModel;
 namespace CodecControl.Client.Models
 {
     /// <summary>
-    /// Ljudkodningsalgoritm, baserat på Prodys implementation
+    /// Audio encoding algorithm, based on Prodys implementation
     /// </summary>
     public enum AudioAlgorithm
     {
-        [Description("Okänd/saknad kodning")] Error = 0,
+        [Description("Unknown / missing encoding")] Error = 0,
         [Description("MPEG 4 AAC-HE")] Mpeg4AacHe = 1,
         [Description("MPEG 4 AAC-LC")] Mpeg4AacLc = 2,
         [Description("MPEG 4 AAC-ELD")] Mpeg4AacEld = 3,

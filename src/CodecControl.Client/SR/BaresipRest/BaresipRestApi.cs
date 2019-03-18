@@ -82,13 +82,14 @@ namespace CodecControl.Client.SR.BaresipRest
             return (enabled, gain);
         }
 
-        public async Task<LineStatus> GetLineStatusAsync(string ip, string lineEncoder = "ProgramL1")
+        public async Task<LineStatus> GetLineStatusAsync(string ip, string lineEncoder = "Line1")
         {
             var url = CreateUrl(ip, "api/linestatus");
             var lineStatus = await HttpService.GetWithBaresipResponseAsync<BaresipLineStatus>(url);
 
             return new LineStatus
             {
+                LineEncoder = "Line1",
                 DisconnectReason = BaresipMapper.MapToDisconnectReason(lineStatus.Call.Code),
                 StatusCode = BaresipMapper.MapToLineStatusCode(lineStatus.State),
                 RemoteAddress = lineStatus.Call.RemoteAddress

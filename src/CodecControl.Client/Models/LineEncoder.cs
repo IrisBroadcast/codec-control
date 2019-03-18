@@ -24,15 +24,21 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- #endregion
+#endregion
 
 namespace CodecControl.Client.Models
 {
-    public class LineStatus
+    public enum LineEncoder
     {
-        public string LineEncoder { get; set; }
-        public LineStatusCode StatusCode { get; set; }
-        public DisconnectReason DisconnectReason { get; set; }
-        public string RemoteAddress { get; set; }
+        Line1 = 0,
+        Line2,
+        Line3,
+        Line4,
+        Line5,
+        Line6,
+        Line7,
+        Line8,
+        Line9,
+        Line10
     }
 }

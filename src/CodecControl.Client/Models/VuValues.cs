@@ -30,10 +30,10 @@ namespace CodecControl.Client.Models
 {
     public class VuValues
     {
-        public int TxLeft { get; set; } // Sändning vänster
-        public int TxRight { get; set; } // Sändning höger
-        public int RxLeft { get; set; } // Mottagning vänster
-        public int RxRight { get; set; } // Mottagning höger
+        public int TxLeft { get; set; }     // Transmit left
+        public int TxRight { get; set; }    // Transmit right
+        public int RxLeft { get; set; }     // Recieving left
+        public int RxRight { get; set; }    // Recieving right
 
         public override string ToString()
         {

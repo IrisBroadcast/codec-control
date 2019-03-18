@@ -147,10 +147,13 @@ namespace CodecControl.Web.Controllers.CodecControl
             {
                 var model = new LineStatusResponse();
 
-                string deviceLineEncoder = string.IsNullOrEmpty(deviceEncoder) ? "ProgramL1" : deviceEncoder;
+                //string deviceLineEncoder = string.IsNullOrEmpty(deviceEncoder) ? "ProgramL1" : deviceEncoder;
 
-                LineStatus lineStatus = await codecApi.GetLineStatusAsync(codecInformation.Ip, deviceLineEncoder);
+                LineStatus lineStatus = await codecApi.GetLineStatusAsync(codecInformation.Ip, deviceEncoder);
 
+                string deviceLineEncoder = string.IsNullOrEmpty(lineStatus.LineEncoder) ? "Line1" : lineStatus.LineEncoder;
+
+                model.LineEncoder = deviceLineEncoder;
                 model.LineStatus = lineStatus.StatusCode.ToString();
                 model.DisconnectReasonCode = (int)lineStatus.DisconnectReason;
                 model.DisconnectReasonDescription = lineStatus.DisconnectReason.Description();
@@ -179,9 +182,15 @@ namespace CodecControl.Web.Controllers.CodecControl
         }
 
         /// <summary>
-        /// Vu-values är en dB-skala, där 0 = full scale.
-        /// Exempelvis motsvarar 0 dB vid 18dB full scale ett värde på -18.
+        /// A strange combination of codecs IOs
         /// </summary>
+        /// <remarks>
+        /// Vu-values is a dB-scale, where 0 = full scale.
+        /// As en example, 0dB at 18dB full scale gives a value at -18.
+        /// </remarks>
+        /// <returns>
+        /// Audio Status response with Gpos, InputStatus and VuValues
+        /// </returns>
         [Route("getaudiostatus")]
         [HttpGet]
         public async Task<ActionResult<AudioStatusResponse>> GetAudioStatus(string sipAddress)
@@ -200,6 +209,15 @@ namespace CodecControl.Web.Controllers.CodecControl
             });
         }
 
+        /// <summary>
+        /// TX and RX Encoder Decoder details
+        /// </summary>
+        /// <remarks>
+        /// Returns the algorithm used for the ongoing call
+        /// </remarks>
+        /// <returns>
+        /// Audio Mode response for encoder and decoder
+        /// </returns>
         [Route("getaudiomode")]
         [HttpGet]
         public async Task<ActionResult<AudioModeResponse>> GetAudioMode(string sipAddress)

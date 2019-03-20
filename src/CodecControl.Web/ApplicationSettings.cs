@@ -39,6 +39,7 @@ namespace CodecControl.Web
         public string LogFolder { get; set; }
         public string ReleaseDate { get; set; }
         public string Version { get; set; }
+        public string ServerEnvironment { get; set; }
 
         public Uri CcmHostUri => new Uri(CcmHost);
         public string Server => Environment.MachineName;

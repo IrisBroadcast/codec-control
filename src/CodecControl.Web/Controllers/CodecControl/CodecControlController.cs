@@ -62,6 +62,24 @@ namespace CodecControl.Web.Controllers.CodecControl
             });
         }
 
+        [Route("whoami")]
+        [HttpGet]
+        public async Task<ActionResult<IsOnlineResponse>> WhoAmI(string sipAddress)
+        {
+            // TODO: Return a model with capabilities, how many inputs do I have, gpios, and so on. 
+            // what is basically implemented in the CCM configuration
+            // could return an endpoint-url for websockets used in Vu-metering / realtime info
+            return await Execute(sipAddress, async (codecApi, codecInformation) =>
+            {
+                var isOnline = await codecApi.CheckIfAvailableAsync(codecInformation.Ip);
+                return new IsOnlineResponse()
+                {
+                    SipAddress = codecInformation.Ip,
+                    IsOnline = isOnline
+                };
+            });
+        }
+
         [Route("isonline")]
         [HttpGet]
         public async Task<ActionResult<IsOnlineResponse>> IsOnline(string sipAddress)

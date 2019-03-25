@@ -40,7 +40,7 @@ namespace CodecControl.Client.SR.BaresipRest
     {
         public async Task<bool> CheckIfAvailableAsync(string ip)
         {
-            var url = CreateUrl(ip, "/api/isavailable");
+            var url = CreateUrl(ip, "api/isavailable");
             var isAvailableResponse = await HttpService.GetWithBaresipResponseAsync<IsAvailableResponse>(url);
             return isAvailableResponse.Success;
         }

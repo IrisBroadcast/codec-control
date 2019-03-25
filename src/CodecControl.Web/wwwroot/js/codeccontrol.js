@@ -120,7 +120,7 @@ var app = new Vue({
         sipAddress: null,
         currentLogLevel: '',
         logLevels: ['Trace', 'Debug', 'Info', 'Warn', 'Error'],
-        userFeedback: "",
+        userFeedback: '',
         selectedLogLevel: ''
     },
     methods: {

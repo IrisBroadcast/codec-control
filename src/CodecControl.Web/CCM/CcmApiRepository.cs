@@ -70,8 +70,14 @@ namespace CodecControl.Web.CCM
                         return null;
                     }
 
+                    JsonSerializerSettings settings = new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Ignore,           // If JSON values contains empty string then ignore
+                        MissingMemberHandling = MissingMemberHandling.Ignore    // If JSON contains more members than the CodecInformation target model
+                    };
+
                     string stringData = await response.Content.ReadAsStringAsync();
-                    var codecInformation = JsonConvert.DeserializeObject<CodecInformation>(stringData);
+                    var codecInformation = JsonConvert.DeserializeObject<CodecInformation>(stringData, settings);
                     return codecInformation;
                 }
                 catch (Exception ex)

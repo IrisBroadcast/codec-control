@@ -50,8 +50,10 @@ namespace CodecControl.Web.Controllers
         public IActionResult Index()
         {
             ViewData["Server"] = _appSettings.Server;
+            ViewData["Environment"] = _appSettings.ServerEnvironment;
             ViewData["Version"] = "v" + _appSettings.Version;
             ViewData["ReleaseDate"] = _appSettings.ReleaseDate;
+            ViewData["LogFolder"] = _appSettings.LogFolder;
             var list = string.Join(", ", LogLevel.AllLoggingLevels.ToList().Select(l => $"\'{l.Name}\'").ToList());
             ViewData["LogLevels"] = list;
             ViewData["CurrentLogLevel"] = LogLevelManager.GetCurrentLevel().Name;

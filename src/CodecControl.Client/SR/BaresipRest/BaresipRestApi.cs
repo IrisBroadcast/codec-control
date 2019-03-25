@@ -59,7 +59,11 @@ namespace CodecControl.Client.SR.BaresipRest
             return response.Success;
         }
 
-        public Task<bool?> GetGpoAsync(string ip, int gpio) { throw new NotImplementedException(); }
+        public Task<bool?> GetGpoAsync(string ip, int gpio)
+        {
+            // Not implemented in Baresip Custom API
+            throw new NotImplementedException();
+        }
 
         public async Task<bool> GetInputEnabledAsync(string ip, int input)
         {
@@ -138,6 +142,7 @@ namespace CodecControl.Client.SR.BaresipRest
 
         public Task<bool> SetGpoAsync(string ip, int gpo, bool active)
         {
+            // Not implemented in Baresip Custom API
             throw new NotImplementedException();
         }
 
@@ -157,6 +162,7 @@ namespace CodecControl.Client.SR.BaresipRest
 
         public Task<bool> RebootAsync(string ip)
         {
+            // Not implemented in Baresip Custom API
             throw new NotImplementedException();
         }
 
@@ -166,6 +172,4 @@ namespace CodecControl.Client.SR.BaresipRest
             return new Uri(baseUrl, path);
         }
     }
-
-
 }

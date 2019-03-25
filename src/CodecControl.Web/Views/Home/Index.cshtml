@@ -135,7 +135,7 @@
         }
 
         label.subheader {
-            padding: 5px 0;
+            padding: 8px 0;
             margin: 0;
             display: block;
         }
@@ -231,7 +231,7 @@
         <div id="conf-links" class="conf-links"><a href="/swagger">API documentation</a> - <a href="/log">Log</a></div>
         <div id="conf-site" class="conf-site">CodecControl</div>
         <div id="conf-version" class="conf-version">@ViewData["Version"]</div>
-        <div id="conf-environment" class="conf-environment"></div>
+        <div id="conf-environment" class="conf-environment">@ViewData["Environment"]</div>
         <div id="conf-started" class="conf-started">@ViewData["ReleaseDate"]</div>
         <div id="conf-server" class="conf-server">@ViewData["Server"]</div>
     </div>
@@ -347,9 +347,13 @@
             </div>
 
             <div class="conf-form">
+                Log Path: @ViewData["LogFolder"]
+            </div>
+
+            <div class="conf-form">
                 <label for="selectedLogLevel" class="subheader">Current log level: {{currentLogLevel}}</label>
                 <select v-model="selectedLogLevel" id="selectedLogLevel">
-                    <option v-for="level in logLevels" v-bind:value="level">{{ level }}</option>
+                    <option v-for="level in logLevels" v-bind:value="level">{{level}}</option>
                 </select>
                 <button v-on:click="setLogLevel(selectedLogLevel)">Change log level</button>
             </div>

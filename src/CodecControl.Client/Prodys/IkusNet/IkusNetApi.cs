@@ -49,8 +49,8 @@ namespace CodecControl.Client.Prodys.IkusNet
             using (var socket = await SocketPool.TakeSocket(hostAddress))
             {
                 SendCommand(socket, new CommandIkusNetGetInputEnabled { Input = input });
-                var response = new IkusNetGetInputEnabledResponse(socket);
-                return response.Enabled;
+                var enabledResponse = new IkusNetGetInputEnabledResponse(socket);
+                return enabledResponse.Enabled;
             }
         }
 
@@ -71,8 +71,8 @@ namespace CodecControl.Client.Prodys.IkusNet
             using (var socket = await SocketPool.TakeSocket(hostAddress))
             {
                 SendCommand(socket, new CommandIkusNetGetInputEnabled { Input = input });
-                var inputEnabledResponse = new IkusNetGetInputEnabledResponse(socket);
-                var enabled = inputEnabledResponse.Enabled;
+                var enabledResponse = new IkusNetGetInputEnabledResponse(socket);
+                var enabled = enabledResponse.Enabled;
 
                 SendCommand(socket, new CommandIkusNetGetInputGainLevel { Input = input });
                 var gainLevelResponse = new IkusNetGetInputGainLevelResponse(socket);

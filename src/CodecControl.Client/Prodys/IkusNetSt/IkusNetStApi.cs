@@ -30,14 +30,16 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CodecControl.Client.Models;
+using CodecControl.Client.Prodys.IkusNet;
 using CodecControl.Client.Prodys.IkusNet.Sdk.Commands;
 using CodecControl.Client.Prodys.IkusNet.Sdk.Enums;
 using CodecControl.Client.Prodys.IkusNet.Sdk.Responses;
 
-namespace CodecControl.Client.Prodys.IkusNet
+namespace CodecControl.Client.Prodys.IkusNetSt
 {
-    // This API is intended for Quantum ST that lacks controllable inputs.
-
+    /// <summary>
+    /// This API is intended for Quantum ST that lacks controllable inputs.
+    /// </summary>
     public class IkusNetStApi : IkusNetApiBase, ICodecApi
     {
 
@@ -206,7 +208,6 @@ namespace CodecControl.Client.Prodys.IkusNet
                     }
                     audioStatus.Gpos.Add(new GpoStatus() { Index = gpo, Active = gpoEnable.Value });
                 }
-
             }
 
             return audioStatus;

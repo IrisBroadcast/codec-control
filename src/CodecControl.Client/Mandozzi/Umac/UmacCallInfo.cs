@@ -1,4 +1,4 @@
-﻿#region copyright
+#region copyright
 /*
  * Copyright (c) 2018 Sveriges Radio AB, Stockholm, Sweden
  *
@@ -24,14 +24,35 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- #endregion
+#endregion
 
-namespace CodecControl.Client
+using System;
+using System.Text.RegularExpressions;
+
+namespace CodecControl.Client.Mandozzi.Umac
 {
-    public enum CodecApiTypes {
-        IkusNet,
-        IkusNetSt,
-        BareSipRest,
-        Umac
+    public class UmacCallInfo
+    {
+        public string ConnectedTo { get;set; }
+        public string State { get;set; }
+        public string Rx { get;set; }
+        public string Tx { get;set; }
+
+        public UmacCallInfo(string s)
+        {
+            var regExp = @"\s*(?<state>[^[]+) \[(?<connectedTo>[^[]+)\].*codec tx: (?<tx>.*), rx: (?<rx>.*)";
+
+            Match m = Regex.Match(s, regExp, RegexOptions.Singleline);
+            if (m.Success == false || m.Groups.Count != 5)
+            {
+                throw new Exception("Unexpected response to \"show call info\".");
+            }
+         
+            State = m.Groups["state"].Value;
+            ConnectedTo = m.Groups["connectedTo"].Value;
+            Tx = m.Groups["tx"].Value.Trim();
+            Rx = m.Groups["rx"].Value.Trim();
+        }
+
     }
 }

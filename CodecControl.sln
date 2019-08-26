@@ -18,6 +18,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodecControl.Data", "src\CodecControl.Data\CodecControl.Data.csproj", "{44B33991-D34F-4882-9942-F147A74ECA55}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,6 +38,10 @@ Global
 		{5807E4AD-991D-41F7-9A01-2475ECF2D27C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5807E4AD-991D-41F7-9A01-2475ECF2D27C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5807E4AD-991D-41F7-9A01-2475ECF2D27C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{44B33991-D34F-4882-9942-F147A74ECA55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44B33991-D34F-4882-9942-F147A74ECA55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44B33991-D34F-4882-9942-F147A74ECA55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44B33991-D34F-4882-9942-F147A74ECA55}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -44,6 +50,7 @@ Global
 		{4C01BD46-17C6-4A78-93B6-489D70ACDAFC} = {7BD8B44B-AF6D-4933-9BDF-35E218FC0677}
 		{04D715D0-8F54-4953-AC51-010F63CEE893} = {7BD8B44B-AF6D-4933-9BDF-35E218FC0677}
 		{5807E4AD-991D-41F7-9A01-2475ECF2D27C} = {546E5B7F-CDEB-4C89-938A-CFED0AAABC58}
+		{44B33991-D34F-4882-9942-F147A74ECA55} = {7BD8B44B-AF6D-4933-9BDF-35E218FC0677}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2D4BB099-0D46-4172-AAC8-492A9BFAE48F}

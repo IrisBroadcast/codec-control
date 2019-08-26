@@ -1,4 +1,4 @@
-﻿#region copyright
+#region copyright
 /*
  * Copyright (c) 2018 Sveriges Radio AB, Stockholm, Sweden
  *
@@ -24,14 +24,18 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- #endregion
+#endregion
 
-namespace CodecControl.Client
+namespace CodecControl.Client.Mandozzi.Umac.Sdk
 {
-    public enum CodecApiTypes {
-        IkusNet,
-        IkusNetSt,
-        BareSipRest,
-        Umac
+    /// <summary>
+    /// Constant values for Umac
+    /// </summary>
+    public static class Umac
+    {
+        public const int ExternalProtocolIpCommandsPort = 54321;// 50031; //54321;
+        public const string ExternalProtocolUserName = "";
+        public const string ExternalProtocolPassword = "";
+        public const int ResponseTimeOut = 3000;
     }
 }

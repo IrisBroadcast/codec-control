@@ -37,6 +37,8 @@ namespace CodecControl.Client.Models
         ReceivingCall,
         ConnectedCalled,    // Connected. Made the actual call.
         ConnectedReceived,  // Connected. Received the call.
-        Unknown
+        Unknown,
+        NotAvailable,
+        Initializing
     }
 }

@@ -31,6 +31,7 @@ using System.Threading.Tasks;
 using CodecControl.Client.Models;
 using CodecControl.Client.Prodys.IkusNet.Sdk.Commands;
 using CodecControl.Client.Prodys.IkusNet.Sdk.Responses;
+using CodecControl.Client.Prodys.IkusNetSt;
 
 namespace CodecControl.Client.Prodys.IkusNet
 {
@@ -79,7 +80,6 @@ namespace CodecControl.Client.Prodys.IkusNet
                 var gain = gainLevelResponse.GainLeveldB;
                 return (enabled, gain);
             }
-
         }
 
         public override async Task<AudioStatus> GetAudioStatusAsync(string hostAddress, int nrOfInputs, int nrOfGpos)
@@ -135,7 +135,6 @@ namespace CodecControl.Client.Prodys.IkusNet
                 return audioStatus;
             }
         }
-
 
         public override async Task<bool> SetInputEnabledAsync(string hostAddress, int input, bool enabled)
         {

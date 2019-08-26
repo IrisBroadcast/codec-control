@@ -26,6 +26,7 @@
  */
  #endregion
 
+using CodecControl.Client.Mandozzi.Umac;
 using CodecControl.Client.Prodys.IkusNet;
 using CodecControl.Client.SR.BaresipRest;
 using CodecControl.Web.CCM;
@@ -47,6 +48,7 @@ namespace CodecControl.Web
             services.AddTransient<SocketProxy>();
             services.AddTransient<IkusNetApi>();
             services.AddTransient<BaresipRestApi>();
+            services.AddTransient<UmacApi>();
 
             services.AddSingleton<AudioStatusService>();
             services.AddSingleton<IHostedService>(x => x.GetRequiredService<AudioStatusService>());

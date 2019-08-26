@@ -27,7 +27,9 @@
  #endregion
 
 using System;
+using CodecControl.Client.Mandozzi.Umac;
 using CodecControl.Client.Prodys.IkusNet;
+using CodecControl.Client.Prodys.IkusNetSt;
 using CodecControl.Client.SR.BaresipRest;
 using Newtonsoft.Json;
 
@@ -57,15 +59,14 @@ namespace CodecControl.Client
                             return typeof(IkusNetStApi);
                         case CodecApiTypes.BareSipRest:
                             return typeof(BaresipRestApi);
+                        case CodecApiTypes.Umac:
+                            return typeof(UmacApi);
                         default:
                             // TODO: Log as warning
                             return null;
                     }
                 }
-                else
-                {
-                    return null;
-                }
+                return null;
             }
         }
     }

@@ -1,4 +1,4 @@
-﻿#region copyright
+#region copyright
 /*
  * Copyright (c) 2018 Sveriges Radio AB, Stockholm, Sweden
  *
@@ -26,12 +26,27 @@
  */
  #endregion
 
-namespace CodecControl.Client
+using System;
+
+namespace CodecControl.Client.Mandozzi.Helpers
 {
-    public enum CodecApiTypes {
-        IkusNet,
-        IkusNetSt,
-        BareSipRest,
-        Umac
+    public static class StringExtensions
+    {
+        /// <summary>
+        /// Returns beginning of string until given string 'untilString
+        /// </summary>
+        public static string LeftOf(this string s, string untilString)
+        {
+            s = s ?? string.Empty;
+            untilString = untilString ?? string.Empty;
+
+            if (string.IsNullOrEmpty(untilString))
+            {
+                return s;
+            }
+
+            var pos = s.IndexOf(untilString, StringComparison.CurrentCulture);
+            return pos > -1 ? s.Substring(0, pos) : s;
+        }
     }
 }

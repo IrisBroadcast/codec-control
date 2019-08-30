@@ -39,6 +39,10 @@ namespace CodecControl.Web
 {
     public static class DependencyInjection
     {
+        /// <summary>
+        /// Set up Api dependencies
+        /// </summary>
+        /// <param name="services"></param>
         public static void ConfigureDepencencyInjection(this IServiceCollection services)
         {
             services.AddSingleton<CcmService>();

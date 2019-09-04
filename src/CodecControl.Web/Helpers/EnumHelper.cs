@@ -28,13 +28,39 @@
 
 using System;
 using System.ComponentModel;
+using System.Resources;
+using CodecControl.Client.Attributes;
+using CodecControl.ResourceLibrary;
+using CodecControl.ResourceLibrary.Resources;
+using Microsoft.Extensions.Localization;
 
 namespace CodecControl.Web.Helpers
 {
-   
-
     public static class EnumHelper
     {
+        private static readonly ResourceManager CoreResourceManager = new ResourceManager(typeof(LanguageResource));
+
+        public static string DescriptionAsResource(this Enum enumValue)
+        {
+            try
+            {
+                var enumType = enumValue.GetType();
+                var field = enumType.GetField(enumValue.ToString());
+                var attributes = field.GetCustomAttributes(typeof(MapAsResourceAttribute), false);
+                if (attributes.Length == 0)
+                {
+                    return string.Format($"Update your enum with Description field :'{field}'.");
+                }
+
+                return CoreResourceManager.GetString(((MapAsResourceAttribute) attributes[0]).ResourceTag) ??
+                       string.Format($"Update your resource file with resource key in '{enumType.ToString()}'.");
+            }
+            catch (Exception ex)
+            {
+                return enumValue.ToString();
+            }
+        }
+
         public static string Description(this Enum enumValue)
         {
             var enumType = enumValue.GetType();
@@ -42,6 +68,5 @@ namespace CodecControl.Web.Helpers
             var attributes = field.GetCustomAttributes(typeof(DescriptionAttribute), false);
             return attributes.Length == 0 ? enumValue.ToString() : ((DescriptionAttribute)attributes[0]).Description;
         }
-
     }
 }

@@ -46,7 +46,7 @@ namespace CodecControl.Client.Prodys.IkusNet
 
         public SocketPool()
         {
-            log.Debug("Socket pool constructor");
+            log.Debug("IkusNet Socket pool constructor");
             _dictionary = new ConcurrentDictionary<string, ConcurrentBag<ProdysSocket>>();
             _evictionTimer = new Timer(state => { EvictOldSockets(); }, null,
                 TimeSpan.FromSeconds(10),
@@ -55,25 +55,22 @@ namespace CodecControl.Client.Prodys.IkusNet
 
         public async Task<SocketProxy> TakeSocket(string ipAddress)
         {
-            using (new TimeMeasurer("Taking socket"))
+            using (new TimeMeasurer("IkusNet Taking socket"))
             {
-                //log.Info($"Taking socket for {ipAddress}");
-
                 var dictionaryForIpAddress = _dictionary.GetOrAdd(ipAddress, s =>
                 {
-                    log.Info($"Creating new Bag for connections to {ipAddress}");
+                    log.Info($"IkusNet Creating new Bag for connections to {ipAddress}");
                     return new ConcurrentBag<ProdysSocket>();
                 });
 
                 if (dictionaryForIpAddress.TryTake(out var socket))
                 {
-                    log.Debug($"Reusing existing socket for IP {ipAddress} found in pool. (Socket #{socket.GetHashCode()})");
+                    log.Debug($"IkusNet Reusing existing socket for IP {ipAddress} found in pool. (Socket #{socket.GetHashCode()})");
                     return new SocketProxy(socket, this);
                 }
 
-                //log.Info($"Socket to IP {ipAddress} not found in pool.");
                 socket = await ProdysSocket.GetConnectedSocketAsync(ipAddress);
-                log.Info($"New socket to IP {ipAddress} created. (Socket #{socket.GetHashCode()})");
+                log.Info($"IkusNet New socket to IP {ipAddress} created. (Socket #{socket.GetHashCode()})");
                 return new SocketProxy(socket, this);
             }
         }
@@ -90,7 +87,7 @@ namespace CodecControl.Client.Prodys.IkusNet
                 return;
             }
 
-            log.Debug($"Returning socket for {socket.IpAddress} to pool. (Socket #{socket.GetHashCode()})");
+            log.Debug($"IkusNet Returning socket for {socket.IpAddress} to pool. (Socket #{socket.GetHashCode()})");
             var dictionaryForIpAddress = _dictionary.GetOrAdd(socket.IpAddress, s => new ConcurrentBag<ProdysSocket>());
             socket.RefreshEvictionTime();
             dictionaryForIpAddress.Add(socket);
@@ -100,7 +97,7 @@ namespace CodecControl.Client.Prodys.IkusNet
         {
             try
             {
-                log.Debug("Checking pool for expired sockets.");
+                log.Debug("IkusNet Checking pool for expired sockets.");
 
                 foreach (KeyValuePair<string, ConcurrentBag<ProdysSocket>> dictionaryForIpAddress in _dictionary)
                 {
@@ -112,18 +109,18 @@ namespace CodecControl.Client.Prodys.IkusNet
                         // Remove empty dictionary, discard it and move on to next ip address
                         if (_dictionary.TryRemove(ipAddress, out socketsBag))
                         {
-                            log.Info($"Pool entry for IP address {ipAddress} is empty and was removed from pool.");
+                            log.Info($"IkusNet Socket pool entry for IP address {ipAddress} is empty and was removed from pool.");
                         }
                         else
                         {
-                            log.Warn($"Pool entry for IP address {ipAddress} not found when trying to remove it from pool.");
+                            log.Warn($"IkusNet Socket pool entry for IP address {ipAddress} not found when trying to remove it from pool.");
                         }
 
                         continue;
                     }
 
                     var nrOfSockets = socketsBag.Count;
-                    log.Debug($"Found #{nrOfSockets} socket(s) for IP {ipAddress}");
+                    log.Debug($"IkusNet Found #{nrOfSockets} socket(s) for IP {ipAddress}");
 
                     // Remove all sockets and re-add non-exired ones.
                     var list = new List<ProdysSocket>();
@@ -136,7 +133,7 @@ namespace CodecControl.Client.Prodys.IkusNet
                         }
                         else
                         {
-                            log.Warn($"Socket not found in pool. Probably other thread got it.");
+                            log.Warn($"IkusNet Socket not found in pool. Probably other thread got it.");
                         }
                     }
 
@@ -151,13 +148,14 @@ namespace CodecControl.Client.Prodys.IkusNet
                         {
                             try
                             {
-                                log.Info($"Closing socket to IP {ipAddress} because not recently used. (Socket #{prodysSocket.GetHashCode()})");
+                                // TODO: How does this acumulate?
+                                log.Info($"IkusNet Closing socket to IP {ipAddress} because not recently used. (Socket #{prodysSocket.GetHashCode()})");
                                 prodysSocket.Close();
                                 prodysSocket.Dispose();
                             }
                             catch (Exception ex)
                             {
-                                log.Warn(ex, "Exception when disposing ProdysSocket");
+                                log.Warn(ex, "IkusNet Exception when disposing ProdysSocket");
                             }
                         }
                     }
@@ -165,7 +163,7 @@ namespace CodecControl.Client.Prodys.IkusNet
             }
             catch (Exception ex)
             {
-                log.Error(ex, "Exception when evicting expired sockets from pool.");
+                log.Error(ex, "IkusNet Exception when evicting expired sockets from pool.");
             }
         }
 

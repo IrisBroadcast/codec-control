@@ -9,26 +9,24 @@
         "dist/browser/signalr.js",
         "dist/browser/signalr.min.js"
       ]
+    },
+    {
+      "provider": "unpkg",
+      "library": "vue@2.5.17",
+      "destination": "wwwroot/lib/vue/",
+      "files": [
+        "dist/vue.js",
+        "dist/vue.min.js"
+      ]
+    },
+    {
+      "provider": "unpkg",
+      "library": "axios@0.18.0",
+      "destination": "wwwroot/lib/axios/",
+      "files": [
+        "dist/axios.js",
+        "dist/axios.min.js"
+      ]
     }
-  ,
-{
-  "provider": "unpkg",
-  "library": "vue@2.5.17",
-  "destination": "wwwroot/lib/vue/",
-  "files": [
-    "dist/vue.js",
-    "dist/vue.min.js"
   ]
-}
-,
-{
-  "provider": "unpkg",
-  "library": "axios@0.18.0",
-  "destination": "wwwroot/lib/axios/",
-  "files": [
-    "dist/axios.js",
-    "dist/axios.min.js"
-  ]
-}
-]
 }

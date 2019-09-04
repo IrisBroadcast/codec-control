@@ -1,0 +1,312 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="SipResponse_ConnectionDropped" xml:space="preserve">
+    <value>Samtalet avbrutet</value>
+  </data>
+  <data name="SipResponse_ConnectionRejected" xml:space="preserve">
+    <value>Samtal avvisat</value>
+  </data>
+  <data name="SipResponse_DifferentProtocol" xml:space="preserve">
+    <value>Annat protokoll används</value>
+  </data>
+  <data name="SipResponse_ErrorConnecting" xml:space="preserve">
+    <value>Problem vid anslutning</value>
+  </data>
+  <data name="SipResponse_HangUp" xml:space="preserve">
+    <value>Samtalet är pålagt</value>
+  </data>
+  <data name="SipResponse_None" xml:space="preserve">
+    <value>Ingen orsak angiven</value>
+  </data>
+  <data name="SipResponse_NotReady" xml:space="preserve">
+    <value>Inte redo</value>
+  </data>
+  <data name="SipResponse_RemoteDisconnected" xml:space="preserve">
+    <value>Mottagaren har avslutat</value>
+  </data>
+  <data name="SipResponse_SipAccepted" xml:space="preserve">
+    <value>Begäran är accepterad</value>
+  </data>
+  <data name="SipResponse_SipAddressIncomplete" xml:space="preserve">
+    <value>Addressen i begäran är okomplett</value>
+  </data>
+  <data name="SipResponse_SipAlternativeService" xml:space="preserve">
+    <value>Samtalet misslyckades, andra alternativ finns</value>
+  </data>
+  <data name="SipResponse_SipAmbiguous" xml:space="preserve">
+    <value>Addressen i begäran är tvetydlig</value>
+  </data>
+  <data name="SipResponse_SipBadEvent" xml:space="preserve">
+    <value>Begäran stötte på en dålig förfrågan</value>
+  </data>
+  <data name="SipResponse_SipBadExtension" xml:space="preserve">
+    <value>Anknytningsprotokollet som används går inte att tolka</value>
+  </data>
+  <data name="SipResponse_SipBadGateway" xml:space="preserve">
+    <value>Dålig gateway</value>
+  </data>
+  <data name="SipResponse_SipBadRequest" xml:space="preserve">
+    <value>Felformaterad begäran</value>
+  </data>
+  <data name="SipResponse_SipBusyEverywhere" xml:space="preserve">
+    <value>Upptaget överallt</value>
+  </data>
+  <data name="SipResponse_SipBusyHere" xml:space="preserve">
+    <value>Mottagaren är upptagen</value>
+  </data>
+  <data name="SipResponse_SipCallBeingForwarded" xml:space="preserve">
+    <value>Samtalet vidarebefordras</value>
+  </data>
+  <data name="SipResponse_SipCallTsxDoesNotExist" xml:space="preserve">
+    <value>Begäran kan inte matchas mot något pågående samtal</value>
+  </data>
+  <data name="SipResponse_SipDecline" xml:space="preserve">
+    <value>Nekad</value>
+  </data>
+  <data name="SipResponse_SipDoesNotExistAnywhere" xml:space="preserve">
+    <value>Önskad åtgärd inns inte någonstans</value>
+  </data>
+  <data name="SipResponse_SipExtensionRequired" xml:space="preserve">
+    <value>Servern behöver ett anknytningsprotokoll som inte är angivet</value>
+  </data>
+  <data name="SipResponse_SipForbidden" xml:space="preserve">
+    <value>Begäran kom fram men den kommer inte att uppfyllas</value>
+  </data>
+  <data name="SipResponse_SipGone" xml:space="preserve">
+    <value>Mottagaren har existerat men är inte tillgänglig längre</value>
+  </data>
+  <data name="SipResponse_SipInternalServerError" xml:space="preserve">
+    <value>Internt serverfel</value>
+  </data>
+  <data name="SipResponse_SipIntervalTooBrief" xml:space="preserve">
+    <value>Källans förfallotid är satt för lågt</value>
+  </data>
+  <data name="SipResponse_SipLoopDetected" xml:space="preserve">
+    <value>En loop har upptäckts av servern</value>
+  </data>
+  <data name="SipResponse_SipMessageTooLarge" xml:space="preserve">
+    <value>Meddelandet är för långt</value>
+  </data>
+  <data name="SipResponse_SipMethodNotAllowed" xml:space="preserve">
+    <value>Begäran är inte tillåten för specifierad mottagare</value>
+  </data>
+  <data name="SipResponse_SipMovedPermanently" xml:space="preserve">
+    <value>Mottagaren har flyttat permanent</value>
+  </data>
+  <data name="SipResponse_SipMovedTemporarily" xml:space="preserve">
+    <value>Mottagaren har flyttat temporärt</value>
+  </data>
+  <data name="SipResponse_SipMultipleChoices" xml:space="preserve">
+    <value>Flera val tillgängliga</value>
+  </data>
+  <data name="SipResponse_SipNotAcceptable" xml:space="preserve">
+    <value>Begäran kan inte genomföras med angivna kriterier</value>
+  </data>
+  <data name="SipResponse_SipNotAcceptableAnywhere" xml:space="preserve">
+    <value>Begäran finns inte någonstans</value>
+  </data>
+  <data name="SipResponse_SipNotAcceptableHere" xml:space="preserve">
+    <value>Begäran är inte accepterad av mottagaren</value>
+  </data>
+  <data name="SipResponse_SipNotFound" xml:space="preserve">
+    <value>Mottagaren finns inte</value>
+  </data>
+  <data name="SipResponse_SipNotImplemented" xml:space="preserve">
+    <value>Inte implementerad</value>
+  </data>
+  <data name="SipResponse_SipOk" xml:space="preserve">
+    <value>Begäran lyckades</value>
+  </data>
+  <data name="SipResponse_SipPaymentRequired" xml:space="preserve">
+    <value>Begäran kräver betalning</value>
+  </data>
+  <data name="SipResponse_SipPreconditionFailure" xml:space="preserve">
+    <value>Förhandsvillkoren misslyckades</value>
+  </data>
+  <data name="SipResponse_SipProgress" xml:space="preserve">
+    <value>Status om framsteg</value>
+  </data>
+  <data name="SipResponse_SipProxyAuthenticationRequired" xml:space="preserve">
+    <value>Förfrågan kräver autentisering mot proxyn</value>
+  </data>
+  <data name="SipResponse_SipQueued" xml:space="preserve">
+    <value>Väntar på mottagaren</value>
+  </data>
+  <data name="SipResponse_SipRequestEntityTooLarge" xml:space="preserve">
+    <value>Begäran innehåller för många tecken</value>
+  </data>
+  <data name="SipResponse_SipRequestPending" xml:space="preserve">
+    <value>Begäran avvaktar</value>
+  </data>
+  <data name="SipResponse_SipRequestTerminated" xml:space="preserve">
+    <value>Mottagaren har avbrutit samtalet</value>
+  </data>
+  <data name="SipResponse_SipRequestTimeout" xml:space="preserve">
+    <value>Mottagaren svarade inte inom angiven timeout</value>
+  </data>
+  <data name="SipResponse_SipRequestUpdated" xml:space="preserve">
+    <value>Begäran är uppdaterad</value>
+  </data>
+  <data name="SipResponse_SipRequestUriTooLong" xml:space="preserve">
+    <value>Addressen angiven innehåller för många tecken, servern kommer inte tolka detta</value>
+  </data>
+  <data name="SipResponse_SipRinging" xml:space="preserve">
+    <value>Begäran kopplas upp</value>
+  </data>
+  <data name="SipResponse_SipServerTimeout" xml:space="preserve">
+    <value>Servern nådde sin förfallotid</value>
+  </data>
+  <data name="SipResponse_SipServiceUnavailable" xml:space="preserve">
+    <value>Tjänsten är inte tillgänglig</value>
+  </data>
+  <data name="SipResponse_SipSessionTimerTooSmall" xml:space="preserve">
+    <value>Sessionens förfallotid i begäran är satt för lågt</value>
+  </data>
+  <data name="SipResponse_SipTemporarilyUnavailable" xml:space="preserve">
+    <value>Samtal till mottagaren är inte tillgängligt just nu</value>
+  </data>
+  <data name="SipResponse_SipTooManyHops" xml:space="preserve">
+    <value>Antalet vidarebefordringar har nått sin maxgräns</value>
+  </data>
+  <data name="SipResponse_SipTrying" xml:space="preserve">
+    <value>Undersöker förbindelse</value>
+  </data>
+  <data name="SipResponse_SipUnauthorized" xml:space="preserve">
+    <value>Begäran kräver auktorisering</value>
+  </data>
+  <data name="SipResponse_SipUndecipherable" xml:space="preserve">
+    <value>Omöjligt att tolka begäran</value>
+  </data>
+  <data name="SipResponse_SipUnsupportedMediaType" xml:space="preserve">
+    <value>Formatet på begäran stöds inte</value>
+  </data>
+  <data name="SipResponse_SipUnsupportedUriScheme" xml:space="preserve">
+    <value>Addressen är felformaterad</value>
+  </data>
+  <data name="SipResponse_SipUseProxy" xml:space="preserve">
+    <value>För att nå mottagaren behövs en proxy</value>
+  </data>
+  <data name="SipResponse_SipVersionNotSupported" xml:space="preserve">
+    <value>Versionen stöds inte</value>
+  </data>
+  <data name="SipResponse_UnableToResolveName" xml:space="preserve">
+    <value>Kan inte tolka angivet namn</value>
+  </data>
+</root>

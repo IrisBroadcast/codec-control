@@ -174,7 +174,7 @@ namespace CodecControl.Web.Controllers.CodecControl
                 model.LineEncoder = deviceLineEncoder;
                 model.LineStatus = lineStatus.StatusCode.ToString();
                 model.DisconnectReasonCode = (int)lineStatus.DisconnectReason;
-                model.DisconnectReasonDescription = lineStatus.DisconnectReason.Description();
+                model.DisconnectReasonDescription = lineStatus.DisconnectReason.DescriptionAsResource();
                 model.RemoteAddress = lineStatus.RemoteAddress;
 
                 return model;

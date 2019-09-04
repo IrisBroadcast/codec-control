@@ -77,27 +77,25 @@ namespace CodecControl.Client.Mandozzi.Umac
             throw new NotImplementedException();
         }
 
-        public async Task<LineStatus> GetLineStatusAsync(string hostAddress, string lineEncoder = "ProgramL1")
+        public Task<LineStatus> GetLineStatusAsync(string hostAddress, string lineEncoder = "ProgramL1")
         {
             log.Debug("Getting line status from Umac codec at {0}", hostAddress);
-
             try
             {
-                using (var client = new UmacClient(hostAddress, global::CodecControl.Client.Mandozzi.Umac.Sdk.Umac.ExternalProtocolIpCommandsPort))
+                using (var client = new UmacClient(hostAddress, Sdk.Umac.ExternalProtocolIpCommandsPort))
                 {
                     var lineStatus = client.GetLineStatus();
-                    return lineStatus;
+                    return Task.FromResult(lineStatus);
                 }
             }
             catch (Exception)
             {
-                return new LineStatus
+                return Task.FromResult(new LineStatus
                 {
                     StatusCode = LineStatusCode.Unknown,
                     DisconnectReason = DisconnectReason.None
-                };
+                });
             }
-
         }
 
         public Task<string> GetLoadedPresetNameAsync(string ip, string lastPresetName)
@@ -130,7 +128,7 @@ namespace CodecControl.Client.Mandozzi.Umac
             throw new NotImplementedException();
         }
 
-        public async Task<int> SetInputGainLevelAsync(string ip, int input, int gainLevel)
+        public Task<int> SetInputGainLevelAsync(string ip, int input, int gainLevel)
         {
             throw new NotImplementedException();
         }
@@ -145,14 +143,14 @@ namespace CodecControl.Client.Mandozzi.Umac
             throw new NotImplementedException();
         }
 
-        public async Task<bool> CallAsync(string hostAddress, string callee, string profileName, string deviceEncoder = "Program")
+        public Task<bool> CallAsync(string hostAddress, string callee, string profileName, string deviceEncoder = "Program")
         {
             log.Debug("Call from Umac codec at {0}", hostAddress);
             
             if (profileName != "Telefon")
             {
                 // We can't deal with anything but the phone profile for now
-                return false;
+                return Task.FromResult(false);
             }
             
             try
@@ -160,18 +158,18 @@ namespace CodecControl.Client.Mandozzi.Umac
                 using (var client = new UmacClient(hostAddress, Sdk.Umac.ExternalProtocolIpCommandsPort))
                 {
                     var lineStatus = client.Call(callee, profileName);
-                    return lineStatus;
+                    return Task.FromResult(lineStatus);
                 }
             }
             catch (Exception ex)
             {
                 log.Warn(ex);
-                return false;
+                return Task.FromResult(false);
             }
 
         }
 
-        public async Task<bool> HangUpAsync(string hostAddress, string deviceEncoder = "Program")
+        public Task<bool> HangUpAsync(string hostAddress, string deviceEncoder = "Program")
         {
             log.Debug("Hanging up Umac codec at {0}", hostAddress);
             
@@ -186,13 +184,13 @@ namespace CodecControl.Client.Mandozzi.Umac
                 using (var client = new UmacClient(hostAddress, Sdk.Umac.ExternalProtocolIpCommandsPort))
                 {
                     var lineStatus = client.HangUp();
-                    return lineStatus;
+                    return Task.FromResult(lineStatus);
                 }
             }
             catch (Exception ex)
             {
                 log.Warn(ex);
-                return false;
+                return Task.FromResult(false);
             }
         }
 

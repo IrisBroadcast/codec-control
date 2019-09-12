@@ -43,6 +43,7 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Net.Http.Headers;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace CodecControl.Web
@@ -92,7 +93,9 @@ namespace CodecControl.Web
                 options.AddPolicy("CorsPolicy", builder =>
                 {
                     builder
+                        .AllowAnyOrigin()
                         .SetIsOriginAllowed(_ => true) // BREAKING CHANGE IN .NETCORE 2.2
+                        .WithHeaders(HeaderNames.AccessControlAllowHeaders, "Content-Type")
                         .AllowAnyMethod()
                         .AllowAnyHeader()
                         .AllowCredentials();

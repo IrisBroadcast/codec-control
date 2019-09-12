@@ -158,7 +158,6 @@ namespace CodecControl.Web.HostedServices
             log.Info("AudioStatusService finished");
         }
 
-
         private async Task CheckAudioStatusOnCodecAsync(string sipAddress)
         {
             try

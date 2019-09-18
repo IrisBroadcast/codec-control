@@ -114,6 +114,18 @@ namespace CodecControl.Web
                         .AllowAnyHeader()
                         .AllowCredentials();
                 });
+
+                options.AddPolicy("CorsPolicyAll", builder =>
+                {
+                    builder
+                    .AllowAnyOrigin()
+                    .SetIsOriginAllowed(_ => true) // BREAKING CHANGE IN .NETCORE 2.2
+                    .WithHeaders(HeaderNames.AccessControlAllowHeaders, "Content-Type")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials();
+                });
+
                 options.AddPolicy("AllowSubdomain",
                     builder =>
                     {
@@ -176,7 +188,7 @@ namespace CodecControl.Web
                 }
             });
 
-            app.UseCors("CorsPolicy");
+            app.UseCors("CorsPolicyAll");
 
             // Localization (RFC 4646)
             app.UseRequestLocalization();

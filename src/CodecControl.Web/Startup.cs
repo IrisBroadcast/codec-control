@@ -27,6 +27,7 @@
  #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -88,6 +89,18 @@ namespace CodecControl.Web
             services.AddDirectoryBrowser();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
+            // Set up CORS
+            List<string> allowedOrigins = new List<string>();
+            if (!string.IsNullOrEmpty(appSettings.CcmHost))
+            {
+                allowedOrigins.Add(appSettings.CcmHost);
+            }
+            if (appSettings.AllowedOrigins != null)
+            {
+                var additionalOrigins = appSettings.AllowedOrigins.Split(",", StringSplitOptions.RemoveEmptyEntries);
+                allowedOrigins.AddRange(additionalOrigins);
+            }
+
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy", builder =>
@@ -97,9 +110,9 @@ namespace CodecControl.Web
                         .SetIsOriginAllowed(_ => true) // BREAKING CHANGE IN .NETCORE 2.2
                         .WithHeaders(HeaderNames.AccessControlAllowHeaders, "Content-Type")
                         .AllowAnyMethod()
+                        .WithOrigins(allowedOrigins.ToArray())
                         .AllowAnyHeader()
                         .AllowCredentials();
-                    //.AllowAnyOrigin();
                 });
                 options.AddPolicy("AllowSubdomain",
                     builder =>

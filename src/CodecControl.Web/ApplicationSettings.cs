@@ -43,5 +43,6 @@ namespace CodecControl.Web
 
         public Uri CcmHostUri => new Uri(CcmHost);
         public string Server => Environment.MachineName;
+        public string AllowedOrigins { get; set; }
     }
 } 

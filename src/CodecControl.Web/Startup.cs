@@ -188,7 +188,7 @@ namespace CodecControl.Web
                 }
             });
 
-            app.UseCors("CorsPolicyAll");
+            app.UseCors("CorsPolicy");
 
             // Localization (RFC 4646)
             app.UseRequestLocalization();

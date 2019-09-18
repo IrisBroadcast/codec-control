@@ -28,9 +28,24 @@
 
 namespace CodecControl.Client
 {
+    /// <summary>
+    /// The actual available API types from different manufacturers.
+    /// Multiple types here can be used for CodecApiUserDefinedTypes
+    /// The more user friendly names coming from CCM on different available Codec API's.
+    /// IMPORTANT: Keep this one updated and in sync with CCM.
+    /// </summary>
     public enum CodecApiTypes {
         IkusNet,
         IkusNetSt,
+        BareSipRest,
+        Umac
+    }
+
+    public enum CodecApiUserDefinedTypes
+    {
+        IkusNet,
+        IkusNetSt,
+        BehringerOscCustomApi,
         BareSipRest,
         Umac
     }

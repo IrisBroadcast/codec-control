@@ -55,7 +55,7 @@ namespace CodecControl.Web.Helpers
                 return CoreResourceManager.GetString(((MapAsResourceAttribute) attributes[0]).ResourceTag) ??
                        string.Format($"Update your resource file with resource key in '{enumType.ToString()}'.");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return enumValue.ToString();
             }

@@ -35,6 +35,10 @@ using Newtonsoft.Json;
 
 namespace CodecControl.Client
 {
+    /// <summary>
+    /// Holds codec information received from CCM.
+    /// Keep this definitions updated
+    /// </summary>
     public class CodecInformation
     {
         public string SipAddress { get; set; }
@@ -49,18 +53,20 @@ namespace CodecControl.Client
         {
             get
             {
-                if (Enum.TryParse(Api, true, out CodecApiTypes apiType))
+                if (Enum.TryParse(Api, true, out CodecApiUserDefinedTypes apiType))
                 {
                     switch (apiType)
                     {
-                        case CodecApiTypes.IkusNet:
+                        case CodecApiUserDefinedTypes.IkusNet:
                             return typeof(IkusNetApi);
-                        case CodecApiTypes.IkusNetSt:
+                        case CodecApiUserDefinedTypes.IkusNetSt:
                             return typeof(IkusNetStApi);
-                        case CodecApiTypes.BareSipRest:
+                        case CodecApiUserDefinedTypes.BareSipRest:
                             return typeof(BaresipRestApi);
-                        case CodecApiTypes.Umac:
+                        case CodecApiUserDefinedTypes.Umac:
                             return typeof(UmacApi);
+                        case CodecApiUserDefinedTypes.BehringerOscCustomApi:
+                            return null;
                         default:
                             // TODO: Log as warning
                             return null;

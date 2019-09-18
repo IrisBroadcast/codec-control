@@ -31,6 +31,9 @@ using CodecControl.Client.Models;
 
 namespace CodecControl.Client
 {
+    /// <summary>
+    /// These are the available functions in the API
+    /// </summary>
     /// <remarks>
     /// Gpi = General Purpose Input
     /// Gpo = General Purpose Output

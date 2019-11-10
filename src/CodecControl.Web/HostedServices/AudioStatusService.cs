@@ -95,6 +95,8 @@ namespace CodecControl.Web.HostedServices
                 log.Info($"AudioStatusService Codec {sipAddress} is not subscribable");
                 return;
             }
+
+            // TODO: Check if the Codec Api type has polling or session
             
             Subscriptions.Add(new SubscriptionInfo { ConnectionId = connectionId, SipAddress = sipAddress });
             await _hub.Groups.AddToGroupAsync(connectionId, sipAddress);
@@ -142,6 +144,7 @@ namespace CodecControl.Web.HostedServices
                                 await CheckAudioStatusOnCodecAsync(sipAddress);
                             }
                         });
+
                         waitTime = (int)Math.Max(_pollDelay.Subtract(timeMeasurer.ElapsedTime).TotalMilliseconds, 0);
                     }
                     log.Debug($"AudioStatusService Waiting {waitTime} ms until next update");

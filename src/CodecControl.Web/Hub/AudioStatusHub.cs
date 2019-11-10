@@ -43,9 +43,9 @@ namespace CodecControl.Web.Hub
             _audioStatusService = audioStatusService;
         }
 
-        public void Subscribe(string sipAddress)
+        public async Task Subscribe(string sipAddress)
         {
-            _audioStatusService.Subscribe(Context.ConnectionId, sipAddress);
+            await _audioStatusService.Subscribe(Context.ConnectionId, sipAddress);
         }
 
         public void Unsubscribe(string sipAddress = "")

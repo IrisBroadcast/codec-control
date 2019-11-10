@@ -95,7 +95,7 @@ namespace CodecControl.Web.Controllers.CodecControl
             });
         }
 
-        [Route("getavailablegpos")]
+        /*[Route("getavailablegpos")]
         [HttpGet]
         public async Task<ActionResult<AvailableGposResponse>> GetAvailableGpos(string sipAddress)
         {
@@ -120,6 +120,36 @@ namespace CodecControl.Web.Controllers.CodecControl
                     {
                         Active = active.Value,
                         Name = i < gpoNames.Count ? gpoNames[i] : $"GPO {i}",
+                        Number = i
+                    });
+                }
+
+                return model;
+            });
+        }*/
+
+        [Route("getavailablegpos")]
+        [HttpGet]
+        public async Task<ActionResult<AvailableGposResponse>> GetAvailableGpos(string sipAddress)
+        {
+            return await Execute(sipAddress, async (codecApi, codecInformation) =>
+            {
+                var model = new AvailableGposResponse();
+
+                for (int i = 0; i < codecInformation.NrOfGpos; i++)
+                {
+                    bool? active = await codecApi.GetGpoAsync(codecInformation.Ip, i);
+
+                    if (!active.HasValue)
+                    {
+                        // GPO missing. Expected that we passed the last GPO
+                        break;
+                    }
+
+                    model.Gpos.Add(new AvailableGpo()
+                    {
+                        Active = active.Value,
+                        Name = $"GPO {i+1}",
                         Number = i
                     });
                 }
@@ -321,7 +351,7 @@ namespace CodecControl.Web.Controllers.CodecControl
         /// <returns></returns>
         //[BasicAuthorize]
         //[HttpPost]
-        //[Route("changeinputgain")] // TODO: This one needs no protection, since private
+        //[Route("changeinputgain")]
         private async Task<ActionResult<InputGainLevelResponse>> ChangeInputGain(ChangeGainRequest request, int change)
         {
             if (request == null) { return BadRequest(); }

@@ -44,8 +44,11 @@ namespace CodecControl.Client
         public string SipAddress { get; set; }
         public string Ip { get; set; }
         public string Api { get; set; }
-        public string GpoNames { get; set; }
+        //public string GpoNames { get; set; }
         public int NrOfInputs { get; set; }
+        public int NrOfOutputs { get; set; }
+        public int NrOfHeadphones { get; set; }
+        public int NrOfGpis { get; set; }
         public int NrOfGpos { get; set; }
 
         [JsonIgnore]

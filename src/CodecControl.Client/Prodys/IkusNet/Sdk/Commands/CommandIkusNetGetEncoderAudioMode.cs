@@ -34,7 +34,9 @@ namespace CodecControl.Client.Prodys.IkusNet.Sdk.Commands
 {
     public class CommandIkusNetGetEncoderAudioMode : CommandBase
     {
-        public CommandIkusNetGetEncoderAudioMode() : base(Command.IkusNetEncoderGetAudioMode, 4) {}
+        public CommandIkusNetGetEncoderAudioMode() : base(Command.IkusNetEncoderGetAudioMode, 4)
+        {
+        }
 
         protected override int EncodePayload(byte[] bytes, int offset)
         {

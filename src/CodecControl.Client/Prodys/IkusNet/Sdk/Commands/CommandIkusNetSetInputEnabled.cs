@@ -40,6 +40,7 @@ namespace CodecControl.Client.Prodys.IkusNet.Sdk.Commands
         }
        
         public int Input { get; set; }
+
         public bool Enabled { get; set; }
 
         protected override int EncodePayload(byte[] bytes, int offset)

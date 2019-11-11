@@ -33,7 +33,8 @@ namespace CodecControl.Client.Prodys.IkusNet.Sdk.Commands
 {
     public class CommandIkusNetGetVuMeters : CommandBase
     {
-        public CommandIkusNetGetVuMeters() : base(Command.IkusNetGetVumeters, 0) {}
-
+        public CommandIkusNetGetVuMeters() : base(Command.IkusNetGetVumeters, 0)
+        {
+        }
     }
 }

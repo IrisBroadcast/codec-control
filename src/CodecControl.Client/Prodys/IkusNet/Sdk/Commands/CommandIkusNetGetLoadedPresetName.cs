@@ -44,7 +44,5 @@ namespace CodecControl.Client.Prodys.IkusNet.Sdk.Commands
         {
             return ConvertHelper.EncodeString(LastLoadedPresetName, bytes, offset, 256);
         }
-
     }
-
 }

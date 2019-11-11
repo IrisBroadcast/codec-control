@@ -166,7 +166,6 @@ namespace CodecControl.Client.Mandozzi.Umac
                 log.Warn(ex);
                 return Task.FromResult(false);
             }
-
         }
 
         public Task<bool> HangUpAsync(string hostAddress, string deviceEncoder = "Program")

@@ -34,7 +34,9 @@ namespace CodecControl.Client.Prodys.IkusNet.Sdk.Commands
 {
     public class CommandIkusNetCall : CommandBase
     {
-        public CommandIkusNetCall() : base(Command.IkusNetCall, 524) {}
+        public CommandIkusNetCall() : base(Command.IkusNetCall, 524)
+        {
+        }
 
         public IkusNetCodec Codec { get; set; }
         public IkusNetCallContent CallContent { get; set; }

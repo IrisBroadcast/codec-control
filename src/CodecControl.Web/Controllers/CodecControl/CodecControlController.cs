@@ -165,8 +165,6 @@ namespace CodecControl.Web.Controllers.CodecControl
             {
                 var model = new LineStatusResponse();
 
-                //string deviceLineEncoder = string.IsNullOrEmpty(deviceEncoder) ? "ProgramL1" : deviceEncoder;
-
                 LineStatus lineStatus = await codecApi.GetLineStatusAsync(codecInformation.Ip, deviceEncoder);
 
                 string deviceLineEncoder = string.IsNullOrEmpty(lineStatus.LineEncoder) ? "Line1" : lineStatus.LineEncoder;

@@ -55,10 +55,11 @@ namespace CodecControl.Web.Controllers.CodecControl
 
             var caller = new SipUri(request.SipAddress).UserAtHost;
 
-            string callee = request.Callee; // Kan vara antingen sip-adress eller telefonnr (som saknar domän).
+            // Could be a SIP-uri or phone number that lacks domain
+            string callee = request.Callee;
             if (!callee.IsNumeric())
             {
-                // Sip-adress.
+                // Sip-address.
                 callee = new SipUri(callee).UserAtHost;
             }
 

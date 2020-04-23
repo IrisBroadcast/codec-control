@@ -137,6 +137,7 @@ namespace CodecControl.Client.Prodys.IkusNet
                 {
                     Line = statusSelectedLineEncoder
                 });
+
                 var response = new IkusNetGetLineStatusResponse(socket);
                 
                 return new LineStatus

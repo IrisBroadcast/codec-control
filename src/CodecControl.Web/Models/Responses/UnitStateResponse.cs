@@ -24,17 +24,15 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- #endregion
+#endregion
 
 using System.Collections.Generic;
-using CodecControl.Client.Models;
 
 namespace CodecControl.Web.Models.Responses
 {
-    public class AudioStatusResponse 
+    public class UnitStateResponse : ResponseBase
     {
-        public VuValues VuValues { get; set; }
-        public List<InputStatus> InputStatus { get; set; }
-        public List<GpoStatus> Gpos { get; set; }
+        public List<LineStatusResponse> LineStatuses { get; set; }
+        public bool IsOnline { get; set; }
     }
 }

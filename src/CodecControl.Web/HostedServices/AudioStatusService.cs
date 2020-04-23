@@ -33,7 +33,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using CodecControl.Client;
 using CodecControl.Client.Exceptions;
+using CodecControl.Client.Models;
 using CodecControl.Web.CCM;
+using CodecControl.Web.Helpers;
 using CodecControl.Web.Hub;
 using CodecControl.Web.Models.Responses;
 using Microsoft.AspNetCore.SignalR;
@@ -53,6 +55,9 @@ namespace CodecControl.Web.HostedServices
 
         public List<SubscriptionInfo> Subscriptions { get; } = new List<SubscriptionInfo>();
         private bool HasSubscriptions => Subscriptions.Any();
+
+        // State
+        private UnitStateResponse CurrentUnitState;
 
         public AudioStatusService(IHubContext<AudioStatusHub> hub, CcmService ccmService, IServiceProvider serviceProvider)
         {
@@ -83,7 +88,7 @@ namespace CodecControl.Web.HostedServices
 
             if (codecInformation == null)
             {
-                log.Info($"Codec {sipAddress} is not registered in CCM.");
+                log.Info($"Codec {sipAddress} is not registered in CCM");
                 return;
             }
 
@@ -123,10 +128,11 @@ namespace CodecControl.Web.HostedServices
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            log.Info($"Audio Status Service is starting.");
+            log.Info($"Queued Audio Status Service is starting");
 
             while (!stoppingToken.IsCancellationRequested)
             {
+                // Audio status
                 while (HasSubscriptions && !stoppingToken.IsCancellationRequested)
                 {
                     int waitTime;
@@ -150,7 +156,7 @@ namespace CodecControl.Web.HostedServices
 
                 if (!stoppingToken.IsCancellationRequested)
                 {
-                    log.Trace("AudioStatusService has no subscriptions");
+                    log.Trace("AudioStatusService / Linestatus has no subscriptions");
                     await Task.Delay(1000); // Wait until next check for HasSubscriptions
                 }
             }
@@ -158,16 +164,15 @@ namespace CodecControl.Web.HostedServices
             log.Info("AudioStatusService finished");
         }
 
-
         private async Task CheckAudioStatusOnCodecAsync(string sipAddress)
         {
             try
             {
-                var codecInformation = await _ccmService.GetCodecInformationBySipAddress(sipAddress);
-
+                // Get codec template data from CCM
+                var codecInformation = await _ccmService.GetCodecInformationBySipAddress(sipAddress); // TODO: Not every time???? 
                 if (codecInformation == null)
                 {
-                    log.Info($"Codec {sipAddress} is not currently registered in CCM.");
+                    log.Info($"Codec {sipAddress} is not currently registered in CCM, could't get codec information");
                     return;
                 }
 
@@ -176,12 +181,11 @@ namespace CodecControl.Web.HostedServices
 
                 if (codecApi == null || string.IsNullOrEmpty(codecInformation.Ip))
                 {
-                    log.Info($"Missing information to connect to codec {sipAddress}");
+                    log.Info($"Missing information for connecting to codec {sipAddress}");
                     return;
                 }
 
-                var audioStatus = await codecApi.GetAudioStatusAsync(codecInformation.Ip, codecInformation.NrOfInputs,
-                    codecInformation.NrOfGpos);
+                var audioStatus = await codecApi.GetAudioStatusAsync(codecInformation.Ip, codecInformation.NrOfInputs, codecInformation.NrOfGpos);
 
                 var model = new AudioStatusResponse()
                 {
@@ -202,9 +206,71 @@ namespace CodecControl.Web.HostedServices
             }
         }
 
+        private async Task CheckLineStatusOnCodecAsync(string sipAddress)
+        {
+            try
+            {
+                // Get codec template data from CCM
+                // TODO: move this out, it's redundant and being used in multiple locations
+                var codecInformation = await _ccmService.GetCodecInformationBySipAddress(sipAddress);
+                if (codecInformation == null)
+                {
+                    log.Info($"Codec {sipAddress} is not currently registered in CCM, could't get codec information");
+                    return;
+                }
+
+                var codecApiType = codecInformation?.CodecApiType;
+                var codecApi = codecApiType != null ? _serviceProvider.GetService(codecApiType) as ICodecApi : null;
+
+                if (codecApi == null || string.IsNullOrEmpty(codecInformation.Ip))
+                {
+                    log.Info($"Missing information for connecting to codec {sipAddress}");
+                    return;
+                }
+
+                var line = new LineStatusResponse();
+
+                var lineStatus = await codecApi.GetLineStatusAsync(codecInformation.Ip, "Line1"); // TODO: Create a GetLineStatuses, for multiple lines
+
+                line.LineEncoder = string.IsNullOrEmpty(lineStatus.LineEncoder) ? "Line1" : lineStatus.LineEncoder;
+                line.LineStatus = lineStatus.StatusCode.ToString();
+                line.DisconnectReasonCode = (int)lineStatus.DisconnectReason;
+                line.DisconnectReasonDescription = lineStatus.DisconnectReason.Description();
+                line.RemoteAddress = lineStatus.RemoteAddress;
+
+                var model = new UnitStateResponse()
+                {
+                    IsOnline = true
+                };
+
+                model.LineStatuses.Add(line);
+
+                // TODO: Get actual connected to information form ccm. this is a very inefficient way, but deal with the rare condition of codec in call but not in ccm. 
+
+                await SendLineStatusToClients(sipAddress, model);
+            }
+            catch (CodecInvocationException ex)
+            {
+                log.Info($"Failed to check line status on {sipAddress}. {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                log.Warn(ex, $"Exception when checking line status on {sipAddress}");
+            }
+        }
+
         private async Task SendAudioStatusToClients(string sipAddress, AudioStatusResponse audioStatus)
         {
             await _hub.Clients.Group(sipAddress).SendAsync("AudioStatus", sipAddress, audioStatus);
+        }
+
+        private async Task SendLineStatusToClients(string sipAddress, UnitStateResponse audioStatus)
+        {
+            if(!CurrentUnitState.Equals(audioStatus))
+            {
+                CurrentUnitState = audioStatus;
+                await _hub.Clients.Group(sipAddress).SendAsync("LineStatus", sipAddress, audioStatus);
+            }
         }
     }
 }

@@ -27,6 +27,9 @@
  #endregion
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 using CodecControl.Web.Hub;
@@ -34,11 +37,14 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Net.Http.Headers;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace CodecControl.Web
@@ -60,17 +66,72 @@ namespace CodecControl.Web
 
             services.ConfigureDepencencyInjection();
 
+            // Localization
+            services.AddLocalization(o => o.ResourcesPath = "Resources");
+            services.Configure<RequestLocalizationOptions>(options =>
+            {
+                var supportedCultures = new[]
+                {
+                    new CultureInfo("sv-SE")
+                };
+                options.DefaultRequestCulture = new RequestCulture("sv-SE", "sv-SE");
+
+                // You must explicitly state which cultures your application supports.
+                // These are the cultures the app supports for formatting 
+                // numbers, dates, etc.
+                options.SupportedCultures = supportedCultures;
+
+                // These are the cultures the app supports for UI strings, 
+                // i.e. we have localized resources for.
+                options.SupportedUICultures = supportedCultures;
+            });
+
             services.AddDirectoryBrowser();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            services.AddCors(options => options.AddPolicy("CorsPolicy", builder =>
+            // Set up CORS
+            List<string> allowedOrigins = new List<string>();
+            if (!string.IsNullOrEmpty(appSettings.CcmHost))
             {
-                builder
+                allowedOrigins.Add(appSettings.CcmHost);
+            }
+            if (appSettings.AllowedOrigins != null)
+            {
+                var additionalOrigins = appSettings.AllowedOrigins.Split(",", StringSplitOptions.RemoveEmptyEntries);
+                allowedOrigins.AddRange(additionalOrigins);
+            }
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy", builder =>
+                {
+                    builder
+                        .AllowAnyOrigin()
+                        .SetIsOriginAllowed(_ => true) // BREAKING CHANGE IN .NETCORE 2.2
+                        .WithHeaders(HeaderNames.AccessControlAllowHeaders, "Content-Type")
+                        .AllowAnyMethod()
+                        .WithOrigins(allowedOrigins.ToArray())
+                        .AllowAnyHeader()
+                        .AllowCredentials();
+                });
+
+                options.AddPolicy("CorsPolicyAll", builder =>
+                {
+                    builder
+                    .AllowAnyOrigin()
+                    .SetIsOriginAllowed(_ => true) // BREAKING CHANGE IN .NETCORE 2.2
+                    .WithHeaders(HeaderNames.AccessControlAllowHeaders, "Content-Type")
                     .AllowAnyMethod()
                     .AllowAnyHeader()
-                    .AllowCredentials()
-                    .AllowAnyOrigin();
-            }));
+                    .AllowCredentials();
+                });
+
+                options.AddPolicy("AllowSubdomain",
+                    builder =>
+                    {
+                        builder.SetIsOriginAllowedToAllowWildcardSubdomains();
+                    });
+            });
 
             services.AddLazyCache();
             services.AddSignalR();
@@ -129,8 +190,11 @@ namespace CodecControl.Web
 
             app.UseCors("CorsPolicy");
 
-            app.UseSwagger();
+            // Localization (RFC 4646)
+            app.UseRequestLocalization();
 
+            // Swagger documentation api
+            app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Codec Control API");

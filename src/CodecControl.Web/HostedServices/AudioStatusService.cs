@@ -69,7 +69,7 @@ namespace CodecControl.Web.HostedServices
 
         public async Task Subscribe(string connectionId, string sipAddress)
         {
-            log.Info($"Subscription from connection id {connectionId} to {sipAddress}");
+            log.Info($"AudioStatusService Subscription from connection id {connectionId} to {sipAddress}");
 
             if (string.IsNullOrEmpty(sipAddress))
             {
@@ -97,10 +97,12 @@ namespace CodecControl.Web.HostedServices
 
             if (codecApi == null || string.IsNullOrEmpty(codecInformation.Ip))
             {
-                log.Info($"Codec {sipAddress} is not subscribable");
+                log.Info($"AudioStatusService Codec {sipAddress} is not subscribable");
                 return;
             }
-            
+
+            // TODO: Check if the Codec Api type has polling or session
+
             Subscriptions.Add(new SubscriptionInfo { ConnectionId = connectionId, SipAddress = sipAddress });
             await _hub.Groups.AddToGroupAsync(connectionId, sipAddress);
         }
@@ -136,21 +138,22 @@ namespace CodecControl.Web.HostedServices
                 while (HasSubscriptions && !stoppingToken.IsCancellationRequested)
                 {
                     int waitTime;
-                    using (var timeMeasurer = new TimeMeasurer("Checking audio status on all codecs"))
+                    using (var timeMeasurer = new TimeMeasurer("AudioStatusService Checking on all codecs"))
                     {
                         var sipAddresses = Subscriptions.Select(s => s.SipAddress).Distinct().ToList();
-                        log.Info($"Checking audio status on #{sipAddresses.Count} codec(s). ({string.Join(",", sipAddresses)})");
+                        log.Debug($"AudioStatusService Checking audio status on #{sipAddresses.Count} codec(s). ({string.Join(",", sipAddresses)})");
 
                         Parallel.ForEach(sipAddresses, async sipAddress =>
                         {
-                            using (new TimeMeasurer($"Checking audio status on {sipAddress}"))
+                            using (new TimeMeasurer($"AudioStatusService Checking for {sipAddress}"))
                             {
                                 await CheckAudioStatusOnCodecAsync(sipAddress);
                             }
                         });
+
                         waitTime = (int)Math.Max(_pollDelay.Subtract(timeMeasurer.ElapsedTime).TotalMilliseconds, 0);
                     }
-                    log.Debug($"Waiting {waitTime} ms until next update");
+                    log.Debug($"AudioStatusService Waiting {waitTime} ms until next update");
                     await Task.Delay(waitTime);
                 }
 
@@ -196,13 +199,18 @@ namespace CodecControl.Web.HostedServices
 
                 await SendAudioStatusToClients(sipAddress, model);
             }
+            catch (UnableToConnectException ex)
+            {
+                log.Warn($"AudioStatusService Exception unable to connect to {sipAddress}.");
+                log.Trace(ex, "AudioStatusService Exception");
+            }
             catch (CodecInvocationException ex)
             {
-                log.Info($"Failed to check audio status on {sipAddress}. {ex.Message}");
+                log.Warn($"AudioStatusService Failed to check audio status on {sipAddress}. {ex.Message}");
             }
             catch (Exception ex)
             {
-                log.Warn(ex, $"Exception when checking audio status on {sipAddress}");
+                log.Warn(ex, $"AudioStatusService Exception when checking audio status on {sipAddress}");
             }
         }
 

@@ -34,9 +34,12 @@ namespace CodecControl.Client.Prodys.IkusNet.Sdk.Commands
 {
     public class CommandIkusNetSetInputGainLevel : CommandBase
     {
-        public CommandIkusNetSetInputGainLevel() : base(Command.IkusNetSetInputGainLevel, 8) {}
+        public CommandIkusNetSetInputGainLevel() : base(Command.IkusNetSetInputGainLevel, 8)
+        {
+        }
 
         public int Input { get; set; }
+
         public int GainLeveldB { get; set; }
 
         protected override int EncodePayload(byte[] bytes, int offset)

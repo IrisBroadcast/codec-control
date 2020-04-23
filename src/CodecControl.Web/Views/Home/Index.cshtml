@@ -106,13 +106,13 @@
             font-size: 11pt;
         }
 
-            .doc-info-table td {
-                background: #7dff7d; /* #c5ff82;*/
-                padding: 5px;
-                font-size: 11pt;
-                border: 0;
-                border-top: 1px solid #ebebeb;
-            }
+        .doc-info-table td {
+            background: #7dff7d; /* #c5ff82;*/
+            padding: 5px;
+            font-size: 11pt;
+            border: 0;
+            border-top: 1px solid #ebebeb;
+        }
 
         .doc-link-ex a {
             text-transform: capitalize;
@@ -148,7 +148,6 @@
         .header {
             display: block;
             font-size: 2em;
-            margin-block-end: 1em;
             font-weight: bold;
         }
 
@@ -227,140 +226,141 @@
 </head>
 <body>
 
-    <div class="conf-container">
-        <div id="conf-links" class="conf-links"><a href="/swagger">API documentation</a> - <a href="/log">Log</a></div>
-        <div id="conf-site" class="conf-site">CodecControl</div>
-        <div id="conf-version" class="conf-version">@ViewData["Version"]</div>
-        <div id="conf-environment" class="conf-environment">@ViewData["Environment"]</div>
-        <div id="conf-started" class="conf-started">@ViewData["ReleaseDate"]</div>
-        <div id="conf-server" class="conf-server">@ViewData["Server"]</div>
+<div class="conf-container">
+    <div id="conf-links" class="conf-links"><a href="/swagger">API documentation</a> - <a href="/log">Log</a></div>
+    <div id="conf-site" class="conf-site">CodecControl</div>
+    <div id="conf-version" class="conf-version">@ViewData["Version"]</div>
+    <div id="conf-environment" class="conf-environment">@ViewData["Environment"]</div>
+    <div id="conf-started" class="conf-started">@ViewData["ReleaseDate"]</div>
+    <div id="conf-server" class="conf-server">@ViewData["Server"]</div>
+</div>
+
+<div class="conf-container" id="app">
+
+    <div class="unit">
+        <div class="conf-headline">
+            Subscriptions
+        </div>
+
+        <div class="conf-form">
+            <button v-on:click="getSubscriptions">Reload</button>
+        </div>
+
+        <table cellspacing="0" cellpadding="0" border="0" class="doc-info-table">
+            <thead>
+            <tr>
+                <th>Connection id</th>
+                <th>Sip-address</th>
+            </tr>
+            </thead>
+            <tbody v-if="subscriptions.length > 0">
+            <tr v-for="subscription in subscriptions">
+                <td>{{subscription.connectionId}}</td>
+                <td>{{subscription.sipAddress}}</td>
+            </tr>
+            </tbody>
+            <tbody v-if="subscriptions.length == 0">
+            <tr>
+                <td colspan="2">
+                    No subscriptions
+                </td>
+            </tr>
+            </tbody>
+        </table>
     </div>
 
-    <div class="conf-container" id="app">
+    <div class="unit">
 
-        <div class="unit">
-            <div class="conf-headline">
-                Subscriptions
-            </div>
-
-            <div class="conf-form">
-                <button v-on:click="getSubscriptions">Reload</button>
-            </div>
-
-            <table cellspacing="0" cellpadding="0" border="0" class="doc-info-table">
-                <thead>
-                    <tr>
-                        <th>Connection id</th>
-                        <th>Sip-address</th>
-                    </tr>
-                </thead>
-                <tbody v-if="subscriptions.length > 0">
-                    <tr v-for="subscription in subscriptions">
-                        <td>{{subscription.connectionId}}</td>
-                        <td>{{subscription.sipAddress}}</td>
-                    </tr>
-                </tbody>
-                <tbody v-if="subscriptions.length == 0">
-                    <tr>
-                        <td colspan="2">
-                            No subscriptions
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="conf-headline">
+            Codec information
         </div>
 
-        <div class="unit">
+        <div class="conf-form">
+            <label for="sipAddress" class="subheader">Get codec information from CCM </label>
 
-            <div class="conf-headline">
-                Codec information
-            </div>
+            <input id="sipAddress"
+                   type="text"
+                   placeholder="SIP-address"
+                   v-model="sipAddress"
+                   v-on:keydown.enter="getCodecInformationBySipAddress(sipAddress)"
+                   class="input-text" />
 
-            <div class="conf-form">
-                <label for="sipAddress" class="subheader">Get codec information from CCM </label>
-
-                <input id="sipAddress"
-                       type="text"
-                       placeholder="SIP-address"
-                       v-model="sipAddress"
-                       v-on:keydown.enter="getCodecInformationBySipAddress(sipAddress)"
-                       class="input-text" />
-
-                <button v-on:click="getCodecInformationBySipAddress(sipAddress)">Fetch info</button>
-            </div>
-
-            <div class="conf-form">
-                {{userFeedback}}
-            </div>
-
-            <table cellspacing="0" class="doc-info-table">
-                <thead>
-                    <tr>
-                        <th>Sip-address</th>
-                        <th>IP</th>
-                        <th>API</th>
-                        <th>Vu-values Rx</th>
-                        <th>Vu-values Tx</th>
-                        <th>Codec-updated</th>
-                        <th>Subscribe / Unsubscribe</th>
-                    </tr>
-                </thead>
-                <tbody v-if="codecs.length > 0">
-                    <tr v-for="codec in codecs">
-                        <td>
-                            {{codec.sipAddress}}
-                        </td>
-                        <td>
-                            {{codec.ip}}
-                        </td>
-                        <td>
-                            {{codec.api}}
-                        </td>
-                        <td>
-                            Rx: {{codec.audioStatus.vuValues.rxLeft}} / {{codec.audioStatus.vuValues.rxRight}}
-                        </td>
-                        <td>
-                            Tx: {{codec.audioStatus.vuValues.txLeft}} / {{codec.audioStatus.vuValues.txRight}}
-                        </td>
-                        <td>
-                            {{codec.updated}}
-                        </td>
-                        <td>
-                            <button v-on:click="subscribe(codec.sipAddress)">Subscribe</button>
-                            <button v-on:click="unsubscribe(codec.sipAddress)">Unsubscribe</button>
-                        </td>
-                    </tr>
-                </tbody>
-                <tbody v-if="codecs.length == 0">
-                    <tr>
-                        <td colspan="7">
-                            No codecs
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <button v-on:click="getCodecInformationBySipAddress(sipAddress)">Fetch info</button>
         </div>
 
-        <div class="unit">
-            <div class="conf-headline">
-                Settings
-            </div>
+        <div class="conf-form">
+            {{userFeedback}}
+        </div>
 
-            <div class="conf-form">
-                Log Path: @ViewData["LogFolder"]
-            </div>
+        <table cellspacing="0" class="doc-info-table">
+            <thead>
+            <tr>
+                <th>Sip-address</th>
+                <th>IP</th>
+                <th>API</th>
+                <th>Vu-values Rx</th>
+                <th>Vu-values Tx</th>
+                <th>Codec-updated</th>
+                <th>Subscribe / Unsubscribe</th>
+            </tr>
+            </thead>
+            <tbody v-if="codecs.length > 0">
+            <tr v-for="codec in codecs">
+                <td>
+                    {{codec.sipAddress}}
+                </td>
+                <td>
+                    {{codec.ip}}
+                </td>
+                <td>
+                    {{codec.api}}
+                </td>
+                <td>
+                    Rx: {{codec.audioStatus.vuValues.rxLeft}} / {{codec.audioStatus.vuValues.rxRight}}
+                </td>
+                <td>
+                    Tx: {{codec.audioStatus.vuValues.txLeft}} / {{codec.audioStatus.vuValues.txRight}}
+                </td>
+                <td>
+                    {{codec.updated}}
+                </td>
+                <td>
+                    <button v-on:click="subscribe(codec.sipAddress)">Subscribe</button>
+                    <button v-on:click="unsubscribe(codec.sipAddress)">Unsubscribe</button>
+                </td>
+            </tr>
+            </tbody>
+            <tbody v-if="codecs.length == 0">
+            <tr>
+                <td colspan="7">
+                    No codecs
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 
-            <div class="conf-form">
-                <label for="selectedLogLevel" class="subheader">Current log level: {{currentLogLevel}}</label>
-                <select v-model="selectedLogLevel" id="selectedLogLevel">
-                    <option v-for="level in logLevels" v-bind:value="level">{{level}}</option>
-                </select>
-                <button v-on:click="setLogLevel(selectedLogLevel)">Change log level</button>
-            </div>
+    <div class="unit">
+        <div class="conf-headline">
+            Settings
+        </div>
+
+        <div class="conf-form">
+            Log Path: @ViewData["LogFolder"]
+        </div>
+
+        <div class="conf-form">
+            <label for="selectedLogLevel" class="subheader">Current log level: {{currentLogLevel}}</label>
+            <select v-model="selectedLogLevel" id="selectedLogLevel">
+                <option v-for="level in logLevels" v-bind:value="level">{{level}}</option>
+            </select>
+            <button v-on:click="setLogLevel(selectedLogLevel)">Change log level</button>
         </div>
     </div>
+</div>
 
 </body>
+</html>
 
 <script src="~/lib/signalr/dist/browser/signalr.js"></script>
 <script src="~/lib/vue/dist/vue.js"></script>
@@ -370,5 +370,3 @@
     app.currentLogLevel = '@ViewData["CurrentLogLevel"]'
     app.selectedLogLevel = app.currentLogLevel;
 </script>
-
-</html>

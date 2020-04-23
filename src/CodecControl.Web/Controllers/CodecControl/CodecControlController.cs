@@ -95,7 +95,7 @@ namespace CodecControl.Web.Controllers.CodecControl
             });
         }
 
-        [Route("getavailablegpos")]
+        /*[Route("getavailablegpos")]
         [HttpGet]
         public async Task<ActionResult<AvailableGposResponse>> GetAvailableGpos(string sipAddress)
         {
@@ -120,6 +120,36 @@ namespace CodecControl.Web.Controllers.CodecControl
                     {
                         Active = active.Value,
                         Name = i < gpoNames.Count ? gpoNames[i] : $"GPO {i}",
+                        Number = i
+                    });
+                }
+
+                return model;
+            });
+        }*/
+
+        [Route("getavailablegpos")]
+        [HttpGet]
+        public async Task<ActionResult<AvailableGposResponse>> GetAvailableGpos(string sipAddress)
+        {
+            return await Execute(sipAddress, async (codecApi, codecInformation) =>
+            {
+                var model = new AvailableGposResponse();
+
+                for (int i = 0; i < codecInformation.NrOfGpos; i++)
+                {
+                    bool? active = await codecApi.GetGpoAsync(codecInformation.Ip, i);
+
+                    if (!active.HasValue)
+                    {
+                        // GPO missing. Expected that we passed the last GPO
+                        break;
+                    }
+
+                    model.Gpos.Add(new AvailableGpo()
+                    {
+                        Active = active.Value,
+                        Name = $"GPO {i+1}",
                         Number = i
                     });
                 }
@@ -172,7 +202,7 @@ namespace CodecControl.Web.Controllers.CodecControl
                 model.LineEncoder = deviceLineEncoder;
                 model.LineStatus = lineStatus.StatusCode.ToString();
                 model.DisconnectReasonCode = (int)lineStatus.DisconnectReason;
-                model.DisconnectReasonDescription = lineStatus.DisconnectReason.Description();
+                model.DisconnectReasonDescription = lineStatus.DisconnectReason.DescriptionAsResource();
                 model.RemoteAddress = lineStatus.RemoteAddress;
 
                 return model;
@@ -285,6 +315,11 @@ namespace CodecControl.Web.Controllers.CodecControl
             });
         }
 
+        /// <summary>
+        /// Increase gain by one (1) for requested input channel id
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
         [BasicAuthorize]
         [HttpPost]
         [Route("increaseinputgain")]
@@ -293,6 +328,11 @@ namespace CodecControl.Web.Controllers.CodecControl
             return await ChangeInputGain(parameters, 1);
         }
 
+        /// <summary>
+        /// Decrease gain by one (1) for requested input channel id
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
         [BasicAuthorize]
         [HttpPost]
         [Route("decreaseinputgain")]
@@ -301,12 +341,17 @@ namespace CodecControl.Web.Controllers.CodecControl
             return await ChangeInputGain(parameters, -1);
         }
 
-        [BasicAuthorize]
-        [HttpPost]
-        [Route("changeinputgain")]
-        public async Task<ActionResult<InputGainLevelResponse>> ChangeInputGain(ChangeGainRequest request, int change)
+        /// <summary>
+        /// Change gain by inputted gain value for requested input channel id
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="change"></param>
+        /// <returns></returns>
+        //[BasicAuthorize]
+        //[HttpPost]
+        //[Route("changeinputgain")]
+        private async Task<ActionResult<InputGainLevelResponse>> ChangeInputGain(ChangeGainRequest request, int change)
         {
-            // TODO: Shouldn't change be in the ChangeGainRequest Object??
             if (request == null) { return BadRequest(); }
 
             return await Execute(request.SipAddress, async (codecApi, codecInformation) =>
@@ -321,6 +366,11 @@ namespace CodecControl.Web.Controllers.CodecControl
             });
         }
 
+        /// <summary>
+        /// Change/set gain by inputted gain value for requested input channel id
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [BasicAuthorize]
         [HttpPost]
         [Route("setinputgain")]

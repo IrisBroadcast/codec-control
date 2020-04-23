@@ -26,17 +26,25 @@
  */
  #endregion
 
-namespace CodecControl.Client.Prodys.IkusNet.Sdk
+using System.Collections.Generic;
+
+namespace CodecControl.Web.Models.Responses
 {
     /// <summary>
-    /// Constants for Ikusnet
+    /// Defines different parameters that describes the "model" of a
+    /// codec unit. The majority of this data is currently stored in
+    /// CCM. But This is some static things that is not user set.
+    /// This object might change at any time.
     /// </summary>
-    public static class IkusNet
+    public class ApiModelInformationResponse
     {
-        // TODO: Should be positioned in a static file../config
-        public const string ExternalProtocolIpSecurityString = "IkusNet External";
-        public const int ExternalProtocolIpCommandsPort = 50031;
-        public const string ExternalProtocolUserName = "Sveriges Radio";
-        public const string ExternalProtocolPassword = ""; // Tomt lösenord
+        public ApiModelInputInformation AudioInput { get; set; }
+
     }
+
+    public class ApiModelInputInformation
+    {
+        
+    }
+
 }

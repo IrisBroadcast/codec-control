@@ -26,7 +26,6 @@
  */
  #endregion
 
-
 namespace CodecControl.Web.Models.Responses
 {
     public class InputEnabledResponse

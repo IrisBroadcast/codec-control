@@ -26,6 +26,7 @@
  */
  #endregion
 
+using CodecControl.Client.Mandozzi.Umac;
 using CodecControl.Client.Prodys.IkusNet;
 using CodecControl.Client.SR.BaresipRest;
 using CodecControl.Web.CCM;
@@ -38,6 +39,10 @@ namespace CodecControl.Web
 {
     public static class DependencyInjection
     {
+        /// <summary>
+        /// Set up Api dependencies
+        /// </summary>
+        /// <param name="services"></param>
         public static void ConfigureDepencencyInjection(this IServiceCollection services)
         {
             services.AddSingleton<CcmService>();
@@ -47,6 +52,7 @@ namespace CodecControl.Web
             services.AddTransient<SocketProxy>();
             services.AddTransient<IkusNetApi>();
             services.AddTransient<BaresipRestApi>();
+            services.AddTransient<UmacApi>();
 
             services.AddSingleton<AudioStatusService>();
             services.AddSingleton<IHostedService>(x => x.GetRequiredService<AudioStatusService>());

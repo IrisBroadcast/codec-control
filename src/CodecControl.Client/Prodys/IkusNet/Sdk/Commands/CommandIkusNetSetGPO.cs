@@ -40,8 +40,8 @@ namespace CodecControl.Client.Prodys.IkusNet.Sdk.Commands
         }
 
         public int Gpo { get; set; }
-        public bool Active { get; set; }
 
+        public bool Active { get; set; }
 
         protected override int EncodePayload(byte[] bytes, int offset)
         {

@@ -37,7 +37,9 @@ namespace CodecControl.Client.Prodys.IkusNet.Sdk.Commands
         public CommandIkusNetGetLineStatus() : base(Command.IkusNetGetLineStatus, 4)
         {
         }
+
         public IkusNetLine Line { get; set; }
+
         protected override int EncodePayload(byte[] bytes, int offset)
         {
             return ConvertHelper.EncodeUInt((uint)Line, bytes, offset);

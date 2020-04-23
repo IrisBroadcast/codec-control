@@ -1,4 +1,4 @@
-﻿#region copyright
+#region copyright
 /*
  * Copyright (c) 2018 Sveriges Radio AB, Stockholm, Sweden
  *
@@ -24,19 +24,18 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- #endregion
+#endregion
 
-namespace CodecControl.Client.Prodys.IkusNet.Sdk
+namespace CodecControl.Client.Mandozzi.Umac.Sdk
 {
     /// <summary>
-    /// Constants for Ikusnet
+    /// Constant values for Umac
     /// </summary>
-    public static class IkusNet
+    public static class Umac
     {
-        // TODO: Should be positioned in a static file../config
-        public const string ExternalProtocolIpSecurityString = "IkusNet External";
-        public const int ExternalProtocolIpCommandsPort = 50031;
-        public const string ExternalProtocolUserName = "Sveriges Radio";
-        public const string ExternalProtocolPassword = ""; // Tomt lösenord
+        public const int ExternalProtocolIpCommandsPort = 54321;// 50031; //54321;
+        public const string ExternalProtocolUserName = "";
+        public const string ExternalProtocolPassword = "";
+        public const int ResponseTimeOut = 3000;
     }
 }

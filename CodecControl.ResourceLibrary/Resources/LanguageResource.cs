@@ -24,19 +24,31 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- #endregion
+#endregion
 
-namespace CodecControl.Client.Prodys.IkusNet.Sdk
+using Microsoft.Extensions.Localization;
+
+namespace CodecControl.ResourceLibrary.Resources
 {
-    /// <summary>
-    /// Constants for Ikusnet
-    /// </summary>
-    public static class IkusNet
+    public interface ILanguageResource
     {
-        // TODO: Should be positioned in a static file../config
-        public const string ExternalProtocolIpSecurityString = "IkusNet External";
-        public const int ExternalProtocolIpCommandsPort = 50031;
-        public const string ExternalProtocolUserName = "Sveriges Radio";
-        public const string ExternalProtocolPassword = ""; // Tomt lösenord
+    }
+
+    public class LanguageResource : ILanguageResource
+    {
+        private readonly IStringLocalizer _localizer;
+
+        public LanguageResource(IStringLocalizer<LanguageResource> localizer)
+        {
+            _localizer = localizer;
+        }
+
+        public string this[string index]
+        {   
+            get
+            {
+                return _localizer[index];
+            }
+        }
     }
 }

@@ -31,6 +31,7 @@ using System.Threading.Tasks;
 using CodecControl.Client.Models;
 using CodecControl.Client.Prodys.IkusNet.Sdk.Commands;
 using CodecControl.Client.Prodys.IkusNet.Sdk.Responses;
+using CodecControl.Client.Prodys.IkusNetSt;
 
 namespace CodecControl.Client.Prodys.IkusNet
 {
@@ -49,8 +50,8 @@ namespace CodecControl.Client.Prodys.IkusNet
             using (var socket = await SocketPool.TakeSocket(hostAddress))
             {
                 SendCommand(socket, new CommandIkusNetGetInputEnabled { Input = input });
-                var response = new IkusNetGetInputEnabledResponse(socket);
-                return response.Enabled;
+                var enabledResponse = new IkusNetGetInputEnabledResponse(socket);
+                return enabledResponse.Enabled;
             }
         }
 
@@ -71,15 +72,14 @@ namespace CodecControl.Client.Prodys.IkusNet
             using (var socket = await SocketPool.TakeSocket(hostAddress))
             {
                 SendCommand(socket, new CommandIkusNetGetInputEnabled { Input = input });
-                var inputEnabledResponse = new IkusNetGetInputEnabledResponse(socket);
-                var enabled = inputEnabledResponse.Enabled;
+                var enabledResponse = new IkusNetGetInputEnabledResponse(socket);
+                var enabled = enabledResponse.Enabled;
 
                 SendCommand(socket, new CommandIkusNetGetInputGainLevel { Input = input });
                 var gainLevelResponse = new IkusNetGetInputGainLevelResponse(socket);
                 var gain = gainLevelResponse.GainLeveldB;
                 return (enabled, gain);
             }
-
         }
 
         public override async Task<AudioStatus> GetAudioStatusAsync(string hostAddress, int nrOfInputs, int nrOfGpos)
@@ -135,7 +135,6 @@ namespace CodecControl.Client.Prodys.IkusNet
                 return audioStatus;
             }
         }
-
 
         public override async Task<bool> SetInputEnabledAsync(string hostAddress, int input, bool enabled)
         {

@@ -44,15 +44,15 @@ namespace CodecControl.Web.Helpers
         public string Host { get; set; }
         public string Port { get; set; }
         public string Parameters { get; set; }
-        public string UserAtHost { get { return string.IsNullOrEmpty(User) || string.IsNullOrEmpty(Host) ? string.Empty : string.Format("{0}@{1}", User, Host); } }
+        public string UserAtHost { get { return string.IsNullOrEmpty(User) || string.IsNullOrEmpty(Host) ? string.Empty : $"{User}@{Host}"; } }
 
-        private readonly string _sipString; // Orginalsträngen
+        private readonly string _sipString; // Original string
 
         public SipUri(string sipAddress)
         {
             try
             {
-                // Handle display name. TODO: Hur gör man detta med RegExp?
+                // Handle display name
                 string displayName = "";
                 if (sipAddress.Contains("<"))
                 {
@@ -84,7 +84,7 @@ namespace CodecControl.Web.Helpers
 
         public override string ToString()
         {
-            return string.Format("{0} ({1})", UserAtHost, _sipString);
+            return $"{UserAtHost} ({_sipString})";
         }
     }
 }

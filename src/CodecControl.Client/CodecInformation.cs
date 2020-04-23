@@ -27,19 +27,28 @@
  #endregion
 
 using System;
+using CodecControl.Client.Mandozzi.Umac;
 using CodecControl.Client.Prodys.IkusNet;
+using CodecControl.Client.Prodys.IkusNetSt;
 using CodecControl.Client.SR.BaresipRest;
 using Newtonsoft.Json;
 
 namespace CodecControl.Client
 {
+    /// <summary>
+    /// Holds codec information received from CCM.
+    /// Keep this definitions updated
+    /// </summary>
     public class CodecInformation
     {
         public string SipAddress { get; set; }
         public string Ip { get; set; }
         public string Api { get; set; }
-        public string GpoNames { get; set; }
+        //public string GpoNames { get; set; }
         public int NrOfInputs { get; set; }
+        public int NrOfOutputs { get; set; }
+        public int NrOfHeadphones { get; set; }
+        public int NrOfGpis { get; set; }
         public int NrOfGpos { get; set; }
 
         [JsonIgnore]
@@ -47,25 +56,26 @@ namespace CodecControl.Client
         {
             get
             {
-                if (Enum.TryParse(Api, true, out CodecApiTypes apiType))
+                if (Enum.TryParse(Api, true, out CodecApiUserDefinedTypes apiType))
                 {
                     switch (apiType)
                     {
-                        case CodecApiTypes.IkusNet:
+                        case CodecApiUserDefinedTypes.IkusNet:
                             return typeof(IkusNetApi);
-                        case CodecApiTypes.IkusNetSt:
+                        case CodecApiUserDefinedTypes.IkusNetSt:
                             return typeof(IkusNetStApi);
-                        case CodecApiTypes.BareSipRest:
+                        case CodecApiUserDefinedTypes.BareSipRest:
                             return typeof(BaresipRestApi);
+                        case CodecApiUserDefinedTypes.Umac:
+                            return typeof(UmacApi);
+                        case CodecApiUserDefinedTypes.BehringerOscCustomApi:
+                            return null;
                         default:
                             // TODO: Log as warning
                             return null;
                     }
                 }
-                else
-                {
-                    return null;
-                }
+                return null;
             }
         }
     }

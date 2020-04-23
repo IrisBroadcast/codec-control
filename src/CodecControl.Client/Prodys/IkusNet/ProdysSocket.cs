@@ -126,7 +126,7 @@ namespace CodecControl.Client.Prodys.IkusNet
 
                 var endpoint = new IPEndPoint(ipAddress, Sdk.IkusNet.ExternalProtocolIpCommandsPort);
                 
-                await socket.ConnectAsync(endpoint); // TODO: timeout ?
+                await socket.ConnectAsync(endpoint, 4000); // TODO: Added a timeout here, verify that it's ok
 
                 if (!socket.Connected)
                 {
@@ -166,7 +166,8 @@ namespace CodecControl.Client.Prodys.IkusNet
             }
             catch (Exception ex)
             {
-                log.Warn(ex, "Exception when connecting to codec at {0}", ipAddress);
+                log.Warn(ex, $"Exception when connecting to codec at {ipAddress}, {ex.GetType().FullName}");
+                log.Debug(ex, "Exception when using Prodys socket");
                 socket?.Close();
                 return null;
             }

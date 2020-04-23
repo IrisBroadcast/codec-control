@@ -1,4 +1,4 @@
-﻿#region copyright
+#region copyright
 /*
  * Copyright (c) 2018 Sveriges Radio AB, Stockholm, Sweden
  *
@@ -26,17 +26,27 @@
  */
  #endregion
 
-namespace CodecControl.Client.Prodys.IkusNet.Sdk
+using System;
+
+namespace CodecControl.Client.Mandozzi.Helpers
 {
-    /// <summary>
-    /// Constants for Ikusnet
-    /// </summary>
-    public static class IkusNet
+    public static class StringExtensions
     {
-        // TODO: Should be positioned in a static file../config
-        public const string ExternalProtocolIpSecurityString = "IkusNet External";
-        public const int ExternalProtocolIpCommandsPort = 50031;
-        public const string ExternalProtocolUserName = "Sveriges Radio";
-        public const string ExternalProtocolPassword = ""; // Tomt lösenord
+        /// <summary>
+        /// Returns beginning of string until given string 'untilString
+        /// </summary>
+        public static string LeftOf(this string s, string untilString)
+        {
+            s = s ?? string.Empty;
+            untilString = untilString ?? string.Empty;
+
+            if (string.IsNullOrEmpty(untilString))
+            {
+                return s;
+            }
+
+            var pos = s.IndexOf(untilString, StringComparison.CurrentCulture);
+            return pos > -1 ? s.Substring(0, pos) : s;
+        }
     }
 }

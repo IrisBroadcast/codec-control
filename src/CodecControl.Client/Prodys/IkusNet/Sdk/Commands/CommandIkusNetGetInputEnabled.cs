@@ -34,7 +34,9 @@ namespace CodecControl.Client.Prodys.IkusNet.Sdk.Commands
 {
     public class CommandIkusNetGetInputEnabled : CommandBase
     {
-        public CommandIkusNetGetInputEnabled() : base(Command.IkusNetGetInputEnabled, 4) {}
+        public CommandIkusNetGetInputEnabled() : base(Command.IkusNetGetInputEnabled, 4)
+        {
+        }
         
         public int Input { get; set; }
 

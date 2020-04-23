@@ -34,7 +34,9 @@ namespace CodecControl.Client.Prodys.IkusNet.Sdk.Commands
 {
     public class CommandIkusNetGetInputGainLevel : CommandBase
     {
-        public CommandIkusNetGetInputGainLevel() : base(Command.IkusNetGetInputGainLevel, 4) {}
+        public CommandIkusNetGetInputGainLevel() : base(Command.IkusNetGetInputGainLevel, 4)
+        {
+        }
 
         public int Input { get; set; }
 

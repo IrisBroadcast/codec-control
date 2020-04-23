@@ -28,6 +28,9 @@
 
 namespace CodecControl.Client.Prodys.IkusNet.Sdk.Enums
 {
+    /// <summary>
+    /// Keep this one in sync with DisconnectReason
+    /// </summary>
     public enum IkusNetStreamingDisconnectionReason
     {
         None,
@@ -40,7 +43,7 @@ namespace CodecControl.Client.Prodys.IkusNet.Sdk.Enums
         ConnectionDropped,
         NotReady,
 
-        // SIP Error codes
+        // SIP Response Messages
         SipTrying = 100,
         SipRinging = 180,
         SipCallBeingForwarded = 181,

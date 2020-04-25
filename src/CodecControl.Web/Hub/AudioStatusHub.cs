@@ -29,11 +29,15 @@
 using System;
 using System.Threading.Tasks;
 using CodecControl.Web.HostedServices;
+using CodecControl.Web.Models.System;
+using Microsoft.AspNetCore.SignalR;
 
 namespace CodecControl.Web.Hub
 {
-    // Contains methods for the client to call
-    // For methods Server->Client see AudioStatusService
+    /// <summary>
+    /// Contains methods for the client to call
+    /// For methods Server->Client see AudioStatusService
+    /// </summary>
     public class AudioStatusHub : Microsoft.AspNetCore.SignalR.Hub
     {
         private readonly AudioStatusService _audioStatusService;
@@ -43,9 +47,38 @@ namespace CodecControl.Web.Hub
             _audioStatusService = audioStatusService;
         }
 
+        public override async Task OnConnectedAsync()
+        {
+            // Do nothing
+            await base.OnConnectedAsync();
+        }
+
+        public override async Task OnDisconnectedAsync(Exception exception)
+        {
+            _audioStatusService.Unsubscribe(Context.ConnectionId);
+            await RemoveFromGroup("SystemStatusListeners");
+            await base.OnDisconnectedAsync(exception);
+        }
+
+        public async Task AddToGroup(string groupName)
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+        }
+
+        public async Task RemoveFromGroup(string groupName)
+        {
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
+        }
+
+        /// <summary>
+        /// Audio Status methods
+        /// </summary>
+        /// <param name="sipAddress"></param>
+        /// <returns></returns>
         public async Task Subscribe(string sipAddress)
         {
             await _audioStatusService.Subscribe(Context.ConnectionId, sipAddress);
+            await SendOutSystemStatus();
         }
 
         public void Unsubscribe(string sipAddress = "")
@@ -58,18 +91,26 @@ namespace CodecControl.Web.Hub
             {
                 _audioStatusService.Unsubscribe(Context.ConnectionId, sipAddress);
             }
+            SendOutSystemStatus();
         }
 
-        public override async Task OnConnectedAsync()
+        /// <summary>
+        /// System Status methods
+        /// </summary>
+        /// <returns></returns>
+        public async Task SubscribeSystemStatus()
         {
-            // Do nothing
-            await base.OnConnectedAsync();
+            await AddToGroup("SystemStatusListeners");
+            await SendOutSystemStatus();
         }
 
-        public override async Task OnDisconnectedAsync(Exception exception)
+        public async Task SendOutSystemStatus()
         {
-            _audioStatusService.Unsubscribe(Context.ConnectionId);
-            await base.OnDisconnectedAsync(exception);
+            var systemStatus = new CodecControlSystemStatus
+            {
+                Subscriptions = _audioStatusService.Subscriptions
+            };
+            await Clients.Group("SystemStatusListeners").SendAsync("CodecControlSystemStatus", systemStatus);
         }
 
     }

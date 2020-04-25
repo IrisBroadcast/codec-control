@@ -67,6 +67,12 @@ namespace CodecControl.Web.HostedServices
             _serviceProvider = serviceProvider;
         }
 
+        /// <summary>
+        /// Client subscribes to information about a specific codec.
+        /// </summary>
+        /// <param name="connectionId">Websocket connection id</param>
+        /// <param name="sipAddress">Sip address to fetch information about</param>
+        /// <returns></returns>
         public async Task Subscribe(string connectionId, string sipAddress)
         {
             log.Info($"AudioStatusService Subscription from connection id {connectionId} to {sipAddress}");
@@ -92,21 +98,38 @@ namespace CodecControl.Web.HostedServices
                 return;
             }
 
+            if (string.IsNullOrEmpty(codecInformation.Ip))
+            {
+                log.Info($"AudioStatusService Codec {sipAddress} is not subscribable, no IP-Address found");
+                return;
+            }
+
             var codecApiType = codecInformation?.CodecApiType;
             var codecApi = codecApiType != null ? _serviceProvider.GetService(codecApiType) as ICodecApi : null;
-
-            if (codecApi == null || string.IsNullOrEmpty(codecInformation.Ip))
+            if (codecApi == null)
             {
-                log.Info($"AudioStatusService Codec {sipAddress} is not subscribable");
+                log.Info($"AudioStatusService Codec {sipAddress} is not subscribable, no API found");
                 return;
             }
 
             // TODO: Check if the Codec Api type has polling or session
 
-            Subscriptions.Add(new SubscriptionInfo { ConnectionId = connectionId, SipAddress = sipAddress });
+            // Add to subscriptions list
+            Subscriptions.Add(new SubscriptionInfo {
+                ConnectionId = connectionId,
+                SipAddress = sipAddress,
+                ConnectionStarted = DateTime.UtcNow
+            });
+
+            // Add subscription to websocket group
             await _hub.Groups.AddToGroupAsync(connectionId, sipAddress);
         }
 
+        /// <summary>
+        /// Client or server removes subscription to a specific codec
+        /// </summary>
+        /// <param name="connectionId"></param>
+        /// <param name="sipAddress"></param>
         public void Unsubscribe(string connectionId, string sipAddress)
         {
             var subscriptions = Subscriptions.Where(s => s.ConnectionId == connectionId && s.SipAddress == sipAddress).ToList();
@@ -117,11 +140,14 @@ namespace CodecControl.Web.HostedServices
             }
         }
 
+        /// <summary>
+        /// Client or server removes all subscriptions related to a websocket connection id
+        /// </summary>
+        /// <param name="connectionId"></param>
         public void Unsubscribe(string connectionId)
         {
             var subscriptions = Subscriptions.Where(s => s.ConnectionId == connectionId);
             Subscriptions.RemoveAll(s => s.ConnectionId == connectionId);
-
             foreach (var subscription in subscriptions)
             {
                 _hub.Groups.RemoveFromGroupAsync(connectionId, subscription.SipAddress);
@@ -153,7 +179,7 @@ namespace CodecControl.Web.HostedServices
 
                         waitTime = (int)Math.Max(_pollDelay.Subtract(timeMeasurer.ElapsedTime).TotalMilliseconds, 0);
                     }
-                    log.Debug($"AudioStatusService Waiting {waitTime} ms until next update");
+                    log.Trace($"AudioStatusService Waiting {waitTime} ms until next update");
                     await Task.Delay(waitTime);
                 }
 
@@ -219,7 +245,7 @@ namespace CodecControl.Web.HostedServices
             try
             {
                 // Get codec template data from CCM
-                // TODO: move this out, it's redundant and being used in multiple locations
+                // TODO: move this out (GetCodecInformationBySipAddress), it's redundant and being used in multiple locations
                 var codecInformation = await _ccmService.GetCodecInformationBySipAddress(sipAddress);
                 if (codecInformation == null)
                 {

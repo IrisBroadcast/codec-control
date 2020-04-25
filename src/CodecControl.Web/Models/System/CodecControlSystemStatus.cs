@@ -26,15 +26,15 @@
  */
 #endregion
 
-using System;
+using System.Collections.Generic;
+using CodecControl.Client.Models;
+using CodecControl.Web.Helpers;
+using CodecControl.Web.Hub;
 
-namespace CodecControl.Web.Hub
+namespace CodecControl.Web.Models.System
 {
-    public class SubscriptionInfo
+    public class CodecControlSystemStatus
     {
-        public string ConnectionId { get; set; }
-        public string SipAddress { get; set; }
-        public string HostAddress { get; set; } // TODO: Implement so can control codecs without CCM
-        public DateTime ConnectionStarted { get; set; }
+        public IEnumerable<SubscriptionInfo> Subscriptions { get; set; }
     }
 }

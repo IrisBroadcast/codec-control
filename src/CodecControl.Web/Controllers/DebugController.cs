@@ -48,7 +48,11 @@ namespace CodecControl.Web.Controllers
             _ccmService = ccmService;
             _audioStatusService = audioStatusService;
         }
-        
+
+        /// <summary>
+        /// Returns all subscriptions to who ever is wondering
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [Route("subscriptions")]
         public List<SubscriptionInfo> Subscriptions()
@@ -56,6 +60,11 @@ namespace CodecControl.Web.Controllers
             return _audioStatusService.Subscriptions;
         }
 
+        /// <summary>
+        /// Fetches information about a codec from CCM
+        /// </summary>
+        /// <param name="sipAddress"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("codecinformation")]
         public async Task<CodecInformation> CodecInformation(string sipAddress)

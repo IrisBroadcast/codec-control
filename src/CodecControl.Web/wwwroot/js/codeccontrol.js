@@ -11,7 +11,20 @@ connection.on("AudioStatus", (sipAddress, audioStatus) => {
     codec.updated = Date.now();
 });
 
-connection.start().catch((err) => {
+connection.on("CodecControlSystemStatus", (systemInfo) => {
+    console.log("CodecControlSystemStatus ", systemInfo);
+    app.systemInformation = systemInfo;
+});
+
+connection.start().then(() => {
+    connection.invoke("subscribeSystemStatus")
+        .then(() => {
+            console.log("Subscribed to SystemStatus");
+        })
+        .catch((err) => {
+            return console.error(err.toString());
+        });
+}).catch((err) => {
     return console.error(err.toString());
 });
 
@@ -118,10 +131,11 @@ var app = new Vue({
         codecs: [],
         subscriptions: [],
         sipAddress: null,
+        systemInformation: {},
         currentLogLevel: '',
         logLevels: ['Trace', 'Debug', 'Info', 'Warn', 'Error'],
         userFeedback: '',
-        selectedLogLevel: ''
+        selectedLogLevel: '',
     },
     methods: {
         subscribe: subscribe,
@@ -129,7 +143,7 @@ var app = new Vue({
         getSubscriptions: getSubscriptions,
         subscriptionLoop: subscriptionLoop,
         getCodecInformationBySipAddress: getCodecInformationBySipAddress,
-        setLogLevel: setLogLevel
+        setLogLevel: setLogLevel,
     },
     mounted() {
         console.log("Mounted app - getting active subscriptions");

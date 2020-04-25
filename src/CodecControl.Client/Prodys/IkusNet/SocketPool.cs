@@ -39,7 +39,7 @@ namespace CodecControl.Client.Prodys.IkusNet
     /// Holds a dictionary with connected sockets with ip address as key.
     /// </summary>
     public class SocketPool : IDisposable
-    {
+    { // TODO: rename to IkusNetSocketPool
         protected static readonly Logger log = LogManager.GetCurrentClassLogger();
         private readonly ConcurrentDictionary<string, ConcurrentBag<ProdysSocket>> _dictionary;
         private readonly Timer _evictionTimer;

@@ -104,23 +104,23 @@ namespace CodecControl.Client.Prodys.IkusNet
                 // Works only on Quantum codec, not Quantum ST
                 for (int input = 0; input < nrOfInputs; input++)
                 {
-                    SendCommand(socket, new CommandIkusNetGetInputEnabled {Input = input});
+                    SendCommand(socket, new CommandIkusNetGetInputEnabled { Input = input });
                     var enabledResponse = new IkusNetGetInputEnabledResponse(socket);
                     var inputEnabled = enabledResponse.Enabled;
 
-                    SendCommand(socket, new CommandIkusNetGetInputGainLevel {Input = input});
+                    SendCommand(socket, new CommandIkusNetGetInputGainLevel { Input = input });
                     var gainLevelResponse = new IkusNetGetInputGainLevelResponse(socket);
                     var gainLevel = gainLevelResponse.GainLeveldB;
 
                     audioStatus.InputStatus.Add(new InputStatus
-                        {Index = input, Enabled = inputEnabled, GainLevel = gainLevel});
+                        { Index = input, Enabled = inputEnabled, GainLevel = gainLevel });
                 }
 
                 audioStatus.Gpos = new List<GpoStatus>();
 
                 for (int gpo = 0; gpo < nrOfGpos; gpo++)
                 {
-                    SendCommand(socket, new CommandIkusNetGetGpo {Gpio = gpo});
+                    SendCommand(socket, new CommandIkusNetGetGpo { Gpio = gpo });
                     var response = new IkusNetGetGpoResponse(socket);
                     var gpoEnable = response.Active;
                     if (!gpoEnable.HasValue)
@@ -129,7 +129,7 @@ namespace CodecControl.Client.Prodys.IkusNet
                         break;
                     }
 
-                    audioStatus.Gpos.Add(new GpoStatus() {Index = gpo, Active = gpoEnable.Value});
+                    audioStatus.Gpos.Add(new GpoStatus() { Index = gpo, Active = gpoEnable.Value });
                 }
 
                 return audioStatus;

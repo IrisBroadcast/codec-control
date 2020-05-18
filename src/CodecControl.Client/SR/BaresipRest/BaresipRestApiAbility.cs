@@ -26,24 +26,25 @@
  */
  #endregion
 
-using System.Net;
-using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using CodecControl.Client.Models;
 
-namespace CodecControl.Web.Controllers.Base
+namespace CodecControl.Client.SR.BaresipRest
 {
     /// <summary>
-    /// API return types and error codes for use with API-REST endpoint
+    /// Describes the 
     /// </summary>
-    public class ApiControllerBase : ControllerBase
+    public class BaresipRestApiAbility : ICodecApiAbility
     {
-        protected ActionResult CodecUnavailable()
-        {
-            return StatusCode((int)HttpStatusCode.NotFound, "Codec unavailable");
-        }
+        public bool IsCapable { get; set; } = false;
 
-        protected ActionResult InternalServerError()
-        {
-            return StatusCode((int)HttpStatusCode.InternalServerError, HttpStatusCode.InternalServerError);
-        }
+        public int MaxNrOfInputs { get; set; } = 0;
+        public int MaxNrOfOutputs { get; set; }
+        public int MaxNrOfMicrophones { get; set; }
+        public int MaxNrOfHeadphones { get; set; }
+        public int MaxNrOfGpis { get; set; }
+        public int MaxNrOfGpos { get; set; }
     }
 }

@@ -40,7 +40,7 @@ namespace CodecControl.Web
     public static class DependencyInjection
     {
         /// <summary>
-        /// Set up Api dependencies
+        /// Set up Api dependencies and services
         /// </summary>
         /// <param name="services"></param>
         public static void ConfigureDepencencyInjection(this IServiceCollection services)
@@ -48,7 +48,7 @@ namespace CodecControl.Web
             services.AddSingleton<CcmService>();
             services.AddTransient<CcmApiRepository>();
 
-            services.AddSingleton<SocketPool>();
+            services.AddSingleton<ProdysSocketPool>();
             services.AddTransient<SocketProxy>();
             services.AddTransient<IkusNetApi>();
             services.AddTransient<BaresipRestApi>();
@@ -57,6 +57,8 @@ namespace CodecControl.Web
             services.AddSingleton<AudioStatusService>();
             services.AddSingleton<IHostedService>(x => x.GetRequiredService<AudioStatusService>());
 
+            services.AddSingleton<BaresipSocketIoPool>();
+            services.AddTransient<BaresipSocketIoClient>();
         }
     }
 }

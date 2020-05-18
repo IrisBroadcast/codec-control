@@ -41,6 +41,9 @@ using NLog;
 
 namespace CodecControl.Web.Controllers.Base
 {
+    /// <summary>
+    /// Main entry point for REST calls to the API, where the correct device API is called.
+    /// </summary>
     public class CodecControlControllerBase : ApiControllerBase
     {
         protected static readonly Logger log = LogManager.GetCurrentClassLogger();
@@ -67,7 +70,6 @@ namespace CodecControl.Web.Controllers.Base
                     }
 
                     var codecInformation = await _ccmService.GetCodecInformationBySipAddress(sipAddress);
-
                     if (codecInformation == null)
                     {
                         log.Info($"Codec {sipAddress} is not currently registered in CCM.");
@@ -76,7 +78,6 @@ namespace CodecControl.Web.Controllers.Base
 
                     var codecApiType = codecInformation.CodecApiType;
                     var codecApi = codecApiType != null ? _serviceProvider.GetService(codecApiType) as ICodecApi : null;
-
                     if (codecApi == null || string.IsNullOrEmpty(codecInformation.Ip))
                     {
                         log.Info($"Missing information to connect to codec {sipAddress}");

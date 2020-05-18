@@ -36,16 +36,16 @@ namespace CodecControl.Client.Prodys.IkusNet
     public abstract class IkusNetApiBase
     {
         protected static readonly Logger log = LogManager.GetCurrentClassLogger();
-        protected readonly SocketPool SocketPool;
+        protected readonly ProdysSocketPool ProdysSocketPool;
 
-        protected IkusNetApiBase(SocketPool socketPool)
+        protected IkusNetApiBase(ProdysSocketPool prodysSocketPool)
         {
-            SocketPool = socketPool;
+            ProdysSocketPool = prodysSocketPool;
         }
 
         protected async Task<bool> SendConfigurationCommandAsync(string hostAddress, ICommandBase cmd)
         {
-            using (var socket = await SocketPool.TakeSocket(hostAddress))
+            using (var socket = await ProdysSocketPool.TakeSocket(hostAddress))
             {
                 SendCommand(socket, cmd);
                 var ackResponse = new AcknowledgeResponse(socket);

@@ -38,7 +38,7 @@ using NLog;
 
 namespace CodecControl.Client.Prodys.IkusNet
 {
-    public class ProdysSocket : Socket
+    public class ProdysSocket : System.Net.Sockets.Socket
     {
         protected static readonly Logger log = LogManager.GetCurrentClassLogger();
         private static readonly TimeSpan LingerTimeSpan = TimeSpan.FromSeconds(30);

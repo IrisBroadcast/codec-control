@@ -40,7 +40,7 @@ namespace CodecControl.Client.Prodys.Helpers
         /// <param name="socket">The socket.</param>
         /// <param name="endpoint">The IP endpoint.</param>
         /// <param name="timeout">The timeout.</param>
-        public static void Connect(this Socket socket, EndPoint endpoint, TimeSpan timeout)
+        public static void Connect(this System.Net.Sockets.Socket socket, EndPoint endpoint, TimeSpan timeout)
         {
 
             var result = socket.BeginConnect(endpoint, null, null);

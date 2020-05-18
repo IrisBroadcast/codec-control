@@ -44,7 +44,7 @@ namespace CodecControl.Client
         /// <param name="socket">The socket.</param>
         /// <param name="endpoint">The IP endpoint.</param>
         /// <param name="timeout">The timeout in milliseconds.</param>
-        public static async Task ConnectAsync(this Socket socket, EndPoint endpoint, int timeout)
+        public static async Task ConnectAsync(this System.Net.Sockets.Socket socket, EndPoint endpoint, int timeout)
         {
             TimeSpan timeOut = TimeSpan.FromMilliseconds(timeout);
 
@@ -71,7 +71,7 @@ namespace CodecControl.Client
             }
         }
 
-        public static void Connect(this Socket socket, EndPoint endpoint, int timeout)
+        public static void Connect(this System.Net.Sockets.Socket socket, EndPoint endpoint, int timeout)
         {
             var result = socket.BeginConnect(endpoint, null, null);
 

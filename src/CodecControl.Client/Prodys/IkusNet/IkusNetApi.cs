@@ -40,14 +40,14 @@ namespace CodecControl.Client.Prodys.IkusNet
     /// </summary>
     public class IkusNetApi : IkusNetStApi
     {
-        public IkusNetApi(SocketPool socketPool) : base(socketPool)
+        public IkusNetApi(ProdysSocketPool prodysSocketPool) : base(prodysSocketPool)
         {
         }
 
         public override async Task<bool> GetInputEnabledAsync(string hostAddress, int input)
         {
             // Works only on Quantum codec, not Quantum ST
-            using (var socket = await SocketPool.TakeSocket(hostAddress))
+            using (var socket = await ProdysSocketPool.TakeSocket(hostAddress))
             {
                 SendCommand(socket, new CommandIkusNetGetInputEnabled { Input = input });
                 var enabledResponse = new IkusNetGetInputEnabledResponse(socket);
@@ -58,7 +58,7 @@ namespace CodecControl.Client.Prodys.IkusNet
         public override async Task<int> GetInputGainLevelAsync(string hostAddress, int input)
         {
             // Works only on Quantum codec, not Quantum ST
-            using (var socket = await SocketPool.TakeSocket(hostAddress))
+            using (var socket = await ProdysSocketPool.TakeSocket(hostAddress))
             {
                 SendCommand(socket, new CommandIkusNetGetInputGainLevel { Input = input });
                 var response = new IkusNetGetInputGainLevelResponse(socket);
@@ -69,7 +69,7 @@ namespace CodecControl.Client.Prodys.IkusNet
         public override async Task<(bool, int)> GetInputGainAndStatusAsync(string hostAddress, int input)
         {
             // Works only on Quantum codec, not Quantum ST
-            using (var socket = await SocketPool.TakeSocket(hostAddress))
+            using (var socket = await ProdysSocketPool.TakeSocket(hostAddress))
             {
                 SendCommand(socket, new CommandIkusNetGetInputEnabled { Input = input });
                 var enabledResponse = new IkusNetGetInputEnabledResponse(socket);
@@ -86,7 +86,7 @@ namespace CodecControl.Client.Prodys.IkusNet
         {
             var audioStatus = new AudioStatus();
 
-            using (var socket = await SocketPool.TakeSocket(hostAddress))
+            using (var socket = await ProdysSocketPool.TakeSocket(hostAddress))
             {
                 SendCommand(socket, new CommandIkusNetGetVuMeters());
                 var vuResponse = new IkusNetGetVumetersResponse(socket);

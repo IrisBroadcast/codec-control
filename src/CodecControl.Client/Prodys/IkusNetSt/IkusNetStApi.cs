@@ -43,7 +43,7 @@ namespace CodecControl.Client.Prodys.IkusNetSt
     public class IkusNetStApi : IkusNetApiBase, ICodecApi
     {
 
-        public IkusNetStApi(SocketPool socketPool) : base(socketPool)
+        public IkusNetStApi(ProdysSocketPool prodysSocketPool) : base(prodysSocketPool)
         {
         }
 
@@ -51,7 +51,7 @@ namespace CodecControl.Client.Prodys.IkusNetSt
         {
             try
             {
-                using (var socket = await SocketPool.TakeSocket(ip))
+                using (var socket = await ProdysSocketPool.TakeSocket(ip))
                 {
                     // Send dummy command to codec.
                     SendCommand(socket, new CommandIkusNetGetVuMeters());
@@ -70,7 +70,7 @@ namespace CodecControl.Client.Prodys.IkusNetSt
         // For test only
         public async Task<string> GetDeviceNameAsync(string hostAddress)
         {
-            using (var socket = await SocketPool.TakeSocket(hostAddress))
+            using (var socket = await ProdysSocketPool.TakeSocket(hostAddress))
             {
                 SendCommand(socket, new CommandIkusNetSysGetDeviceName());
                 var response = new IkusNetGetDeviceNameResponse(socket);
@@ -80,7 +80,7 @@ namespace CodecControl.Client.Prodys.IkusNetSt
 
         public async Task<bool?> GetGpiAsync(string hostAddress, int gpio)
         {
-            using (var socket = await SocketPool.TakeSocket(hostAddress))
+            using (var socket = await ProdysSocketPool.TakeSocket(hostAddress))
             {
                 SendCommand(socket, new CommandIkusNetGetGpi { Gpio = gpio });
                 var response = new IkusNetGetGpiResponse(socket);
@@ -90,7 +90,7 @@ namespace CodecControl.Client.Prodys.IkusNetSt
 
         public async Task<bool?> GetGpoAsync(string hostAddress, int gpio)
         {
-            using (var socket = await SocketPool.TakeSocket(hostAddress))
+            using (var socket = await ProdysSocketPool.TakeSocket(hostAddress))
             {
                 SendCommand(socket, new CommandIkusNetGetGpo { Gpio = gpio });
                 var response = new IkusNetGetGpoResponse(socket);
@@ -119,7 +119,7 @@ namespace CodecControl.Client.Prodys.IkusNetSt
         public async Task<LineStatus> GetLineStatusAsync(string hostAddress, string lineEncoder = "ProgramL1")
         {
             // TODO: Get actual amount of lines from CCM and add to CodecInformation object to determine if it exists
-            using (var socket = await SocketPool.TakeSocket(hostAddress))
+            using (var socket = await ProdysSocketPool.TakeSocket(hostAddress))
             {
                 // If the device have multiple lines and encoders
                 var deviceLineEncoder = string.IsNullOrEmpty(lineEncoder) || lineEncoder == "null" ? "ProgramL1" : lineEncoder;
@@ -154,7 +154,7 @@ namespace CodecControl.Client.Prodys.IkusNetSt
 
         public async Task<VuValues> GetVuValuesAsync(string hostAddress)
         {
-            using (var socket = await SocketPool.TakeSocket(hostAddress))
+            using (var socket = await ProdysSocketPool.TakeSocket(hostAddress))
             {
                 SendCommand(socket, new CommandIkusNetGetVuMeters());
                 var response = new IkusNetGetVumetersResponse(socket);
@@ -164,7 +164,7 @@ namespace CodecControl.Client.Prodys.IkusNetSt
 
         public async Task<AudioMode> GetAudioModeAsync(string hostAddress)
         {
-            using (var socket = await SocketPool.TakeSocket(hostAddress))
+            using (var socket = await ProdysSocketPool.TakeSocket(hostAddress))
             {
                 // Get encoder algoritm
                 SendCommand(socket, new CommandIkusNetGetEncoderAudioMode());
@@ -186,7 +186,7 @@ namespace CodecControl.Client.Prodys.IkusNetSt
         {
             var audioStatus = new AudioStatus();
 
-            using (var socket = await SocketPool.TakeSocket(hostAddress))
+            using (var socket = await ProdysSocketPool.TakeSocket(hostAddress))
             {
                 SendCommand(socket, new CommandIkusNetGetVuMeters());
                 var vuResponse = new IkusNetGetVumetersResponse(socket);

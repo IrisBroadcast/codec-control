@@ -63,7 +63,7 @@ namespace CodecControl.IntegrationTests.Baresip
         [Fact]
         public async Task GetInputLevel()
         {
-            var sut = new IkusNetApi(new SocketPool());
+            var sut = new IkusNetApi(new ProdysSocketPool());
 
             await sut.SetInputGainLevelAsync(_ip, 0, 6);
 
@@ -80,7 +80,7 @@ namespace CodecControl.IntegrationTests.Baresip
         [Fact]
         public async Task GetLineStatus()
         {
-            var sut = new IkusNetApi(new SocketPool());
+            var sut = new IkusNetApi(new ProdysSocketPool());
 
             LineStatus lineStatus = await sut.GetLineStatusAsync(_ip);
             Assert.Equal(LineStatusCode.NoPhysicalLine, lineStatus.StatusCode);
@@ -90,7 +90,7 @@ namespace CodecControl.IntegrationTests.Baresip
         [Fact(Skip = "To avoid unintentional calling")]
         public async Task Call()
         {
-            var sut = new IkusNetApi(new SocketPool());
+            var sut = new IkusNetApi(new ProdysSocketPool());
 
             var callee = "sto-s17-01@acip.example.com";
             var profileName = "Studio";
@@ -103,7 +103,7 @@ namespace CodecControl.IntegrationTests.Baresip
         [Fact(Skip = "To avoid unintentional hangup")]
         public async Task Hangup()
         {
-            var sut = new IkusNetApi(new SocketPool());
+            var sut = new IkusNetApi(new ProdysSocketPool());
             bool result = await sut.HangUpAsync(_ip);
             Assert.True(result);
         }

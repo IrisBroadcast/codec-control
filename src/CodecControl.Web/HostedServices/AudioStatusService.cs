@@ -119,6 +119,8 @@ namespace CodecControl.Web.HostedServices
                 ConnectionStarted = DateTime.UtcNow
             });
 
+            // TODO: here should start intances for polling or sockets..
+
             // Add subscription to websocket group
             await _hub.Groups.AddToGroupAsync(connectionId, sipAddress);
         }
@@ -152,6 +154,11 @@ namespace CodecControl.Web.HostedServices
             }
         }
 
+        /// <summary>
+        /// Should be used to keep track of current subscriptions
+        /// </summary>
+        /// <param name="stoppingToken"></param>
+        /// <returns></returns>
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             log.Info($"Queued Audio Status Service is starting");

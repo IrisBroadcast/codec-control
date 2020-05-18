@@ -53,7 +53,7 @@ namespace CodecControl.IntegrationTests.IkusNet
         [Fact]
         public async Task GetDeviceName()
         {
-            var sut = new IkusNetApi(new SocketPool());
+            var sut = new IkusNetApi(new ProdysSocketPool());
             var deviceName = await sut.GetDeviceNameAsync(CodecInformation.Ip);
             Assert.Equal("MTU 25", deviceName);
         }
@@ -61,7 +61,7 @@ namespace CodecControl.IntegrationTests.IkusNet
         [Fact]
         public async Task GetInputLevel()
         {
-            var sut = new IkusNetApi(new SocketPool());
+            var sut = new IkusNetApi(new ProdysSocketPool());
 
             await sut.SetInputGainLevelAsync(CodecInformation.Ip, 0, 6);
 
@@ -78,7 +78,7 @@ namespace CodecControl.IntegrationTests.IkusNet
         [Fact]
         public async Task GetLineStatus()
         {
-            var sut = new IkusNetApi(new SocketPool());
+            var sut = new IkusNetApi(new ProdysSocketPool());
 
             LineStatus lineStatus = await sut.GetLineStatusAsync(CodecInformation.Ip);
             Assert.Equal(LineStatusCode.NoPhysicalLine, lineStatus.StatusCode);
@@ -110,7 +110,7 @@ namespace CodecControl.IntegrationTests.IkusNet
         [Fact]
         public async Task Ikusnet_GetLineStatus()
         {
-            var codecApi = new IkusNetApi(new SocketPool());
+            var codecApi = new IkusNetApi(new ProdysSocketPool());
             var lineStatus = await codecApi.GetLineStatusAsync(CodecInformation.Ip);
             Assert.NotNull(lineStatus);
         }

@@ -32,57 +32,50 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using NLog;
-using Socket.Io.Client.Core;
 
-namespace CodecControl.Client.SR.BaresipRest
+namespace CodecControl.Client.Prodys.IkusNet
 {
    /// <summary>
     /// Holds a dictionary with connected sockets with ip address as key.
     /// </summary>
-    public class SocketIoPool : IDisposable
+    public class ProdysSocketPool : IDisposable
     {
         protected static readonly Logger log = LogManager.GetCurrentClassLogger();
-        private readonly ConcurrentDictionary<string, ConcurrentBag<SocketIoClient>> _dictionary;
+        private readonly ConcurrentDictionary<string, ConcurrentBag<ProdysSocket>> _dictionary;
         private readonly Timer _evictionTimer;
 
-        public SocketIoPool()
+        public ProdysSocketPool()
         {
             log.Debug("IkusNet Socket pool constructor");
-            _dictionary = new ConcurrentDictionary<string, ConcurrentBag<SocketIoClient>>();
+            _dictionary = new ConcurrentDictionary<string, ConcurrentBag<ProdysSocket>>();
             _evictionTimer = new Timer(state => { EvictOldSockets(); }, null,
                 TimeSpan.FromSeconds(10),
                 TimeSpan.FromSeconds(10));
         }
 
-        public async Task<SocketIoClient> TakeSocket(string ipAddress)
+        public async Task<SocketProxy> TakeSocket(string ipAddress)
         {
-
-            using var client = new SocketIoClient();
-
-            await client.OpenAsync(new Uri("http://localhost:3000"), options);
-            await client.CloseAsync();
-
             using (new TimeMeasurer("IkusNet Taking socket"))
             {
                 var dictionaryForIpAddress = _dictionary.GetOrAdd(ipAddress, s =>
                 {
                     log.Info($"IkusNet Creating new Bag for connections to {ipAddress}");
-                    return new ConcurrentBag<SocketIoClient>();
+                    return new ConcurrentBag<ProdysSocket>();
                 });
 
                 if (dictionaryForIpAddress.TryTake(out var socket))
                 {
                     log.Debug($"IkusNet Reusing existing socket for IP {ipAddress} found in pool. (Socket #{socket.GetHashCode()})");
-                    return new SocketIoClient(socket, this);
+                    return new SocketProxy(socket, this);
                 }
 
-                socket = await SocketIoClient.GetConnectedSocketAsync(ipAddress);
+                socket = await ProdysSocket.GetConnectedSocketAsync(ipAddress);
                 log.Info($"IkusNet New socket to IP {ipAddress} created. (Socket #{socket.GetHashCode()})");
-                return new SocketIoClient(socket, this);
+                return new SocketProxy(socket, this);
             }
         }
 
-        public void ReleaseSocket(SocketIoClient socket)
+        public void ReleaseSocket(ProdysSocket socket)
         {
             if (socket == null)
             {
@@ -106,7 +99,7 @@ namespace CodecControl.Client.SR.BaresipRest
             {
                 log.Debug("IkusNet Checking pool for expired sockets.");
 
-                foreach (KeyValuePair<string, ConcurrentBag<SocketIoClient>> dictionaryForIpAddress in _dictionary)
+                foreach (KeyValuePair<string, ConcurrentBag<ProdysSocket>> dictionaryForIpAddress in _dictionary)
                 {
                     var ipAddress = dictionaryForIpAddress.Key;
                     var socketsBag = dictionaryForIpAddress.Value;
@@ -130,11 +123,11 @@ namespace CodecControl.Client.SR.BaresipRest
                     log.Debug($"IkusNet Found #{nrOfSockets} socket(s) for IP {ipAddress}");
 
                     // Remove all sockets and re-add non-exired ones.
-                    var list = new List<SocketIoClient>();
+                    var list = new List<ProdysSocket>();
 
                     while (!socketsBag.IsEmpty)
                     {
-                        if (socketsBag.TryTake(out SocketIoClient socket))
+                        if (socketsBag.TryTake(out ProdysSocket socket))
                         {
                             list.Add(socket);
                         }

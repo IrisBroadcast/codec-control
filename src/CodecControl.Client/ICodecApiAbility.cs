@@ -26,24 +26,28 @@
  */
  #endregion
 
-using System.Net;
-using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
+using CodecControl.Client.Models;
 
-namespace CodecControl.Web.Controllers.Base
+namespace CodecControl.Client
 {
     /// <summary>
-    /// API return types and error codes for use with API-REST endpoint
+    /// Defines what values and features there is on the CodecApi
     /// </summary>
-    public class ApiControllerBase : ControllerBase
+    public interface ICodecApiAbility
     {
-        protected ActionResult CodecUnavailable()
-        {
-            return StatusCode((int)HttpStatusCode.NotFound, "Codec unavailable");
-        }
+        bool IsCapable { get; set; }
+        //bool HasAudioInputs { get; set; }
+        //bool HasAudioOutputs { get; set; }
+        //bool HasGeneralPurposeInputs { get; set; }
+        //bool HasGeneralPurposeOutputs { get; set; }
 
-        protected ActionResult InternalServerError()
-        {
-            return StatusCode((int)HttpStatusCode.InternalServerError, HttpStatusCode.InternalServerError);
-        }
+        //int MaxNrOfInputs { get; set; }
+        //int MaxNrOfOutputs { get; set; }
+        //int MaxNrOfMicrophones { get; set; }
+        //int MaxNrOfHeadphones { get; set; }
+        //int MaxNrOfGpis { get; set; }
+        //int MaxNrOfGpos { get; set; }
     }
+    
 }

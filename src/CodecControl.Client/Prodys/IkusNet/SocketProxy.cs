@@ -38,13 +38,13 @@ namespace CodecControl.Client.Prodys.IkusNet
     public class SocketProxy : IDisposable
     {
         private readonly ProdysSocket _socket;
-        private readonly SocketPool _socketPool;
+        private readonly ProdysSocketPool _prodysSocketPool;
         protected static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-        public SocketProxy(ProdysSocket socket, SocketPool socketPool)
+        public SocketProxy(ProdysSocket socket, ProdysSocketPool prodysSocketPool)
         {
             _socket = socket;
-            _socketPool = socketPool;
+            _prodysSocketPool = prodysSocketPool;
         }
 
         public int Send(byte[] buffer)
@@ -60,7 +60,7 @@ namespace CodecControl.Client.Prodys.IkusNet
         public void Dispose()
         {
             // Return the socket-instance to the pool, but never close the socket
-            _socketPool.ReleaseSocket(_socket);
+            _prodysSocketPool.ReleaseSocket(_socket);
         }
     }
 }

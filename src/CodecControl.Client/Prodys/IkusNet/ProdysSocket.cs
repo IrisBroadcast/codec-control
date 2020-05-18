@@ -151,11 +151,11 @@ namespace CodecControl.Client.Prodys.IkusNet
                 var length = (int) ConvertHelper.DecodeUInt(buffer, 4);
                 var receivedCommand = (Command) ConvertHelper.DecodeUInt(buffer, 8);
                 // TODO: Verify command, length, receivedCommand
-                var acknowleged = Convert.ToBoolean(ConvertHelper.DecodeUInt(buffer, 12));
+                var acknowledged = Convert.ToBoolean(ConvertHelper.DecodeUInt(buffer, 12));
 
-                log.Debug("Connect response from codec at {0}: {1}", ipAddress, acknowleged);
+                log.Debug("Connect response from codec at {0}: {1}", ipAddress, acknowledged);
 
-                if (!acknowleged)
+                if (!acknowledged)
                 {
                     socket.Close();
                     socket.Dispose();

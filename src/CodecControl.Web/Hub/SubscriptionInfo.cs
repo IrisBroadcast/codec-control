@@ -32,5 +32,6 @@ namespace CodecControl.Web.Hub
     {
         public string ConnectionId { get; set; }
         public string SipAddress { get; set; }
+        public string HostName { get; set; } // TODO: future use, for connecting without CCM
     }
 }

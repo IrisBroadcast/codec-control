@@ -32,8 +32,8 @@ using NLog;
 namespace CodecControl.Client.Prodys.IkusNet
 {
     /// <summary>
-    /// Kapslar in en ProdysSocket.
-    /// Vid dispose lämnas socketen tillbaka till poolen.
+    /// Encapsulates a "ProdysSocket"
+    /// On Dispose it's returned to the pool, but not closed.
     /// </summary>
     public class SocketProxy : IDisposable
     {
@@ -59,7 +59,7 @@ namespace CodecControl.Client.Prodys.IkusNet
         
         public void Dispose()
         {
-            // Lämna tillbaka socket-instansen till poolen men stäng aldrig socketen
+            // Return the socket-instance to the pool, but never close the socket
             _socketPool.ReleaseSocket(_socket);
         }
     }

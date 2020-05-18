@@ -40,7 +40,7 @@ namespace CodecControl.Client.Prodys.IkusNet
         private readonly ProdysSocket _socket;
         private readonly SocketPool _socketPool;
         protected static readonly Logger log = LogManager.GetCurrentClassLogger();
-        
+
         public SocketProxy(ProdysSocket socket, SocketPool socketPool)
         {
             _socket = socket;
@@ -56,7 +56,7 @@ namespace CodecControl.Client.Prodys.IkusNet
         {
             return _socket.Receive(buffer);
         }
-        
+
         public void Dispose()
         {
             // Return the socket-instance to the pool, but never close the socket

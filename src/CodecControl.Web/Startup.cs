@@ -43,6 +43,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace CodecControl.Web
 {
@@ -74,17 +75,17 @@ namespace CodecControl.Web
                 options.DefaultRequestCulture = new RequestCulture("sv-SE", "sv-SE");
 
                 // You must explicitly state which cultures your application supports.
-                // These are the cultures the app supports for formatting 
+                // These are the cultures the app supports for formatting
                 // numbers, dates, etc.
                 options.SupportedCultures = supportedCultures;
 
-                // These are the cultures the app supports for UI strings, 
+                // These are the cultures the app supports for UI strings,
                 // i.e. we have localized resources for.
                 options.SupportedUICultures = supportedCultures;
             });
 
             services.AddDirectoryBrowser();
-            services.AddMvc(option => option.EnableEndpointRouting = false).SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1); // .AddMvc(option => option.EnableEndpointRouting = false);
 
             // Set up CORS
             List<string> allowedOrigins = new List<string>();
@@ -111,17 +112,6 @@ namespace CodecControl.Web
                         .AllowAnyHeader()
                         .AllowCredentials();
                 });
-
-                /*options.AddPolicy("CorsPolicyAll", builder =>
-                {
-                    builder
-                    .AllowAnyOrigin()
-                    .SetIsOriginAllowed(_ => true) // BREAKING CHANGE IN .NETCORE 2.2
-                    .WithHeaders(HeaderNames.AccessControlAllowHeaders, "Content-Type")
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowCredentials();
-                });*/
 
                 options.AddPolicy("AllowSubdomain",
                     builder =>
@@ -164,7 +154,7 @@ namespace CodecControl.Web
 
             // Serve log files as static files
             var logFolder = applicationSettings.LogFolder;
-            Directory.CreateDirectory(logFolder); 
+            Directory.CreateDirectory(logFolder);
 
             app.UseFileServer(new FileServerOptions
             {
@@ -193,14 +183,19 @@ namespace CodecControl.Web
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Codec Control API");
             });
 
+            // EndpointRoutingMiddleware must be added to the request execution pipeline before EndpointMiddleware
             app.UseRouting();
-            app.UseEndpoints((endpoints) =>
-            {
-                endpoints.MapControllers();
-                endpoints.MapHub<AudioStatusHub>("/audiostatusHub");
-            });
 
-            app.UseMvc();
+            app.UseEndpoints(endpoints =>
+            {
+                // endpoints.MapControllers();
+                endpoints.MapHub<AudioStatusHub>("/audiostatusHub");
+
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{action}/{id?}",
+                    defaults: new { controller = "Home", action = "Index" });
+            });
         }
     }
 }

@@ -83,7 +83,6 @@ namespace CodecControl.Web.HostedServices
             }
 
             sipAddress = sipAddress.Trim().ToLower();
-
             if (Subscriptions.Any(s => s.ConnectionId == connectionId && s.SipAddress == sipAddress))
             {
                 // Already subscribing
@@ -91,7 +90,6 @@ namespace CodecControl.Web.HostedServices
             }
 
             var codecInformation = await _ccmService.GetCodecInformationBySipAddress(sipAddress);
-
             if (codecInformation == null)
             {
                 log.Info($"Codec {sipAddress} is not registered in CCM");
@@ -106,7 +104,7 @@ namespace CodecControl.Web.HostedServices
 
             var codecApiType = codecInformation?.CodecApiType;
             var codecApi = codecApiType != null ? _serviceProvider.GetService(codecApiType) as ICodecApi : null;
-            if (codecApi == null)
+            if (codecApi == null || string.IsNullOrEmpty(codecInformation.Ip))
             {
                 log.Info($"AudioStatusService Codec {sipAddress} is not subscribable, no API found");
                 return;

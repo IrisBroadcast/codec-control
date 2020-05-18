@@ -32,19 +32,20 @@ using CodecControl.Client.Prodys.IkusNet;
 using CodecControl.Client.Prodys.IkusNetSt;
 using CodecControl.Client.SR.BaresipRest;
 using Newtonsoft.Json;
+using NLog;
 
 namespace CodecControl.Client
 {
     /// <summary>
     /// Holds codec information received from CCM.
-    /// Keep this definitions updated
+    /// Keep this definitions updated, important.
     /// </summary>
     public class CodecInformation
     {
         public string SipAddress { get; set; }
         public string Ip { get; set; }
         public string Api { get; set; }
-        //public string GpoNames { get; set; }
+
         public int NrOfInputs { get; set; }
         public int NrOfOutputs { get; set; }
         public int NrOfHeadphones { get; set; }

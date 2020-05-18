@@ -33,6 +33,8 @@ namespace CodecControl.Web
     public class ApplicationSettings
     {
         public string CcmHost { get; set; }
+        public bool CcmHostUseProxy { get; set; }
+        public string HttpProxy { get; set; } = "";
         public int CcmCodecInformationReloadInterval { get; set; } = 60;
         public string AuthenticatedUserName { get; set; }
         public string AuthenticatedPassword { get; set; }
@@ -42,6 +44,7 @@ namespace CodecControl.Web
         public string ServerEnvironment { get; set; }
 
         public Uri CcmHostUri => new Uri(CcmHost);
+        public Uri HttpProxyUri => new Uri(HttpProxy);
         public string Server => Environment.MachineName;
         public string AllowedOrigins { get; set; }
     }

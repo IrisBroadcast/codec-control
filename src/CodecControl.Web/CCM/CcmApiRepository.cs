@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using CodecControl.Client;
@@ -58,12 +59,29 @@ namespace CodecControl.Web.CCM
                 Uri uri = null;
                 try
                 {
-                    var client = new HttpClient();
+                    
+                    var httpClientHandler = new HttpClientHandler();
+                    if (_applicationSettings.CcmHostUseProxy)
+                    {
+                        var proxy = new WebProxy
+                        {
+                            Address = _applicationSettings.HttpProxyUri,
+                            BypassProxyOnLocal = false,
+                            UseDefaultCredentials = false,
+                        };
 
+                        // Now create a client handler which uses that proxy
+                        httpClientHandler = new HttpClientHandler
+                        {
+                            Proxy = proxy,
+                        };
+                    }
+
+                    var client = new HttpClient(handler: httpClientHandler, disposeHandler: true);
+                        
                     uri = new Uri(_applicationSettings.CcmHostUri, "api/codecinformation?sipaddress=" + sipAddress);
 
                     var response = await client.GetAsync(uri);
-
                     if (!response.IsSuccessStatusCode)
                     {
                         log.Warn("Failed to retrieve codec information from CCM");

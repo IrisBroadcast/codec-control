@@ -34,7 +34,7 @@ using System.Threading.Tasks;
 
 namespace CodecControl.Web.Controllers
 {
-    [Route("")]
+    [Route("/")]
     [ApiExplorerSettings(IgnoreApi = true)]
     public class HomeController : Controller
     {
@@ -60,7 +60,6 @@ namespace CodecControl.Web.Controllers
 
             return View();
         }
-
 
         [HttpPost]
         [Route("setloglevel")]

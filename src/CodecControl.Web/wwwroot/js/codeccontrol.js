@@ -32,7 +32,7 @@ var subscribe = (sipAddress) => {
     console.log("Subscribe to " + sipAddress);
     connection.invoke("subscribe", sipAddress)
         .then(() => {
-            getSubscriptions();
+            
         })
         .catch((err) => {
             return console.error(err.toString());
@@ -43,37 +43,11 @@ var unsubscribe = (sipAddress) => {
     console.log("Unsubscribe to " + sipAddress);
     connection.invoke("unsubscribe", sipAddress)
         .then(() => {
-            getSubscriptions();
+            
         })
         .catch((err) => {
             return console.error(err.toString());
         });
-};
-
-var getSubscriptions = () => {
-    axios.get("/debug/subscriptions")
-        .then((response) => {
-            let subscriptions = response.data;
-            console.log("Subscriptions ", subscriptions);
-            app.subscriptions = subscriptions;
-        })
-        .catch((error) => {
-            console.log(error);
-        });
-};
-
-var subscriptionLoop = () => {
-    var subLoopCount = 0;
-    var subLoop = setInterval(() => {
-        console.log("Checking subscriptions");
-        subLoopCount++;
-        if(subLoopCount > 3000)
-        {
-            clearInterval(subLoop);
-        }
-        this.getSubscriptions();
-    },
-    5000);
 };
 
 const getCodecInformationBySipAddress = (sipAddress) => {
@@ -129,7 +103,6 @@ var app = new Vue({
     el: '#app',
     data: {
         codecs: [],
-        subscriptions: [],
         sipAddress: null,
         systemInformation: {},
         currentLogLevel: '',
@@ -140,14 +113,10 @@ var app = new Vue({
     methods: {
         subscribe: subscribe,
         unsubscribe: unsubscribe,
-        getSubscriptions: getSubscriptions,
-        subscriptionLoop: subscriptionLoop,
         getCodecInformationBySipAddress: getCodecInformationBySipAddress,
         setLogLevel: setLogLevel,
     },
     mounted() {
-        console.log("Mounted app - getting active subscriptions");
-        this.getSubscriptions();
-        this.subscriptionLoop();
+        console.log("Mounted app");
     }
 });

@@ -241,10 +241,6 @@
             Subscriptions
         </div>
 
-        <div class="conf-form">
-            <button v-on:click="getSubscriptions">Reload</button>
-        </div>
-
         <table cellspacing="0" cellpadding="0" border="0" class="doc-info-table">
             <thead>
             <tr>
@@ -252,13 +248,13 @@
                 <th>Sip-address</th>
             </tr>
             </thead>
-            <tbody v-if="subscriptions.length > 0">
-            <tr v-for="subscription in subscriptions">
+            <tbody v-if="systemInformation.subscriptions.length > 0">
+            <tr v-for="subscription in systemInformation.subscriptions">
                 <td>{{subscription.connectionId}}</td>
                 <td>{{subscription.sipAddress}}</td>
             </tr>
             </tbody>
-            <tbody v-if="subscriptions.length == 0">
+            <tbody v-if="systemInformation.subscriptions.length == 0">
             <tr>
                 <td colspan="2">
                     No subscriptions
@@ -293,48 +289,48 @@
 
         <table cellspacing="0" class="doc-info-table">
             <thead>
-            <tr>
-                <th>Sip-address</th>
-                <th>IP</th>
-                <th>API</th>
-                <th>Vu-values Rx</th>
-                <th>Vu-values Tx</th>
-                <th>Codec-updated</th>
-                <th>Subscribe / Unsubscribe</th>
-            </tr>
+                <tr>
+                    <th>Sip-address</th>
+                    <th>IP</th>
+                    <th>API</th>
+                    <th>Vu-values Rx</th>
+                    <th>Vu-values Tx</th>
+                    <th>Codec-updated</th>
+                    <th>Subscribe / Unsubscribe</th>
+                </tr>
             </thead>
             <tbody v-if="codecs.length > 0">
-            <tr v-for="codec in codecs">
-                <td>
-                    {{codec.sipAddress}}
-                </td>
-                <td>
-                    {{codec.ip}}
-                </td>
-                <td>
-                    {{codec.api}}
-                </td>
-                <td>
-                    Rx: {{codec.audioStatus.vuValues.rxLeft}} / {{codec.audioStatus.vuValues.rxRight}}
-                </td>
-                <td>
-                    Tx: {{codec.audioStatus.vuValues.txLeft}} / {{codec.audioStatus.vuValues.txRight}}
-                </td>
-                <td>
-                    {{codec.updated}}
-                </td>
-                <td>
-                    <button v-on:click="subscribe(codec.sipAddress)">Subscribe</button>
-                    <button v-on:click="unsubscribe(codec.sipAddress)">Unsubscribe</button>
-                </td>
-            </tr>
+                <tr v-for="codec in codecs">
+                    <td>
+                        {{codec.sipAddress}}
+                    </td>
+                    <td>
+                        {{codec.ip}}
+                    </td>
+                    <td>
+                        {{codec.api}}
+                    </td>
+                    <td>
+                        Rx: {{codec.audioStatus.vuValues.rxLeft}} / {{codec.audioStatus.vuValues.rxRight}}
+                    </td>
+                    <td>
+                        Tx: {{codec.audioStatus.vuValues.txLeft}} / {{codec.audioStatus.vuValues.txRight}}
+                    </td>
+                    <td>
+                        {{codec.updated}}
+                    </td>
+                    <td>
+                        <button v-on:click="subscribe(codec.sipAddress)">Subscribe</button>
+                        <button v-on:click="unsubscribe(codec.sipAddress)">Unsubscribe</button>
+                    </td>
+                </tr>
             </tbody>
             <tbody v-if="codecs.length == 0">
-            <tr>
-                <td colspan="7">
-                    No codecs
-                </td>
-            </tr>
+                <tr>
+                    <td colspan="7">
+                        No codecs
+                    </td>
+                </tr>
             </tbody>
         </table>
     </div>

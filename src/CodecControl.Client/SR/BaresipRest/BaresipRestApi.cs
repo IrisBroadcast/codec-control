@@ -41,7 +41,8 @@ namespace CodecControl.Client.SR.BaresipRest
         public async Task<bool> CheckIfAvailableAsync(string ip)
         {
             var url = CreateUrl(ip, "api/isavailable");
-            var isAvailableResponse = await HttpService.GetWithBaresipResponseAsync<IsAvailableResponse>(url);
+            var isAvailableResponse = await HttpService.GetWithBaresipIsAvailableResponseAsync<IsAvailableResponse>(url);
+            // TODO: look over this one, isAvailable is only valid if you have a controllable audiocard.. does not make sense
             return isAvailableResponse.Success;
         }
 
@@ -156,8 +157,8 @@ namespace CodecControl.Client.SR.BaresipRest
         public async Task<int> SetInputGainLevelAsync(string ip, int input, int gainLevel)
         {
             var url = CreateUrl(ip, "api/inputgain");
-            var inputgainResponse = await HttpService.PostWithBaresipResponseAsync<InputGainResponse>(url, new { input = input, value = gainLevel });
-            return inputgainResponse.Value;
+            var response = await HttpService.PostWithBaresipResponseAsync<InputGainResponse>(url, new { input = input, value = gainLevel });
+            return response.Value;
         }
 
         public Task<bool> RebootAsync(string ip)

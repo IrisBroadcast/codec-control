@@ -47,6 +47,27 @@ namespace CodecControl.Client.SR.BaresipRest
             }
         }
 
+        /// <summary>
+        /// Utterly temporary TODO: .... solve
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        public static async Task<IsAvailableResponse> GetWithBaresipIsAvailableResponseAsync<T>(Uri url)
+        {
+            using (var client = new HttpClient())
+            {
+                client.Timeout = TimeSpan.FromSeconds(4);
+                var response = await client.GetAsync(url);
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new CodecInvocationException($"Response from {response.RequestMessage.RequestUri} was invalid");
+                }
+
+                return new IsAvailableResponse {Success = true};
+            }
+        }
+
         public static async Task<T> PostWithBaresipResponseAsync<T>(Uri url, object data = null) where T : BaresipResponse
         {
             using (var client = new HttpClient())

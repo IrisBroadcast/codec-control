@@ -104,11 +104,18 @@ var app = new Vue({
     data: {
         codecs: [],
         sipAddress: null,
-        systemInformation: {},
+        systemInformation: {
+            subscriptions: []
+        },
         currentLogLevel: '',
         logLevels: ['Trace', 'Debug', 'Info', 'Warn', 'Error'],
         userFeedback: '',
         selectedLogLevel: '',
+    },
+    computed: {
+        subscriptions: function () {
+            return this.systemInformation.subscriptions;
+        }
     },
     methods: {
         subscribe: subscribe,

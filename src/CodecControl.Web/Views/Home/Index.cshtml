@@ -114,6 +114,19 @@
             border-top: 1px solid #ebebeb;
         }
 
+        .doc-info-table tr.offline td {
+            background: #ffb6c1;
+            padding: 5px;
+            font-size: 11pt;
+            border: 0;
+            border-top: 1px solid #ebebeb;
+        }
+
+        .doc-info-table button {
+            padding: 0 5px;
+            min-height: unset;
+        }
+
         .doc-link-ex a {
             text-transform: capitalize;
             text-decoration: underline;
@@ -184,7 +197,7 @@
             background: #5f5f5f;
             border: 1px solid #313131;
             color: #fff;
-            padding: 0 30px;
+            padding: 0 1em;
             min-height: 35px;
             font-size: 1em;
             cursor: pointer;
@@ -243,23 +256,23 @@
 
         <table cellspacing="0" cellpadding="0" border="0" class="doc-info-table">
             <thead>
-            <tr>
-                <th>Connection id</th>
-                <th>Sip-address</th>
-            </tr>
+                <tr>
+                    <th>Connection id</th>
+                    <th>Sip-address</th>
+                </tr>
             </thead>
-            <tbody v-if="systemInformation.subscriptions.length > 0">
-            <tr v-for="subscription in systemInformation.subscriptions">
-                <td>{{subscription.connectionId}}</td>
-                <td>{{subscription.sipAddress}}</td>
-            </tr>
+            <tbody v-if="subscriptions.length > 0">
+                <tr v-for="subscription in subscriptions">
+                    <td>{{subscription.connectionId}}</td>
+                    <td>{{subscription.sipAddress}}</td>
+                </tr>
             </tbody>
-            <tbody v-if="systemInformation.subscriptions.length == 0">
-            <tr>
-                <td colspan="2">
-                    No subscriptions
-                </td>
-            </tr>
+            <tbody v-if="subscriptions.length == 0">
+                <tr>
+                    <td colspan="2">
+                        No subscriptions
+                    </td>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -300,7 +313,7 @@
                 </tr>
             </thead>
             <tbody v-if="codecs.length > 0">
-                <tr v-for="codec in codecs">
+                <tr v-for="codec in codecs" v-bind:class="{ offline: !codec.ip }">
                     <td>
                         {{codec.sipAddress}}
                     </td>

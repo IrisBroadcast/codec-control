@@ -34,7 +34,7 @@ namespace CodecControl.Client.Prodys.IkusNet.Sdk.Responses
 {
     public class IkusNetGetLineStatusResponse : IkusNetStatusResponseBase
     {
-        public IkusNetGetLineStatusResponse(SocketProxy socket)
+        public IkusNetGetLineStatusResponse(ProdysSocketProxy socket)
         {
             var responseBytes = GetResponseBytes(socket, Command.IkusNetGetLineStatus, 268);
             Address = responseBytes.ToNullTerminatedString(0, 256);

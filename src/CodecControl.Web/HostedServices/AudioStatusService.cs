@@ -303,13 +303,9 @@ namespace CodecControl.Web.HostedServices
             await _hub.Clients.Group(sipAddress).SendAsync("AudioStatus", sipAddress, audioStatus);
         }
 
-        private async Task SendLineStatusToClients(string sipAddress, UnitStateResponse audioStatus)
+        private async Task SendLineStatusToClients(string sipAddress, UnitStateResponse unitStatus)
         {
-            if(!CurrentUnitState.Equals(audioStatus))
-            {
-                CurrentUnitState = audioStatus;
-                await _hub.Clients.Group(sipAddress).SendAsync("LineStatus", sipAddress, audioStatus);
-            }
+            await _hub.Clients.Group(sipAddress).SendAsync("LineStatus", sipAddress, unitStatus);
         }
     }
 }

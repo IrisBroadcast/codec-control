@@ -34,7 +34,7 @@ namespace CodecControl.Client.Prodys.IkusNet.Sdk.Responses
 {
     public class IkusNetGetEncoderAudioModeResponse : IkusNetStatusResponseBase
     {
-        public static IkusNetGetEncoderAudioModeResponse GetResponse(SocketProxy socket)
+        public static IkusNetGetEncoderAudioModeResponse GetResponse(ProdysSocketProxy socket)
         {
             var responseBytes = GetResponseBytes(socket, Command.IkusNetEncoderGetAudioMode, 4);
             return new IkusNetGetEncoderAudioModeResponse(responseBytes);

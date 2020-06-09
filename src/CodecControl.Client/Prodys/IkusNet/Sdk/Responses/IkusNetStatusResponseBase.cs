@@ -35,7 +35,7 @@ namespace CodecControl.Client.Prodys.IkusNet.Sdk.Responses
 {
     public abstract class IkusNetStatusResponseBase
     {
-        protected static byte[] GetResponseBytes(SocketProxy socket, Command expectedCommand, int expectedResponseLength)
+        protected static byte[] GetResponseBytes(ProdysSocketProxy socket, Command expectedCommand, int expectedResponseLength)
         {
             // Read fixed part of header
             var buffer = new byte[8];

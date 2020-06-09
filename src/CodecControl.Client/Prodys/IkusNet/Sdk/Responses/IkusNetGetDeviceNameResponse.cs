@@ -35,7 +35,7 @@ namespace CodecControl.Client.Prodys.IkusNet.Sdk.Responses
     {
         public string DeviceName { get; private set; }
 
-        public IkusNetGetDeviceNameResponse(SocketProxy socket)
+        public IkusNetGetDeviceNameResponse(ProdysSocketProxy socket)
         {
             var payload = GetResponseBytes(socket, Command.IkusNetSysGetDeviceName, 256);
             DeviceName = payload.ToNullTerminatedString(0, 256);

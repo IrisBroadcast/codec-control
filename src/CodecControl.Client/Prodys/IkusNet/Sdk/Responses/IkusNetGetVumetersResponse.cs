@@ -40,7 +40,7 @@ namespace CodecControl.Client.Prodys.IkusNet.Sdk.Responses
         public int ProgramRxLeft { get; private set; }
         public int ProgramRxRight { get; private set; }
 
-        public IkusNetGetVumetersResponse(SocketProxy socket)
+        public IkusNetGetVumetersResponse(ProdysSocketProxy socket)
         {
             var responseBytes = GetResponseBytes(socket, Command.IkusNetGetVumeters, 32);
             ProgramTxLeft = (int) ConvertHelper.DecodeUInt(responseBytes, 0);

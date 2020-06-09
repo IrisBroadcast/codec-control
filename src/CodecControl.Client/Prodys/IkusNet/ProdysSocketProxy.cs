@@ -35,13 +35,13 @@ namespace CodecControl.Client.Prodys.IkusNet
     /// Encapsulate a ProdysSocket
     /// when a Dispose happens, the socket is returned to the pool
     /// </summary>
-    public class SocketProxy : IDisposable
+    public class ProdysSocketProxy : IDisposable
     {
         private readonly ProdysSocket _socket;
         private readonly ProdysSocketPool _prodysSocketPool;
         protected static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-        public SocketProxy(ProdysSocket socket, ProdysSocketPool prodysSocketPool)
+        public ProdysSocketProxy(ProdysSocket socket, ProdysSocketPool prodysSocketPool)
         {
             _socket = socket;
             _prodysSocketPool = prodysSocketPool;

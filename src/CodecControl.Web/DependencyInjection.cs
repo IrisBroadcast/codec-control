@@ -49,7 +49,7 @@ namespace CodecControl.Web
             services.AddTransient<CcmApiRepository>();
 
             services.AddSingleton<ProdysSocketPool>();
-            services.AddTransient<SocketProxy>();
+            services.AddTransient<ProdysSocketProxy>();
             services.AddTransient<IkusNetApi>();
             services.AddTransient<BaresipRestApi>();
             services.AddTransient<UmacApi>();

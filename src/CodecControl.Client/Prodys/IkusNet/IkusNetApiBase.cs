@@ -53,7 +53,7 @@ namespace CodecControl.Client.Prodys.IkusNet
             }
         }
 
-        protected int SendCommand(SocketProxy socket, ICommandBase command)
+        protected int SendCommand(ProdysSocketProxy socket, ICommandBase command)
         {
             return socket.Send(command.GetBytes());
         }

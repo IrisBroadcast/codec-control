@@ -34,14 +34,14 @@ namespace CodecControl.Client.Prodys.IkusNet.Sdk.Responses
 {
     public class IkusNetGetGpiResponse : IkusNetGetGpioResponse
     {
-        public IkusNetGetGpiResponse(SocketProxy socket) :base(socket, Command.IkusNetGetGpi)
+        public IkusNetGetGpiResponse(ProdysSocketProxy socket) :base(socket, Command.IkusNetGetGpi)
         {
         }
     }
 
     public  class IkusNetGetGpoResponse : IkusNetGetGpioResponse
     {
-        public IkusNetGetGpoResponse(SocketProxy socket) : base(socket, Command.IkusNetGetGpo)
+        public IkusNetGetGpoResponse(ProdysSocketProxy socket) : base(socket, Command.IkusNetGetGpo)
         {
         }
     }
@@ -50,12 +50,12 @@ namespace CodecControl.Client.Prodys.IkusNet.Sdk.Responses
     {
         public bool? Active { get; protected set; }
 
-        protected IkusNetGetGpioResponse(SocketProxy socket, Command command)
+        protected IkusNetGetGpioResponse(ProdysSocketProxy socket, Command command)
         {
             ParseResponse(socket, command);
         }
 
-        protected void ParseResponse(SocketProxy socket, Command expectedCommand)
+        protected void ParseResponse(ProdysSocketProxy socket, Command expectedCommand)
         {
             var buffer = new byte[8];
             socket.Receive(buffer);

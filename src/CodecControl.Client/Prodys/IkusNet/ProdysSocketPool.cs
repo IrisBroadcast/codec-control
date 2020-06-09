@@ -53,7 +53,7 @@ namespace CodecControl.Client.Prodys.IkusNet
                 TimeSpan.FromSeconds(10));
         }
 
-        public async Task<SocketProxy> TakeSocket(string ipAddress)
+        public async Task<ProdysSocketProxy> TakeSocket(string ipAddress)
         {
             using (new TimeMeasurer("IkusNet Taking socket"))
             {
@@ -66,12 +66,12 @@ namespace CodecControl.Client.Prodys.IkusNet
                 if (dictionaryForIpAddress.TryTake(out var socket))
                 {
                     log.Debug($"IkusNet Reusing existing socket for IP {ipAddress} found in pool. (Socket #{socket.GetHashCode()})");
-                    return new SocketProxy(socket, this);
+                    return new ProdysSocketProxy(socket, this);
                 }
 
                 socket = await ProdysSocket.GetConnectedSocketAsync(ipAddress);
                 log.Info($"IkusNet New socket to IP {ipAddress} created. (Socket #{socket.GetHashCode()})");
-                return new SocketProxy(socket, this);
+                return new ProdysSocketProxy(socket, this);
             }
         }
 

@@ -35,6 +35,7 @@ namespace CodecControl.Web.Hub
         public string ConnectionId { get; set; }
         public string SipAddress { get; set; }
         public string HostAddress { get; set; } // TODO: Implement so can control codecs without CCM
+        public bool CodecApiHasWebsocket { get; set; }
         public DateTime ConnectionStarted { get; set; }
     }
 }

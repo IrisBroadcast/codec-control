@@ -29,9 +29,11 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using CodecControl.Client.Prodys.IkusNet;
+using Microsoft.Extensions.Logging;
 using NLog;
 using Socket.Io.Client.Core;
 
@@ -43,40 +45,75 @@ namespace CodecControl.Client.SR.BaresipRest
     public class BaresipSocketIoPool : IDisposable
     {
         protected static readonly Logger log = LogManager.GetCurrentClassLogger();
-        private readonly ConcurrentDictionary<string, ConcurrentBag<SocketIoClient>> _dictionary;
+        private readonly ConcurrentDictionary<string, BaresipSocketIoClient> _dictionary;
+        private readonly Timer _evictionTimer;
 
         public BaresipSocketIoPool()
         {
-            log.Debug("Baresip WebSocket pool constructor");
-            _dictionary = new ConcurrentDictionary<string, ConcurrentBag<SocketIoClient>>();
+            log.Info("WebSocket pool constructor");
+            _dictionary = new ConcurrentDictionary<string, BaresipSocketIoClient>();
+            _evictionTimer = new Timer(state => { EvictUnusedSockets(); }, null,
+                TimeSpan.FromSeconds(15),
+                TimeSpan.FromSeconds(15));
         }
 
-        //public async Task<BaresipSocketIoClient> TakeSocket(string ipAddress)
-        //{
+        public async Task<BaresipSocketIoClient> TakeSocket(string ipAddress)
+        {
+            using (new TimeMeasurer("Taking socket IO Client"))
+            {
+                // Check if there is a socket or create a new one
+                var socketForIpAddress = _dictionary.GetOrAdd(ipAddress, s =>
+                {
+                    log.Info($"Creating new socket for connections to {ipAddress}");
+                    return new BaresipSocketIoClient(ipAddress);
+                });
 
-        //    using (new TimeMeasurer("Baresip Taking socket"))
-        //    {
-        //        var dictionaryForIpAddress = _dictionary.GetOrAdd(ipAddress, s =>
-        //        {
-        //            log.Info($"Baresip socket Creating new Bag for connections to {ipAddress}");
-        //            return new ConcurrentBag<SocketIoClient>();
-        //        });
+                // Bump up the interest time
+                socketForIpAddress.Connect();
+                socketForIpAddress.RefreshEvictionTime();
+                log.Debug($"Using connected socket for IP {ipAddress}. (Socket #{socketForIpAddress.GetHashCode()})");
+                return socketForIpAddress;
+            }
+        }
 
-        //        if (dictionaryForIpAddress.TryTake(out var socket))
-        //        {
-        //            log.Debug($"Baresip Reusing existing socket for IP {ipAddress} found in socket-pool. (Socket #{socket.GetHashCode()})");
-        //            return new BaresipSocketIoClient(socket, this);
-        //        }
+        private void EvictUnusedSockets()
+        {
+            try
+            {
+                log.Debug("Checking websocket pool for expired sockets.");
 
-        //        socket = await BaresipSocketIoClient.GetConnectedSocketAsync(ipAddress);
-        //        log.Info($"Baresip New socket to IP {ipAddress} created. (Socket #{socket.GetHashCode()})");
-        //        return new BaresipSocketIoClient(socket, this);
-        //    }
-        //}
+                foreach (KeyValuePair<string, BaresipSocketIoClient> socketDictionary in _dictionary)
+                {
+                    var ipAddress = socketDictionary.Key;
+                    var socket = socketDictionary.Value;
+
+                    if (socket.IsOld())
+                    {
+                        // Remove empty dictionary, discard it and move on to next ip address
+                        if (_dictionary.TryRemove(ipAddress, out socket))
+                        {
+                            log.Info($"Socket pool entry for IP address {ipAddress} is empty and was removed from pool.");
+                            //socket.Close();
+                            socket.Dispose();
+                        }
+                        else
+                        {
+                            log.Warn($"Socket pool entry for IP address {ipAddress} not found when trying to remove it from pool.");
+                        }
+                    }
+                }
+                log.Info($"Found #{_dictionary.Count} Websocket(s) ");
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex, "Exception when evicting expired websockets from pool.");
+            }
+        }
 
         public void Dispose()
         {
-            // Hmm do something here?
+            _evictionTimer?.Change(Timeout.Infinite, 0);
+            _evictionTimer?.Dispose();
         }
     }
 }

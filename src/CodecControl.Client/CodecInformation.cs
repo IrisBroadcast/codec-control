@@ -72,11 +72,29 @@ namespace CodecControl.Client
                         case CodecApiUserDefinedTypes.BehringerOscCustomApi:
                             return null;
                         default:
-                            // TODO: Log as warning
                             return null;
                     }
                 }
                 return null;
+            }
+        }
+
+        [JsonIgnore]
+        public bool CodecApiHasSocketConnection
+        {
+            get
+            {
+                if (Enum.TryParse(Api, true, out CodecApiUserDefinedTypes apiType))
+                {
+                    switch (apiType)
+                    {
+                        case CodecApiUserDefinedTypes.BareSipRest:
+                            return true;
+                        default:
+                            return false;
+                    }
+                }
+                return false;
             }
         }
     }

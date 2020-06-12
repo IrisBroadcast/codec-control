@@ -37,6 +37,7 @@ namespace CodecControl.Client
     public interface ICodecApiAbility
     {
         bool IsCapable { get; set; }
+        //bool Websocket
         //bool HasAudioInputs { get; set; }
         //bool HasAudioOutputs { get; set; }
         //bool HasGeneralPurposeInputs { get; set; }

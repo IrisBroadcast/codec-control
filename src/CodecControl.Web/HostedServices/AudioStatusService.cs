@@ -34,6 +34,7 @@ using System.Threading.Tasks;
 using CodecControl.Client;
 using CodecControl.Client.Exceptions;
 using CodecControl.Client.Models;
+using CodecControl.Client.SR.BaresipRest;
 using CodecControl.Web.CCM;
 using CodecControl.Web.Helpers;
 using CodecControl.Web.Hub;
@@ -51,20 +52,19 @@ namespace CodecControl.Web.HostedServices
         private readonly IHubContext<AudioStatusHub> _hub;
         private readonly CcmService _ccmService;
         private readonly IServiceProvider _serviceProvider;
-        private readonly TimeSpan _pollDelay = TimeSpan.FromMilliseconds(500);
+        private readonly BaresipSocketIoPool _baresipSocketIoPool;
+        private readonly TimeSpan _pollDelay = TimeSpan.FromMilliseconds(15500);
 
         public List<SubscriptionInfo> Subscriptions { get; } = new List<SubscriptionInfo>();
         private bool HasSubscriptions => Subscriptions.Any();
 
-        // State
-        private UnitStateResponse CurrentUnitState;
-
-        public AudioStatusService(IHubContext<AudioStatusHub> hub, CcmService ccmService, IServiceProvider serviceProvider)
+        public AudioStatusService(IHubContext<AudioStatusHub> hub, CcmService ccmService, IServiceProvider serviceProvider, BaresipSocketIoPool baresipSocketIoPool)
         {
             log.Debug("AudioStatusService constructor");
             _hub = hub;
             _ccmService = ccmService;
             _serviceProvider = serviceProvider;
+            _baresipSocketIoPool = baresipSocketIoPool;
         }
 
         /// <summary>
@@ -116,6 +116,7 @@ namespace CodecControl.Web.HostedServices
             Subscriptions.Add(new SubscriptionInfo {
                 ConnectionId = connectionId,
                 SipAddress = sipAddress,
+                CodecApiHasWebsocket = codecInformation?.CodecApiHasSocketConnection ?? false,
                 ConnectionStarted = DateTime.UtcNow
             });
 
@@ -171,14 +172,22 @@ namespace CodecControl.Web.HostedServices
                     int waitTime;
                     using (var timeMeasurer = new TimeMeasurer("AudioStatusService Checking on all codecs"))
                     {
-                        var sipAddresses = Subscriptions.Select(s => s.SipAddress).Distinct().ToList();
-                        log.Debug($"AudioStatusService Checking audio status on #{sipAddresses.Count} codec(s). ({string.Join(",", sipAddresses)})");
+                        //var sipAddresses = Subscriptions.Select(s => s.SipAddress).Distinct().ToList();
+                        var subs = Subscriptions.Distinct().ToList();
+                        log.Debug($"AudioStatusService Checking audio status on #{subs.Count} codec(s).");
 
-                        Parallel.ForEach(sipAddresses, async sipAddress =>
+                        Parallel.ForEach(subs, async sub =>
                         {
-                            using (new TimeMeasurer($"AudioStatusService Checking for {sipAddress}"))
+                            using (new TimeMeasurer($"AudioStatusService Checking for {sub.SipAddress}"))
                             {
-                                await CheckAudioStatusOnCodecAsync(sipAddress);
+                                if (sub.CodecApiHasWebsocket)
+                                {
+                                    await StartWebsocketConnectionToCodec(sub.SipAddress);
+                                }
+                                else
+                                {
+                                    await CheckAudioStatusOnCodecAsync(sub.SipAddress);
+                                }
                             }
                         });
 
@@ -196,6 +205,41 @@ namespace CodecControl.Web.HostedServices
             }
 
             log.Info("AudioStatusService finished");
+        }
+
+        private async Task StartWebsocketConnectionToCodec(string sipAddress)
+        {
+            try
+            {
+                //log.Info("Starting websocket to service.");
+                // Get codec template data from CCM
+                var codecInformation = await _ccmService.GetCodecInformationBySipAddress(sipAddress); // TODO: Not every time???? 
+                if (codecInformation == null)
+                {
+                    log.Info($"Codec {sipAddress} is not currently registered in CCM, could't get codec information");
+                    return;
+                }
+
+                if (string.IsNullOrEmpty(codecInformation.Ip))
+                {
+                    log.Info($"Could not start socket {sipAddress} is not subscribable");
+                    return;
+                }
+                var socket = _baresipSocketIoPool.TakeSocket(codecInformation.Ip);
+            }
+            catch (UnableToConnectException ex)
+            {
+                log.Warn($"AudioStatusService Exception unable to connect to {sipAddress}.");
+                log.Trace(ex, "AudioStatusService Exception");
+            }
+            catch (CodecInvocationException ex)
+            {
+                log.Warn($"AudioStatusService Failed to check audio status on {sipAddress}. {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                log.Warn(ex, $"AudioStatusService Exception when checking audio status on {sipAddress}");
+            }
         }
 
         private async Task CheckAudioStatusOnCodecAsync(string sipAddress)

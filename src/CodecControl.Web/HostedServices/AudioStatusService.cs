@@ -110,8 +110,6 @@ namespace CodecControl.Web.HostedServices
                 return;
             }
 
-            // TODO: Check if the Codec Api type has polling or session
-
             // Add to subscriptions list
             Subscriptions.Add(new SubscriptionInfo {
                 ConnectionId = connectionId,
@@ -119,8 +117,6 @@ namespace CodecControl.Web.HostedServices
                 CodecApiHasWebsocket = codecInformation?.CodecApiHasSocketConnection ?? false,
                 ConnectionStarted = DateTime.UtcNow
             });
-
-            // TODO: here should start intances for polling or sockets..
 
             // Add subscription to websocket group
             await _hub.Groups.AddToGroupAsync(connectionId, sipAddress);
@@ -170,7 +166,7 @@ namespace CodecControl.Web.HostedServices
                 while (HasSubscriptions && !stoppingToken.IsCancellationRequested)
                 {
                     int waitTime;
-                    using (var timeMeasurer = new TimeMeasurer("AudioStatusService Checking on all codecs"))
+                    using (var timeMeasurer = new TimeMeasurer("AudioStatusService checking on all codecs"))
                     {
                         //var sipAddresses = Subscriptions.Select(s => s.SipAddress).Distinct().ToList();
                         var subs = Subscriptions.Distinct().ToList();
@@ -211,7 +207,6 @@ namespace CodecControl.Web.HostedServices
         {
             try
             {
-                //log.Info("Starting websocket to service.");
                 // Get codec template data from CCM
                 var codecInformation = await _ccmService.GetCodecInformationBySipAddress(sipAddress); // TODO: Not every time???? 
                 if (codecInformation == null)
@@ -229,16 +224,16 @@ namespace CodecControl.Web.HostedServices
             }
             catch (UnableToConnectException ex)
             {
-                log.Warn($"AudioStatusService Exception unable to connect to {sipAddress}.");
+                log.Warn($"AudioStatusService Exception unable to connect to socket {sipAddress}.");
                 log.Trace(ex, "AudioStatusService Exception");
             }
             catch (CodecInvocationException ex)
             {
-                log.Warn($"AudioStatusService Failed to check audio status on {sipAddress}. {ex.Message}");
+                log.Warn($"AudioStatusService Failed to check audio status on socket {sipAddress}. {ex.Message}");
             }
             catch (Exception ex)
             {
-                log.Warn(ex, $"AudioStatusService Exception when checking audio status on {sipAddress}");
+                log.Warn(ex, $"AudioStatusService Exception when checking audio status on socket {sipAddress}");
             }
         }
 

@@ -29,20 +29,11 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Reactive.Linq;
 using System.Threading.Tasks;
-using CodecControl.Client.Exceptions;
-using CodecControl.Client.Prodys.IkusNet.Sdk.Commands;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
+using CodecControl.Client.SR.BaresipRest.Sdk;
 using NLog;
-using Socket.Io.Client.Core;
-using Socket.Io.Client.Core.Model;
-using Socket.Io.Client.Core.Model.SocketEvent;
-using Socket.Io.Client.Core.Model.SocketIo;
-using Utf8Json;
-using LogLevel = Websocket.Client.Logging.LogLevel;
+using SocketIOClient;
+
 
 namespace CodecControl.Client.SR.BaresipRest
 {
@@ -51,7 +42,7 @@ namespace CodecControl.Client.SR.BaresipRest
         protected static readonly Logger log = LogManager.GetCurrentClassLogger();
 
         private static readonly TimeSpan LingerTimeSpan = TimeSpan.FromSeconds(30);
-        private readonly SocketIoClient _socketIoClient;
+        private readonly SocketIO _socketIoClient;
         public string IpAddress { get; }
 
         // Sets a time in the future, if no one has refreshed interest in the device/connection
@@ -62,104 +53,70 @@ namespace CodecControl.Client.SR.BaresipRest
             IPAddress ipAddress = GetIpAddress(ipAddressStr);
             IpAddress = ipAddress.ToString();
 
-            var options = new SocketIoClientOptions();
-            _socketIoClient = new SocketIoClient(options);
+            var conIp = "http://" + IpAddress + ":" + Baresip.ExternalProtocolIpCommandsPort;
+
+            _socketIoClient = new SocketIO(new Uri(conIp), new SocketIOOptions
+            {
+                ConnectionTimeout = TimeSpan.FromSeconds(6)
+            });
+
+            try
+            {
+                _socketIoClient.On("system--initiation", response =>
+                {
+                    try
+                    {
+                        BaresipWsInitalData data = response.GetValue<BaresipWsInitalData>();
+                        log.Debug($"Answer Mode: {data.AnswerMode}");
+                    }
+                    catch (Exception ex)
+                    {
+                        log.Error(ex);
+                    }
+                });
+
+                _socketIoClient.OnConnected += async (sender, e) =>
+                {
+                    log.Info("Websocket to Baresip initiated, sending client-join");
+                    await _socketIoClient.EmitAsync("client-join", "");
+                };
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex);
+            }
+        }
+
+        class BaresipWsInitalData
+        {
+            public bool Redial { get; set; }
+            public string SavedUri { get; set; }
+            public string SavedDisplayname { get; set; }
+            //public bool GuiClock { get; set; }
+            //public string audiocard { get; set; }Object
+            public string ScreenRotation { get; set; }
+            public string AnswerMode { get; set; }
+            //public string profiles: { get; set; }[],
+            public string SelectedProfile { get; set; }
+            public string DeviceType { get; set; }
         }
 
         public async void Connect()
         {
-            if (_socketIoClient != null) { 
-                if (!_socketIoClient.IsRunning)
+            if (_socketIoClient != null) {
+                if (!_socketIoClient.Connected)
                 {
-                    log.Info("######### CONNECTING LOAL");
-
-                    IDisposable someEventSubscription = _socketIoClient.On("app--config")
-                        .Subscribe(message =>
-                        {
-                            Console.WriteLine($"Received event: {message.EventName}. Data: {message.FirstData}");
-                            log.Info($"Rceived {message.FirstData.ToString()}");
-                        });
-
-                    _socketIoClient.On("codec--update")
-                        .Subscribe(message =>
-                        {
-                            Console.WriteLine($"Received event codec--update: {message.EventName}. Data: {message.FirstData}");
-                            log.Info("OOK");
-                            log.Info($"Received codec--update {message.FirstData.ToString()}");
-                        });
-
-                    _socketIoClient.On("system--initiation")
-                        .Subscribe(message =>
-                        {
-                            Console.WriteLine($"Received event system--initiation: {message.EventName}. Data: {message.FirstData}");
-                            log.Info("OOK");
-                            log.Info($"Received system--initiation {message.FirstData.ToString()}");
-                        });
-
-                    _socketIoClient.Events.OnPacket.Subscribe(data =>
-                    {
-                        log.Info("OnPacket");
-                        log.Info(data.ToString());
-                        ProcessAckAndEvent(data);
-                    });
-
-                    _socketIoClient.Events.OnOpen.Subscribe(observer =>
-                    {
-                        log.Info("OnOpen");
-                        _socketIoClient.Emit("client-join", "");
-                    });
-
-                    await _socketIoClient.OpenAsync(new Uri("http://localhost:8080"));
-
-
-                    _socketIoClient.Emit("client-join", "");
-
-                    //optionally unsubscribe (equivalent to off() from socket.io)
-                    //someEventSubscription.Dispose();
+                    log.Info($"SocketIO connecting {IpAddress}");
+                    await _socketIoClient.ConnectAsync();
+                }
+                else
+                {
+                    log.Debug("Socket IO Client is already connected");
                 }
             }
             else
             {
                 log.Warn("Socket IO Client is null");
-            }
-        }
-
-        private void ProcessAckAndEvent(Packet packet)
-        {
-            try
-            {
-                if (packet.SocketIoType == SocketIoType.Event || packet.SocketIoType == SocketIoType.Ack)
-                {
-                    log.Info(packet.Id.ToString());
-                    log.Info(packet.Data.ToString());
-                    var eventArray = _socketIoClient.Options.JsonSerializer.Deserialize<string[]>(packet.Data);
-                    if (eventArray != null && eventArray.Length > 0)
-                    {
-                        if (packet.Id.HasValue)
-                            log.Info($"Received packet with ACK: {packet.Id.Value}");
-
-                        if (packet.SocketIoType == SocketIoType.Ack && packet.Id.HasValue)
-                        {
-                            log.Info("OK");
-                        }
-                        else
-                        {
-                            //first element should contain event name
-                            //we can have zero, one or multiple arguments after event name so emit based on number of them
-                            var message = eventArray.Length == 1
-                                ? new EventMessageEvent(eventArray[0], new List<string>())
-                                : new EventMessageEvent(eventArray[0], eventArray[1..]);
-
-                            log.Info($"Message {message}");
-                        }
-                    }
-                }
-            }
-            catch (JsonParsingException ex)
-            {
-                log.Info(ex, $"Error while deserializing event message. Packet: {packet}");
-                log.Error(ex);
-                log.Error(ex.Message);
             }
         }
 
@@ -171,11 +128,6 @@ namespace CodecControl.Client.SR.BaresipRest
         public bool IsOld()
         {
             return DateTime.Now > _evictionTime;
-        }
-
-        internal static Task<BaresipSocketIoClient> GetConnectedSocketAsync(string ipAddress)
-        {
-            throw new NotImplementedException();
         }
 
         private static IPAddress GetIpAddress(string address)
@@ -197,8 +149,8 @@ namespace CodecControl.Client.SR.BaresipRest
 
         public async void Dispose()
         {
-            log.Info("DISPOSING");
-            await _socketIoClient.CloseAsync();
+            log.Info($"SocketIO disposing {IpAddress}");
+            await _socketIoClient.DisconnectAsync();
             Dispose(true);
         }
         #endregion

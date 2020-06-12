@@ -257,19 +257,25 @@
         <table cellspacing="0" cellpadding="0" border="0" class="doc-info-table">
             <thead>
                 <tr>
+                    <th>SIP-address</th>
+                    <th>Host address</th>
                     <th>Connection id</th>
-                    <th>Sip-address</th>
+                    <th>Started</th>
+                    <th>Has websocket</th>
                 </tr>
             </thead>
             <tbody v-if="subscriptions.length > 0">
                 <tr v-for="subscription in subscriptions">
-                    <td>{{subscription.connectionId}}</td>
                     <td>{{subscription.sipAddress}}</td>
+                    <td>{{subscription.hostAddress}}</td>
+                    <td>{{subscription.connectionId}}</td>
+                    <td>{{subscription.connectionStarted}}</td>
+                    <td>{{subscription.codecApiHasWebsocket}}</td>
                 </tr>
             </tbody>
             <tbody v-if="subscriptions.length == 0">
                 <tr>
-                    <td colspan="2">
+                    <td colspan="5">
                         No subscriptions
                     </td>
                 </tr>
@@ -303,7 +309,7 @@
         <table cellspacing="0" class="doc-info-table">
             <thead>
                 <tr>
-                    <th>Sip-address</th>
+                    <th>SIP-address</th>
                     <th>IP</th>
                     <th>API</th>
                     <th>Vu-values Rx</th>

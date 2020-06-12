@@ -33,6 +33,6 @@ namespace CodecControl.Client.SR.BaresipRest.Sdk
     /// </summary>
     public static class Baresip
     {
-        public const int ExternalProtocolIpCommandsPort = 50031; // 80;
+        public const int ExternalProtocolIpCommandsPort = 50031;
     }
 }

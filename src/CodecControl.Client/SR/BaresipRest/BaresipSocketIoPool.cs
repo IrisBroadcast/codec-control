@@ -35,7 +35,6 @@ using System.Threading.Tasks;
 using CodecControl.Client.Prodys.IkusNet;
 using Microsoft.Extensions.Logging;
 using NLog;
-using Socket.Io.Client.Core;
 
 namespace CodecControl.Client.SR.BaresipRest
 {
@@ -59,19 +58,21 @@ namespace CodecControl.Client.SR.BaresipRest
 
         public async Task<BaresipSocketIoClient> TakeSocket(string ipAddress)
         {
-            using (new TimeMeasurer("Taking socket IO Client"))
+            using (new TimeMeasurer("Taking websocket"))
             {
                 // Check if there is a socket or create a new one
                 var socketForIpAddress = _dictionary.GetOrAdd(ipAddress, s =>
                 {
-                    log.Info($"Creating new socket for connections to {ipAddress}");
+                    log.Info($"Creating new websocket for connection to {ipAddress}");
                     return new BaresipSocketIoClient(ipAddress);
                 });
 
-                // Bump up the interest time
+                // Make sure it's connected
                 socketForIpAddress.Connect();
+
+                // Bump up the interest time
                 socketForIpAddress.RefreshEvictionTime();
-                log.Debug($"Using connected socket for IP {ipAddress}. (Socket #{socketForIpAddress.GetHashCode()})");
+                log.Debug($"Using connected websocket for IP {ipAddress}. (Socket #{socketForIpAddress.GetHashCode()})");
                 return socketForIpAddress;
             }
         }
@@ -92,13 +93,12 @@ namespace CodecControl.Client.SR.BaresipRest
                         // Remove empty dictionary, discard it and move on to next ip address
                         if (_dictionary.TryRemove(ipAddress, out socket))
                         {
-                            log.Info($"Socket pool entry for IP address {ipAddress} is empty and was removed from pool.");
-                            //socket.Close();
+                            log.Info($"Websocket pool entry for IP address {ipAddress} is empty and was removed from pool.");
                             socket.Dispose();
                         }
                         else
                         {
-                            log.Warn($"Socket pool entry for IP address {ipAddress} not found when trying to remove it from pool.");
+                            log.Warn($"Websocket pool entry for IP address {ipAddress} not found when trying to remove it from pool.");
                         }
                     }
                 }

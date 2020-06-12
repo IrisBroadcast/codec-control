@@ -34,7 +34,7 @@ using CodecControl.Client.Models;
 namespace CodecControl.Client.SR.BaresipRest
 {
     /// <summary>
-    /// Describes the 
+    /// Describes the ability of the Api: BaresipRest
     /// </summary>
     public class BaresipRestApiAbility : ICodecApiAbility
     {

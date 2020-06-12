@@ -64,7 +64,7 @@ namespace CodecControl.Client.SR.BaresipRest
                     throw new CodecInvocationException($"Response from {response.RequestMessage.RequestUri} was invalid");
                 }
 
-                return new IsAvailableResponse {Success = true};
+                return new IsAvailableResponse { Success = true };
             }
         }
 

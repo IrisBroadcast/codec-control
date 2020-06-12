@@ -87,7 +87,7 @@ namespace CodecControl.Web
             services.AddDirectoryBrowser();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1); // .AddMvc(option => option.EnableEndpointRouting = false);
 
-            // FIxing some reference loop handling in .NET Core 3.1
+            // Fixing some reference loop handling in .NET Core 3.1
             services.AddControllers().AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
             );

@@ -176,14 +176,14 @@ namespace CodecControl.Web.HostedServices
                         {
                             using (new TimeMeasurer($"AudioStatusService Checking for {sub.SipAddress}"))
                             {
-                                if (sub.CodecApiHasWebsocket)
-                                {
-                                    await StartWebsocketConnectionToCodec(sub.SipAddress);
-                                }
-                                else
-                                {
+                                //if (sub.CodecApiHasWebsocket)
+                                //{
+                                //    await StartWebsocketConnectionToCodec(sub.SipAddress);
+                                //}
+                                //else
+                                //{
                                     await CheckAudioStatusOnCodecAsync(sub.SipAddress);
-                                }
+                                //}
                             }
                         });
 

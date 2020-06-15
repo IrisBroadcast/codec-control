@@ -27,8 +27,6 @@
 #endregion
 
 using System.Collections.Generic;
-using CodecControl.Client.Models;
-using CodecControl.Web.Helpers;
 using CodecControl.Web.Hub;
 
 namespace CodecControl.Web.Models.System
